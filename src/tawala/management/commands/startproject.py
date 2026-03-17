@@ -157,7 +157,7 @@ class Command(BaseCommand):
             'version = "0.1.0"\n'
             'description = ""\n'
             'readme = "README.md"\n'
-            'requires-python = ">=3.12"\n'
+            'requires-python = ">=3.13"\n'
             f"dependencies = [{dependencies}]\n"
             "\n"
             "[dependency-groups]\n"
@@ -168,11 +168,10 @@ class Command(BaseCommand):
 
     def _get_gitignore_content(self, args: Namespace) -> str:
         """Generate the content for .gitignore based on the provided arguments."""
-        sqlite = f"/db.{DatabaseChoices.SQLITE}3\n" if args.db == DatabaseChoices.SQLITE else ""
+        sqlite = f"\n# SQLite database\n/db.{DatabaseChoices.SQLITE}3\n" if args.db == DatabaseChoices.SQLITE else ""
         return (
             "# Python-generated files\n"
             "__pycache__/\n"
-            "*.py[oc]\n"
             "\n"
             "# Virtual environment\n"
             "/.venv/\n"

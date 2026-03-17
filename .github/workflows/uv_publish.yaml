@@ -1,9 +1,12 @@
 name: uv Publish to PyPI or TestPyPI
 
 on:
+  # Automated triggers
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*" # Trigger on standard version tags
+      - "!v*.*.*.dev*" # Ignore development releases
+  # Manual triggers
   workflow_dispatch:
     inputs:
       index:
@@ -18,10 +21,11 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Select environment based on manual input, default to 'pypi' on pushed tags
     environment: ${{ inputs.index || 'pypi' }}
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Crucial for PyPI Trusted Publishing (OIDC)
 
     steps:
       - name: Checkout code
