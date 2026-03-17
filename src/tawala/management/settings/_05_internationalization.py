@@ -13,10 +13,10 @@ class _InternationalizationConf(BaseConf):
 
     verbose_name = "05. Internationalization Configuration"
 
-    language_code = ConfField(type=str, env="LANGUAGE_CODE", toml="internationalization.language_code", default="en-us")
-    time_zone = ConfField(type=str, env="TIME_ZONE", toml="internationalization.time_zone", default="Africa/Nairobi")
-    use_i18n = ConfField(type=bool, env="USE_I18N", toml="internationalization.use_i18n", default=True)
-    use_tz = ConfField(type=bool, env="USE_TZ", toml="internationalization.use_tz", default=True)
+    language_code = ConfField(type=str, env="LANGUAGE_CODE", toml="internationalization.language-code", default="en-us")
+    time_zone = ConfField(type=str, env="TIME_ZONE", toml="internationalization.time-zone", default="UTC")
+    use_i18n = ConfField(type=bool, env="USE_I18N", toml="internationalization.use-i18n", default=True)
+    use_tz = ConfField(type=bool, env="USE_TZ", toml="internationalization.use-tz", default=True)
 
 
 _INTERNATIONALIZATION = _InternationalizationConf()
