@@ -35,7 +35,13 @@ class _DatabaseConf(BaseConf):
     host = ConfField(type=str, env="DB_HOST", toml="db.host", default="")
     port = ConfField(type=str, env="DB_PORT", toml="db.port", default="")
     pool = ConfField(type=bool, env="DB_POOL", toml="db.pool", default=False)
-    ssl_mode = ConfField(type=str, env="DB_SSL_MODE", toml="db.ssl-mode", default="prefer")
+    ssl_mode = ConfField(
+        type=str,
+        choices=["prefer", "require", "disable", "allow", "verify-ca", "verify-full"],
+        env="DB_SSL_MODE",
+        toml="db.ssl-mode",
+        default="prefer",
+    )
 
 
 _DATABASE = _DatabaseConf()
