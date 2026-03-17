@@ -1,0 +1,16 @@
+{% load static %}
+
+{# css #}
+<style nonce="{{ csp_nonce }}">
+  #scroll-top:hover {
+    background-color: color-mix(in srgb, var(--color-accent), transparent 20%);
+  }
+</style>
+{# html #}
+<a href="#"
+   id="scroll-top"
+   class="bg-accent hover:text-contrast invisible fixed right-[15px] bottom-[15px] z-99999 flex h-10 w-10 items-center justify-center rounded opacity-0 transition-all duration-400 [&.active]:visible [&.active]:opacity-100">
+  <i class="bi bi-arrow-up-short text-contrast text-2xl"></i>
+</a>
+{# js #}
+<script defer src="{% static 'app/js/scroll-top.js' %}"></script>

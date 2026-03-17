@@ -1,0 +1,23 @@
+{% load static %}
+
+{# css #}
+<style nonce="{{ csp_nonce }}">
+  @keyframes animate-preloader {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  #preloader:before {
+    animation: animate-preloader 1.5s linear infinite;
+  }
+</style>
+{# html #}
+<div id="preloader"
+     class="bg-background before:border-y-accent fixed inset-0 z-999999 overflow-hidden transition-all duration-600 ease-out before:fixed before:top-[calc(50%-30px)] before:left-[calc(50%-30px)] before:h-[60px] before:w-[60px] before:rounded-full before:border-[6px] before:border-x-transparent before:content-['']">
+</div>
+{# js #}
+<script defer src="{% static 'app/js/preloader.js' %}"></script>

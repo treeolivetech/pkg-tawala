@@ -1,0 +1,14 @@
+# Python-generated files
+__pycache__/
+
+# Virtual environment
+/.venv/
+
+# Ruff cache
+/.ruff_cache/
+
+# Temporary files
+/.tmp/
+
+# Distribution files
+/dist/

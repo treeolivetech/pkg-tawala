@@ -1,0 +1,48 @@
+name: uv Publish to PyPI or TestPyPI
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      index:
+        description: "Target package index. Choose 'pypi' for the official PyPI repository or 'testpypi' for the TestPyPI repository."
+        required: true
+        type: choice
+        options:
+          - pypi
+          - testpypi
+        default: "pypi"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.index || 'pypi' }}
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Build and Publish to PyPI or TestPyPI
+        run: |
+          echo "Building distributions"
+          uv build
+
+          INDEX="${{ inputs.index || 'pypi' }}"
+
+          echo "Publishing to $INDEX"
+          # PyPI is the default target, while testpypi uses the custom index configuration
+          if [ "$INDEX" = "testpypi" ]; then
+            uv publish --index testpypi
+          else
+            uv publish
+          fi
