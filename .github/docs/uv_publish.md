@@ -31,6 +31,7 @@ You can use `uv version` to bump the version automatically:
 ```bash
 uv version --bump patch  # e.g., 1.5.1 -> 1.5.2
 uv version --bump minor  # e.g., 1.5.1 -> 1.6.0
+uv version --bump major --bump dev  # e.g., 1.6.0 -> 2.0.0.dev1
 uv version 2.0.0         # Set explicitly
 ```
 
@@ -60,7 +61,7 @@ _(Note: We highly recommend publishing to `testpypi` first via this method whene
 
 #### Option B: Automatic Release (on Push/Tag)
 
-The workflow is also configured to run automatically and publish to PyPI if you push a version tag matching `v*.*.*`.
+The workflow is also configured to run automatically and publish to PyPI if you push a version tag matching `v*.*.*`. Note that development releases (tags matching `v*.*.*.dev*`) are explicitly ignored and will not be published.
 
 We have provided an automated script that uses the project's internal tools to read your version and trigger the entire tagging process:
 
