@@ -6,15 +6,7 @@ from typing import TypedDict
 from ...constants import Package, Project, StorageChoices, StorageTomlKeys
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = [
-    "STORAGE_BACKEND",
-    "BLOB_READ_WRITE_TOKEN",
-    "STORAGES",
-    "STATIC_ROOT",
-    "STATIC_URL",
-    "MEDIA_ROOT",
-    "MEDIA_URL",
-]
+__all__ = ["STORAGE_BACKEND", "BLOB_READ_WRITE_TOKEN", "STORAGES", "STATIC_ROOT", "STATIC_URL", "MEDIA_ROOT", "MEDIA_URL"]
 
 
 class _StorageConf(BaseConf):

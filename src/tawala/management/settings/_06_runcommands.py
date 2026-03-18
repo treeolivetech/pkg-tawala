@@ -2,7 +2,7 @@
 
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["RUNCOMMANDS"]
+__all__ = ["RUNCOMMANDS"]
 
 
 class _RunCommandsConf(BaseConf):

@@ -10,7 +10,7 @@ from django.http import HttpRequest
 if TYPE_CHECKING:
     from django.contrib.auth.models import AbstractBaseUser
 
-__all__: list[str] = ["UsernameOrEmailAuthBackend"]
+__all__ = ["UsernameOrEmailAuthBackend"]
 
 
 class UsernameOrEmailAuthBackend(ModelBackend):

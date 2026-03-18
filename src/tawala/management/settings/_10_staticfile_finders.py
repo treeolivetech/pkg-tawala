@@ -4,7 +4,7 @@ from ...constants import AppDefMappings, StaticFileFinders
 from ..conf import BaseConf, ConfField
 from ._07_installed_apps import INSTALLED_APPS
 
-__all__: list[str] = ["STATICFILES_FINDERS"]
+__all__ = ["STATICFILES_FINDERS"]
 
 
 class _StaticfileFindersConf(BaseConf):

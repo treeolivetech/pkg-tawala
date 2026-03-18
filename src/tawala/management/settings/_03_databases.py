@@ -11,7 +11,7 @@ from typing import NotRequired, TypedDict
 from ...constants import DatabaseChoices, DatabaseTomlKeys, Project
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["DATABASES"]
+__all__ = ["DATABASES"]
 
 
 class _DatabaseConf(BaseConf):

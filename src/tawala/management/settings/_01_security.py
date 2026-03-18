@@ -5,7 +5,7 @@ https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
 
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = [
+__all__ = [
     "SECRET_KEY",
     "DEBUG",
     "ALLOWED_HOSTS",

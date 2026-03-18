@@ -3,7 +3,7 @@
 from ...constants import Package
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["SERVER_USE_ASGI", "WSGI_APPLICATION"]
+__all__ = ["SERVER_USE_ASGI", "WSGI_APPLICATION"]
 
 
 class _ServerConf(BaseConf):

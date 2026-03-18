@@ -5,7 +5,7 @@ https://docs.djangoproject.com/en/stable/topics/i18n/
 
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["LANGUAGE_CODE", "TIME_ZONE", "USE_I18N", "USE_TZ"]
+__all__ = ["LANGUAGE_CODE", "TIME_ZONE", "USE_I18N", "USE_TZ"]
 
 
 class _InternationalizationConf(BaseConf):

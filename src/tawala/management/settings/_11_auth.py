@@ -7,7 +7,7 @@ from typing import TypedDict, cast
 
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["AUTH_PASSWORD_VALIDATORS"]
+__all__ = ["AUTH_PASSWORD_VALIDATORS"]
 
 
 class _AuthPasswordValidatorsConf(BaseConf):

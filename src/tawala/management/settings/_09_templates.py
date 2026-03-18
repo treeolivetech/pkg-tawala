@@ -7,7 +7,7 @@ from ...constants import AppDefMappings, ContextProcessors
 from ..conf import BaseConf, ConfField
 from ._07_installed_apps import INSTALLED_APPS
 
-__all__: list[str] = ["TEMPLATES"]
+__all__ = ["TEMPLATES"]
 
 
 class _ContextProcessorsConf(BaseConf):

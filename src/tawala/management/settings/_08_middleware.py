@@ -4,7 +4,7 @@ from ...constants import AppDefMappings, Middlewares
 from ..conf import BaseConf, ConfField
 from ._07_installed_apps import INSTALLED_APPS
 
-__all__: list[str] = ["MIDDLEWARE"]
+__all__ = ["MIDDLEWARE"]
 
 
 class _MiddlewareConf(BaseConf):

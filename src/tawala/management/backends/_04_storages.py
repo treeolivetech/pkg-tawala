@@ -1,20 +1,18 @@
 """Custom storage backends."""
 
-from django.core.files.base import ContentFile, File
-from django.core.files.storage import Storage
-from django.utils.deconstruct import deconstructible
-
 from ...constants import StorageChoices
 from ..settings import STORAGE_BACKEND
 
-
 match STORAGE_BACKEND:
     case StorageChoices.VERCELBLOB:
+        from django.core.files.base import ContentFile, File
+        from django.core.files.storage import Storage
+        from django.utils.deconstruct import deconstructible
         from vercel.blob import BlobClient  # pyright: ignore[reportMissingTypeStubs]
 
         from ..settings import BLOB_READ_WRITE_TOKEN
 
-        __all__: list[str] = ["VercelBlobStorageBackend"]
+        __all__ = ["VercelBlobStorageBackend"]
 
         @deconstructible
         class VercelBlobStorageBackend(Storage):
@@ -78,4 +76,4 @@ match STORAGE_BACKEND:
                 return name
 
     case _:
-        __all__: list[str] = []
+        __all__ = []

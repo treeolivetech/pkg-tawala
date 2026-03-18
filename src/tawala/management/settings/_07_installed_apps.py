@@ -3,7 +3,7 @@
 from ...constants import InstalledApps, Package, Project
 from ..conf import BaseConf, ConfField
 
-__all__: list[str] = ["INSTALLED_APPS"]
+__all__ = ["INSTALLED_APPS"]
 
 
 class _AppsConf(BaseConf):
