@@ -7,7 +7,7 @@ Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 
 [project]
 name = "tawala"
-version = "1.3.1.dev1"
+version = "1.3.1.dev3"
 description = "Build and deploy Django apps with confidence."
 readme = "README.md"
 license = "MIT"

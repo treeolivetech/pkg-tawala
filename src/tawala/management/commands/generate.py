@@ -13,7 +13,7 @@ from ...constants import FileGenerateChoices, Package, Project
 
 def get_api_server_spec(path: pathlib.Path = Project.API_DIR / "server.py") -> FileSpec:
     """Return the FileSpec for api/server.py."""
-    content = f"from {Package.NAME}.management.backends import server_application as application\n\napp = application\n"
+    content = f"from {Package.NAME}.management.backends import server_application\n\napp = server_application\n"
     return FileSpec(path=path, content=content)
 
 

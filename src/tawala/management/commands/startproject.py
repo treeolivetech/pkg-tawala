@@ -5,7 +5,16 @@ from pathlib import Path
 
 from christianwhocodes import BaseCommand, ExitCode, FileGenerator, FileSpec, InitAction, PostgresFilename, Text, cprint, status
 
-from ...constants import DatabaseChoices, Package, PostgresFlags, PresetChoices, Project, StorageChoices
+from ...constants import (
+    DatabaseChoices,
+    DatabaseTomlKeys,
+    Package,
+    PostgresFlags,
+    PresetChoices,
+    Project,
+    StorageChoices,
+    StorageTomlKeys,
+)
 
 
 class Command(BaseCommand):
@@ -30,12 +39,25 @@ class Command(BaseCommand):
             default=PresetChoices.DEFAULT,
         )
         parser.add_argument(
-            "-d", "--db", dest="db", type=DatabaseChoices, choices=[db for db in DatabaseChoices], help="Database backend to use."
+            "-d",
+            "--db",
+            dest="db",
+            type=DatabaseChoices,
+            choices=[db for db in DatabaseChoices],
+            help=(
+                "Database backend to use.  Defaults to SQLite if not specified. "
+                f"Note: the {PresetChoices.VERCEL} preset automatically uses {DatabaseChoices.POSTGRESQL}. "
+                f"Other presets work with either database backend, so choose based on your needs and preferences. Defaults to {DatabaseChoices.SQLITE} if not specified."
+            ),
         )
         parser.add_argument(
             PostgresFlags.USE_VARS,
             action="store_true",
-            help=f"Use environment / pyproject.toml variables for PostgreSQL configuration. If False, configuration will be read from {PostgresFilename.PGSERVICE} and {PostgresFilename.PGPASS} files.",
+            help=(
+                f"Use environment / pyproject.toml variables for PostgreSQL configuration. If False, configuration will be read from {PostgresFilename.PGSERVICE} and {PostgresFilename.PGPASS} files."
+                f"Note: this flag is only applicable if the database backend is set to {DatabaseChoices.POSTGRESQL}. "
+                f"The {PresetChoices.VERCEL} preset automatically sets this flag to True since Vercel requires environment variable configuration for PostgreSQL and does not support file-based configuration."
+            ),
         )
 
     def handle(self, args: Namespace) -> ExitCode:
@@ -49,7 +71,7 @@ class Command(BaseCommand):
             with status("Generating preset files..."):
                 self._generate_preset_files(self._project_dir, self._validated_args)
         except (ValueError, FileExistsError, Exception) as e:
-            cprint(f"Error occurred during project initialization:\n{e}", Text.ERROR)
+            cprint(f"Something went wrong during project initialization:\n{e}", Text.WARNING)
             self._revert_generated_files(self._project_dir)
             return ExitCode.ERROR
         else:
@@ -143,13 +165,9 @@ class Command(BaseCommand):
         # tool section
         tool_section = f"[tool.{Package.NAME}]\n"
         if args.db == DatabaseChoices.POSTGRESQL:
-            tool_section += (
-                # TODO: Consider using enums for the toml keys
-                f'db = {{ backend = "{DatabaseChoices.POSTGRESQL}", use-vars = {"true" if args.pg_use_vars else "false"} }}\n'
-            )
+            tool_section += f'db = {{ {DatabaseTomlKeys.BACKEND} = "{DatabaseChoices.POSTGRESQL}", {DatabaseTomlKeys.USE_VARS} = {"true" if args.pg_use_vars else "false"} }}\n'
         if args.preset == PresetChoices.VERCEL:
-            # TODO: Consider using enums for the toml keys
-            tool_section += f'storage = {{ backend = "{StorageChoices.VERCELBLOB}", blob-token = "get-from-vercel-blob-storage-and-keep-private-via-env-var" }}\n'
+            tool_section += f'storage = {{ {StorageTomlKeys.BACKEND} = "{StorageChoices.VERCELBLOB}", {StorageTomlKeys.BLOB_TOKEN} = "get-from-vercel-blob-storage-and-keep-private-via-env-var" }}\n'
         # final content
         return (
             "[project]\n"
