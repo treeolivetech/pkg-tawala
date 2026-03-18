@@ -8,7 +8,7 @@ https://www.postgresql.org/docs/current/libpq-pgpass.html
 from pathlib import Path
 from typing import NotRequired, TypedDict
 
-from ...constants import DatabaseChoices, Project
+from ...constants import DatabaseChoices, DatabaseTomlKeys, Project
 from ..conf import BaseConf, ConfField
 
 __all__: list[str] = ["DATABASES"]
@@ -17,17 +17,17 @@ __all__: list[str] = ["DATABASES"]
 class _DatabaseConf(BaseConf):
     """Database settings."""
 
-    verbose_name = "02. Database Configuration"
+    verbose_name = "03. Database Configuration"
 
     backend = ConfField(
         type=str,
         choices=[DatabaseChoices.SQLITE, DatabaseChoices.POSTGRESQL],
         env="DB_BACKEND",
-        toml="db.backend",
+        toml=f"db.{DatabaseTomlKeys.BACKEND}",
         default=DatabaseChoices.SQLITE,
     )
     # postgresql specific
-    use_vars = ConfField(type=bool, env="DB_USE_VARS", toml="db.use-vars", default=False)
+    use_vars = ConfField(type=bool, env="DB_USE_VARS", toml=f"db.{DatabaseTomlKeys.USE_VARS}", default=False)
     service = ConfField(type=str, env="DB_SERVICE", toml="db.service", default="")
     user = ConfField(type=str, env="DB_USER", toml="db.user", default="")
     password = ConfField(type=str, env="DB_PASSWORD", toml="db.password", default="")
@@ -35,11 +35,11 @@ class _DatabaseConf(BaseConf):
     host = ConfField(type=str, env="DB_HOST", toml="db.host", default="")
     port = ConfField(type=str, env="DB_PORT", toml="db.port", default="")
     pool = ConfField(type=bool, env="DB_POOL", toml="db.pool", default=False)
-    ssl_mode = ConfField(
+    sslmode = ConfField(
         type=str,
         choices=["prefer", "require", "disable", "allow", "verify-ca", "verify-full"],
-        env="DB_SSL_MODE",
-        toml="db.ssl-mode",
+        env="DB_SSLMODE",
+        toml="db.sslmode",
         default="prefer",
     )
 
@@ -86,7 +86,7 @@ def _get_databases_config() -> _DatabasesDict:
             }
         case DatabaseChoices.POSTGRESQL:
             config: _DatabaseDict
-            options: _DatabaseOptionsDict = {"pool": _DATABASE.pool, "sslmode": _DATABASE.ssl_mode}
+            options: _DatabaseOptionsDict = {"pool": _DATABASE.pool, "sslmode": _DATABASE.sslmode}
             if _DATABASE.use_vars:
                 config = {
                     "ENGINE": f"django.db.backends.{DatabaseChoices.POSTGRESQL}",

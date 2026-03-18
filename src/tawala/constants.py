@@ -136,3 +136,17 @@ class PresetChoices(StrEnum):
 
     DEFAULT = "default"
     VERCEL = "vercel"
+
+
+class StorageTomlKeys(StrEnum):
+    """Keys for storage configuration in pyproject.toml."""
+
+    BACKEND = "backend"
+    BLOB_TOKEN = "blob-token"
+
+
+class DatabaseTomlKeys(StrEnum):
+    """Keys for database configuration in pyproject.toml."""
+
+    BACKEND = "backend"
+    USE_VARS = "use-vars"
