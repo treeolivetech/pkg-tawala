@@ -8,13 +8,13 @@ https://www.postgresql.org/docs/current/libpq-pgpass.html
 from pathlib import Path
 from typing import NotRequired, TypedDict
 
-from ...constants import DatabaseChoices, DatabaseTomlKeys, Project
-from ..conf import BaseConf, ConfField
+from ... import DatabaseChoices, DatabaseTomlKeys, Project
+from .. import ConfField, SettingsConf
 
 __all__ = ["DATABASES"]
 
 
-class _DatabaseConf(BaseConf):
+class _DatabaseConf(SettingsConf):
     """Database settings."""
 
     verbose_name = "03. Database Configuration"

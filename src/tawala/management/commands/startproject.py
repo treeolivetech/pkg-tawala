@@ -5,16 +5,7 @@ from pathlib import Path
 
 from christianwhocodes import BaseCommand, ExitCode, FileGenerator, FileSpec, InitAction, PostgresFilename, Text, cprint, status
 
-from ...constants import (
-    DatabaseChoices,
-    DatabaseTomlKeys,
-    Package,
-    PostgresFlags,
-    PresetChoices,
-    Project,
-    StorageChoices,
-    StorageTomlKeys,
-)
+from ... import DatabaseChoices, DatabaseTomlKeys, Package, PostgresFlags, PresetChoices, Project, StorageChoices, StorageTomlKeys
 
 
 class Command(BaseCommand):
@@ -180,6 +171,9 @@ class Command(BaseCommand):
             "\n"
             "[dependency-groups]\n"
             'dev = ["djlint>=1.36.4"]\n'
+            "\n"
+            "[tool.uv.sources]\n"
+            f'{Package.NAME} = {{ git = "https://github.com/treeolivetech/pkg-tawala" }}\n'
             "\n"
             f"{tool_section}"
         )

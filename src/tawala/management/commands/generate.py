@@ -8,7 +8,7 @@ from typing import Any, cast
 from christianwhocodes import FileGenerator, FileSpec, get_pg_service_spec, get_pgpass_spec
 from django.core.management.base import BaseCommand, CommandParser
 
-from ...constants import FileGenerateChoices, Package, Project
+from ... import FileGenerateChoices, Package, Project
 
 
 def get_api_server_spec(path: pathlib.Path = Project.API_DIR / "server.py") -> FileSpec:

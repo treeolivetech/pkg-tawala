@@ -4,7 +4,7 @@ import sys
 
 from christianwhocodes import ExitCode, InitAction, Text, cprint
 
-from ..constants import Package, Project
+from .. import Package, Project
 
 
 def main() -> None:
@@ -22,10 +22,10 @@ def main() -> None:
 
             sys.exit(Command()(sys.argv[2:]))
         case _:
-            from .conf import PROJECT_CONF, ProjectValidationError
+            from . import MANAGEMENT_CONF, ProjectValidationError
 
             try:
-                PROJECT_CONF.validate()
+                MANAGEMENT_CONF.validate()
             except ProjectValidationError as e:
                 cprint(f"Is this a valid {Package.DISPLAY_NAME} project directory?\n{e}", Text.WARNING)
                 cprint(

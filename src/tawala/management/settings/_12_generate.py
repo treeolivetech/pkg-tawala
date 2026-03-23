@@ -1,7 +1,7 @@
 """Generate Configuration."""
 
-from ..conf import BaseConf
+from .. import SettingsConf
 
 __all__ = ["CONF_FIELDS"]
 
-CONF_FIELDS = BaseConf.get_conf_fields()
+CONF_FIELDS = SettingsConf.get_conf_fields()

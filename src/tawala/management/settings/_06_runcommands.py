@@ -1,11 +1,11 @@
 """Runcommands Configuration."""
 
-from ..conf import BaseConf, ConfField
+from .. import ConfField, SettingsConf
 
 __all__ = ["RUNCOMMANDS"]
 
 
-class _RunCommandsConf(BaseConf):
+class _RunCommandsConf(SettingsConf):
     """Runcommands Configuration."""
 
     verbose_name = "06. Runcommands Configuration"

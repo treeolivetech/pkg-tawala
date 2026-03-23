@@ -3,13 +3,13 @@
 from pathlib import Path
 from typing import TypedDict
 
-from ...constants import Package, Project, StorageChoices, StorageTomlKeys
-from ..conf import BaseConf, ConfField
+from ... import Package, Project, StorageChoices, StorageTomlKeys
+from .. import ConfField, SettingsConf
 
 __all__ = ["STORAGE_BACKEND", "BLOB_READ_WRITE_TOKEN", "STORAGES", "STATIC_ROOT", "STATIC_URL", "MEDIA_ROOT", "MEDIA_URL"]
 
 
-class _StorageConf(BaseConf):
+class _StorageConf(SettingsConf):
     """Files and Storage Configuration."""
 
     verbose_name = "04. Files and Storage Configuration"

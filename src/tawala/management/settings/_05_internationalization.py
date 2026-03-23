@@ -3,12 +3,12 @@
 https://docs.djangoproject.com/en/stable/topics/i18n/
 """
 
-from ..conf import BaseConf, ConfField
+from .. import ConfField, SettingsConf
 
 __all__ = ["LANGUAGE_CODE", "TIME_ZONE", "USE_I18N", "USE_TZ"]
 
 
-class _InternationalizationConf(BaseConf):
+class _InternationalizationConf(SettingsConf):
     """Internationalization Configuration."""
 
     verbose_name = "05. Internationalization Configuration"

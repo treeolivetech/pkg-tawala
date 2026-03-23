@@ -1,6 +1,6 @@
 """Custom storage backends."""
 
-from ...constants import StorageChoices
+from ... import StorageChoices
 from ..settings import STORAGE_BACKEND
 
 match STORAGE_BACKEND:

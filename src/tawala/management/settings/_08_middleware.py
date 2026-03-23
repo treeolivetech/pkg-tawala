@@ -1,13 +1,13 @@
 """Middleware Configuration."""
 
-from ...constants import AppDefMappings, Middlewares
-from ..conf import BaseConf, ConfField
+from ... import AppDefMappings, Middlewares
+from .. import ConfField, SettingsConf
 from ._07_installed_apps import INSTALLED_APPS
 
 __all__ = ["MIDDLEWARE"]
 
 
-class _MiddlewareConf(BaseConf):
+class _MiddlewareConf(SettingsConf):
     """Middleware Configuration."""
 
     verbose_name = "08. Middleware Configuration"

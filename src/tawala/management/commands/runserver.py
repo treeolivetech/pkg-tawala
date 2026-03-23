@@ -5,7 +5,7 @@ from typing import Any
 from django.contrib.staticfiles.management.commands.runserver import Command as RunserverCommand
 from django.core.management.base import CommandParser
 
-from ...constants import Package
+from ... import Package
 
 
 class Command(RunserverCommand):

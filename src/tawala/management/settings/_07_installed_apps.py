@@ -1,12 +1,12 @@
 """Installed Apps Configuration."""
 
-from ...constants import InstalledApps, Package, Project
-from ..conf import BaseConf, ConfField
+from ... import InstalledApps, Package, Project
+from .. import ConfField, SettingsConf
 
 __all__ = ["INSTALLED_APPS"]
 
 
-class _AppsConf(BaseConf):
+class _AppsConf(SettingsConf):
     """Installed Apps Configuration."""
 
     verbose_name = "07. Installed Apps Configuration"

@@ -2,7 +2,7 @@
 
 from os import environ
 
-from ....constants import Package
+from .... import Package
 from ...settings import SERVER_USE_ASGI
 from ._asgi import asgi_application
 from ._wsgi import wsgi_application

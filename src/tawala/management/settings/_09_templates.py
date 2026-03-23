@@ -3,14 +3,14 @@
 from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
 
-from ...constants import AppDefMappings, ContextProcessors
-from ..conf import BaseConf, ConfField
+from ... import AppDefMappings, ContextProcessors
+from .. import ConfField, SettingsConf
 from ._07_installed_apps import INSTALLED_APPS
 
 __all__ = ["TEMPLATES"]
 
 
-class _ContextProcessorsConf(BaseConf):
+class _ContextProcessorsConf(SettingsConf):
     """Context Processors Configuration."""
 
     verbose_name = "09. Context Processors Configuration"

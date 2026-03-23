@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...constants import Package
+from ... import Package
 
 
 class BaseConfig(AppConfig):

@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.urls import URLPattern, URLResolver, include, path
 
-from ..constants import InstalledApps, Project
+from .. import InstalledApps, Project
 
 urlpatterns: list[URLPattern | URLResolver] = [
     *(

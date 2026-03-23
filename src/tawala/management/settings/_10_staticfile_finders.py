@@ -1,13 +1,13 @@
 """Staticfile Finders Configuration."""
 
-from ...constants import AppDefMappings, StaticFileFinders
-from ..conf import BaseConf, ConfField
+from ... import AppDefMappings, StaticFileFinders
+from .. import ConfField, SettingsConf
 from ._07_installed_apps import INSTALLED_APPS
 
 __all__ = ["STATICFILES_FINDERS"]
 
 
-class _StaticfileFindersConf(BaseConf):
+class _StaticfileFindersConf(SettingsConf):
     """Staticfile Finders Configuration."""
 
     verbose_name = "10. Staticfile Finders Configuration"

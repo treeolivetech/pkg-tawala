@@ -1,1 +1,1 @@
-"""Apps module."""
+"""Contrib apps module."""

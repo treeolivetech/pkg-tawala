@@ -5,12 +5,12 @@ https://docs.djangoproject.com/en/stable/ref/settings/#auth-password-validators
 
 from typing import TypedDict, cast
 
-from ..conf import BaseConf, ConfField
+from .. import ConfField, SettingsConf
 
 __all__ = ["AUTH_PASSWORD_VALIDATORS"]
 
 
-class _AuthPasswordValidatorsConf(BaseConf):
+class _AuthPasswordValidatorsConf(SettingsConf):
     """Password Validators Configuration."""
 
     verbose_name = "11. Password Validators Configuration"

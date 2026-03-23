@@ -3,7 +3,7 @@
 https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
 """
 
-from ..conf import BaseConf, ConfField
+from .. import ConfField, SettingsConf
 
 __all__ = [
     "SECRET_KEY",
@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-class _SecurityConf(BaseConf):
+class _SecurityConf(SettingsConf):
     """Security and Deployment Configuration."""
 
     verbose_name = "01. Security and Deployment Configuration"

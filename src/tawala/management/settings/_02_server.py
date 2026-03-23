@@ -1,12 +1,12 @@
 """Server (ASGI/WSGI) Configuration."""
 
-from ...constants import Package
-from ..conf import BaseConf, ConfField
+from ... import Package
+from .. import ConfField, SettingsConf
 
 __all__ = ["SERVER_USE_ASGI", "WSGI_APPLICATION"]
 
 
-class _ServerConf(BaseConf):
+class _ServerConf(SettingsConf):
     """Server (ASGI/WSGI) Configuration."""
 
     verbose_name = "02. Server (ASGI/WSGI) Configuration"
