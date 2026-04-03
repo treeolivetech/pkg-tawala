@@ -1,6 +1,6 @@
 [project.urls]
-Repository = "https://github.com/treeolivetech/pkg-tawala"
 Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+Repository = "https://github.com/treeolivetech/pkg-tawala"
 # Homepage = "https://github.com/treeolivetech/pkg-tawala"
 # Documentation = "https://github.com/treeolivetech/pkg-tawala#readme"
 
@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Treeolive Technologies", email = "hi@treeolive.tech" }]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Web Environment",
@@ -27,7 +27,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "christianwhocodes==1.5.4",
+    "christianwhocodes==1.5.5",
     "django==6.0.3",
     "django-browser-reload==1.21.0",
     "django-compressor==4.6.0",
@@ -56,8 +56,8 @@ dev = [
 ]
 
 [project.scripts]
-tawala = "tawala.management.cli:main"
-twl = "tawala.management.cli:main"
+tawala = "tawala.api.management:main"
+twl = "tawala.api.management:main"
 
 [build-system]
 requires = ["uv_build>=0.11.3,<0.12.0"]
@@ -70,6 +70,8 @@ format = { skip-magic-trailing-comma = true, docstring-code-format = true }
 
 [tool.djlint]
 ignore = "H016,H030,H031"
+blank_line_before_tag = "block,if,for"
+blank_line_after_tag = "endblock,endif,endfor"
 
 [[tool.uv.index]]
 name = "testpypi"

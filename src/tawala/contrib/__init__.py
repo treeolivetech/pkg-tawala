@@ -1,1 +1,0 @@
-"""Contrib apps module."""
