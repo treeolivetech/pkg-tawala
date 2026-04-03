@@ -1,87 +1,78 @@
 # uv Publishing Guide
 
-This document outlines the process for publishing the package to [PyPI](https://pypi.org/) and [TestPyPI](https://test.pypi.org/) using [`uv`](https://docs.astral.sh/uv/guides/package/) and [GitHub Actions Trusted Publishing](https://docs.pypi.org/trusted-publishers/adding-a-publisher/).
+Publish to [PyPI](https://pypi.org/) or [TestPyPI](https://test.pypi.org/) using [uv](https://docs.astral.sh/uv/guides/package/) and GitHub Actions Trusted Publishing.
 
-## Prerequisites: Trusted Publishing Setup
+## One-Time Setup
 
-Instead of using hardcoded API tokens or passwords, this project uses **OpenID Connect (OIDC) Trusted Publishing**.
+Use OIDC Trusted Publishing (no API tokens).
 
-1. **GitHub Environments**: You need two environments configured in your GitHub repository settings (Settings > Environments):
+1. In GitHub repository settings, create environments:
    - `pypi`
    - `testpypi`
-2. **PyPI / TestPyPI Setup**:
-   - Go to your project on PyPI and TestPyPI.
-   - Navigate to **Publishing** -> **Add a Trusted Publisher**.
-   - Input the following details:
-     - **Publisher Type**: GitHub
-     - **Owner**: `<personal account / organization username>`
-     - **Repository name**: `<repo name>`
-     - **Workflow name**: `uv_publish.yaml` (or leave empty if allowing all workflows)
-     - **Environment name**: Use exactly `pypi` for PyPI and `testpypi` for TestPyPI.
+2. In both PyPI and TestPyPI project settings, add a trusted publisher:
+   - Publisher Type: GitHub
+   - Owner: `<personal account / organization username>`
+   - Repository: `<repo name>`
+   - Workflow: `uv_publish.yaml` (or blank to allow all workflows)
+   - Environment: `pypi` for PyPI, `testpypi` for TestPyPI
 
-## Publishing Process
+## Release Workflow
 
-Publishing works entirely from your `pyproject.toml` version.
+The source of truth is `project.version` in `pyproject.toml`.
 
-### 1. Bump the Version
-
-Before publishing, ensure the application code is ready and update the version in `pyproject.toml`.
-You can use `uv version` to bump the version automatically:
+### 1. Set the Version
 
 ```bash
-uv version --bump patch  # e.g., 1.5.1 -> 1.5.2
-uv version --bump minor  # e.g., 1.5.1 -> 1.6.0
-uv version --bump major --bump dev  # e.g., 1.6.0 -> 2.0.0.dev1
-uv version 2.0.0         # Set explicitly
+uv version --bump patch
+uv version --bump minor
+uv version --bump major --bump dev
+uv version 2.0.0
 ```
 
-Commit this change and push it to GitHub:
+Then commit and push:
 
 ```bash
 git add pyproject.toml
-git commit -m "Bump version to 1.5.2"
+git commit -m "Bump version to X.Y.Z"
 git push
 ```
 
-### 2. Trigger the Workflow
+### 2. Publish
 
-The `uv Publish to PyPI or TestPyPI` GitHub Action workflow (`.github/workflows/uv_publish.yaml`) dictates how builds propagate:
+The workflow is defined in `.github/workflows/uv_publish.yaml`.
 
-#### Option A: Manual Release (Recommended for TestPyPI)
+#### Manual publish (Actions UI)
 
-You can manually trigger a release from the **Actions** tab on GitHub:
+Run **uv Publish to PyPI or TestPyPI** and choose `pypi` or `testpypi`.
 
-1. Go to the Actions tab and select **uv Publish to PyPI or TestPyPI**.
-2. Click **Run workflow**.
-3. Select your desired branch (usually `main`).
-4. Select the target index: `pypi` or `testpypi`.
-5. Click **Run workflow**.
+Behavior on manual dispatch:
 
-_(Note: We highly recommend publishing to `testpypi` first via this method whenever introducing major changes, just to ensure the package builds right!)_
+- Reads `pyproject.toml` version and computes `v<version>`.
+- Rejects development versions (any version containing `.dev`) and exits before tagging/publishing.
+- Creates and pushes the tag only if it does not already exist on `origin`.
+- Builds and publishes in the same run.
 
-#### Option B: Automatic Release (on Push/Tag)
+Use this path for TestPyPI validation before publishing to PyPI.
 
-The workflow is also configured to run automatically and publish to PyPI if you push a version tag matching `v*.*.*`. Note that development releases (tags matching `v*.*.*.dev*`) are explicitly ignored and will not be published.
+#### Tag-triggered publish
 
-We have provided an automated script that uses the project's internal tools to read your version and trigger the entire tagging process:
+Pushing a tag matching `v*.*.*` triggers publish (default environment: `pypi`).
+Tags matching `v*.*.*.dev*` are ignored.
+
+Helper script (run from repository root):
 
 ```bash
-# When run from the root directory
 uv run .github/triggers/uv_publish.py
 ```
 
-This tiny Python script will locally grab your version matching your currently committed `pyproject.toml`, tag it, and instantly upload that tag to trigger the publishing pipeline.
+The script fetches/prunes tags, reads the version, creates `v<version>`, and pushes it.
 
-Whenever triggered automatically via this automation script, the workflow defaults to using the **`pypi`** environment and publishes directly to the official PyPI registry.
+## Verify
 
-### 3. Verification
+- PyPI: `https://pypi.org/project/<package_name>/`
+- TestPyPI: `https://test.pypi.org/project/<package_name>/`
 
-Once the action succeeds:
-
-- **PyPI**: View your package at `https://pypi.org/project/<package_name>/`
-- **TestPyPI**: View your package at `https://test.pypi.org/project/<package_name>/`
-
-To test installing your newly published package from TestPyPI:
+Test install from TestPyPI:
 
 ```bash
 uv pip install -i https://test.pypi.org/simple/ package_name
