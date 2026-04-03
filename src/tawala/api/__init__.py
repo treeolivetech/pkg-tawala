@@ -22,7 +22,7 @@ class _ManagementConf:
     """Project configuration for the current working directory."""
 
     _validated: bool = field(default=False, init=False, repr=False)
-    _toml: dict[str, Any] = field(default_factory=lambda: dict(), init=False, repr=False)
+    _toml: dict[str, Any] = field(default_factory=lambda: {}, init=False, repr=False)
     _base_dir: pathlib.Path = field(default_factory=pathlib.Path.cwd)
 
     def _load_project(self) -> None:
@@ -158,6 +158,9 @@ class ConfField:
         except ValueError as e:
             field_info = f" for field '{field_name}'" if field_name else ""
             raise ValueError(f"Error converting config value{field_info}: {e}") from e
+
+        # This point should not be reachable; added to avoid implicit None return.
+        raise ValueError(f"Unsupported target type or conversion failure for: {target_type}")
 
     # ============================================================================
     # Descriptor Protocol

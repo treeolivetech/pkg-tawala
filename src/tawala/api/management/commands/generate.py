@@ -135,6 +135,8 @@ def _readme_get_type_hint(field_type: type) -> str:
             return "absolute path"
         case _:
             return "string"
+    # Fallback return to satisfy static analysis; should be unreachable.
+    return "string"
 
 
 def _readme_format_default_value(value: Any, field_type: type) -> str:
@@ -156,6 +158,8 @@ def _readme_format_default_value(value: Any, field_type: type) -> str:
             return f"`{pathlib.PurePosixPath(value)}`"
         case _:
             return f"`{value}`"
+    # Fallback: ensure a string is always returned even if the match is modified in the future.
+    return f"`{value}`"
 
 
 def _readme_table_row(

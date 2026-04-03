@@ -1,6 +1,6 @@
 """Settings configuration."""
 
-from ... import DefaultApps, Package, Project
+from ._00_base import *
 from ._01_security import *
 from ._02_server import *
 from ._03_databases import *
@@ -14,8 +14,3 @@ from ._10_staticfile_finders import *
 from ._11_auth import *
 from ._12_generate import *
 from ._13_sass import *
-from ._14_csp import *
-
-PKG_DISPLAY_NAME = Package.DISPLAY_NAME
-BASE_DIR = Project.BASE_DIR
-ROOT_URLCONF: str = f"{DefaultApps.APP}.urls"

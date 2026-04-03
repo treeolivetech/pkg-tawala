@@ -121,7 +121,7 @@ class Command(RunserverCommand):
             network_url = f"{self.protocol}://{local_ip}:{server_port}/"
             self.stdout.write(f"  🌍 Network address: {self.style.SUCCESS(network_url)}")
         except gaierror:
-            pass
+            self.stdout.write(f"  🌍 {self.style.WARNING('Could not determine network address')}")
 
     def _copy_to_clipboard(self, server_port: int) -> None:
         """Copy server URL to clipboard."""
@@ -133,8 +133,8 @@ class Command(RunserverCommand):
             self.stdout.write(f"  📋 {self.style.SUCCESS('Copied to clipboard!')}")
         except ImportError:
             self.stdout.write(f"  📋 {self.style.WARNING('pyperclip not installed - skipping clipboard copy')}")
-        except Exception:
-            pass
+        except Exception as exc:
+            self.stderr.write(f"  📋 {self.style.WARNING(f'Failed to copy to clipboard: {exc!r}')}")
 
     def _format_address(self) -> str:
         """Format address for display."""

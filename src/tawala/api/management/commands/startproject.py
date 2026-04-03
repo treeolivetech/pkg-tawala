@@ -12,9 +12,9 @@ from .... import (
     PostgresFlags,
     PresetChoices,
     Project,
+    SecurityTomlKeys,
     StorageChoices,
     StorageTomlKeys,
-    SecurityTomlKeys,
 )
 
 
