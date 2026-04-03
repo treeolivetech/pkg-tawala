@@ -37,22 +37,22 @@ dependencies = [
     "django-sass-processor==1.4.2",
     "django-watchfiles==1.4.0",
     "libsass==0.23.0",
-    "pillow==12.1.1",
+    "pillow==12.2.0",
     "pyperclip==1.11.0",
     "python-dotenv==1.2.2",
 ]
 
 [project.optional-dependencies]
-vercel = ["vercel==0.5.2"]
+vercel = ["vercel==0.5.3"]
 psycopg = ["psycopg[binary,pool]==3.3.3"]
 
 [dependency-groups]
 dev = [
     "djlint>=1.36.4",
     "psycopg[binary,pool]==3.3.3",
-    "ruff>=0.15.7",
-    "ty>=0.0.24",
-    "vercel==0.5.2",
+    "ruff>=0.15.9",
+    "ty>=0.0.28",
+    "vercel==0.5.3",
 ]
 
 [project.scripts]
@@ -60,7 +60,7 @@ tawala = "tawala.management.cli:main"
 twl = "tawala.management.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.11.0,<0.12.0"]
+requires = ["uv_build>=0.11.3,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.ruff]
