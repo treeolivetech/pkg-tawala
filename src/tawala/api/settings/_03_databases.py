@@ -32,8 +32,8 @@ class _DatabaseConf(SettingsConf):
     user = ConfField(type=str, env="DB_USER", toml="db.user", default="")
     password = ConfField(type=str, env="DB_PASSWORD", toml="db.password", default="")
     name = ConfField(type=str, env="DB_NAME", toml="db.name", default="")
-    host = ConfField(type=str, env="DB_HOST", toml="db.host", default="")
-    port = ConfField(type=str, env="DB_PORT", toml="db.port", default="")
+    host = ConfField(type=str, env="DB_HOST", toml="db.host", default="localhost")
+    port = ConfField(type=int, env="DB_PORT", toml="db.port", default=5432)
     pool = ConfField(type=bool, env="DB_POOL", toml="db.pool", default=False)
     sslmode = ConfField(
         type=str,
@@ -86,7 +86,6 @@ def _get_databases_config() -> _DatabasesDict:
             }
         case DatabaseChoices.POSTGRESQL:
             config: _DatabaseDict
-            options: _DatabaseOptionsDict = {"pool": _DATABASE.pool, "sslmode": _DATABASE.sslmode}
             if _DATABASE.use_vars:
                 config = {
                     "ENGINE": f"django.db.backends.{DatabaseChoices.POSTGRESQL}",
@@ -94,15 +93,14 @@ def _get_databases_config() -> _DatabasesDict:
                     "USER": _DATABASE.user,
                     "PASSWORD": _DATABASE.password,
                     "HOST": _DATABASE.host,
-                    "PORT": _DATABASE.port,
-                    "OPTIONS": options,
+                    "PORT": str(_DATABASE.port),
+                    "OPTIONS": {"pool": _DATABASE.pool, "sslmode": _DATABASE.sslmode},
                 }
             else:
-                options["service"] = _DATABASE.service
                 config = {
                     "ENGINE": f"django.db.backends.{DatabaseChoices.POSTGRESQL}",
                     "NAME": _DATABASE.name,
-                    "OPTIONS": options,
+                    "OPTIONS": {"pool": _DATABASE.pool, "sslmode": _DATABASE.sslmode, "service": _DATABASE.service},
                 }
             return {"default": config}
         case _:
