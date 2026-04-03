@@ -2,7 +2,7 @@
 
 from ... import AppDefMappings, StaticFileFinders
 from .. import ConfField, SettingsConf
-from ._07_installed_apps import INSTALLED_APPS
+from ._06_installed_apps import INSTALLED_APPS
 
 __all__ = ["STATICFILES_FINDERS"]
 
@@ -10,10 +10,20 @@ __all__ = ["STATICFILES_FINDERS"]
 class _StaticfileFindersConf(SettingsConf):
     """Staticfile Finders Configuration."""
 
-    verbose_name = "10. Staticfile Finders Configuration"
+    verbose_name = "09. Staticfile Finders Configuration"
 
-    extend = ConfField(type=list, env="STATICFILE_FINDERS_EXTEND", toml="staticfile_finders.extend", default=[])
-    remove = ConfField(type=list, env="STATICFILE_FINDERS_REMOVE", toml="staticfile_finders.remove", default=[])
+    extend = ConfField(
+        type=list,
+        env="STATICFILE_FINDERS_EXTEND",
+        toml="staticfile_finders.extend",
+        default=[],
+    )
+    remove = ConfField(
+        type=list,
+        env="STATICFILE_FINDERS_REMOVE",
+        toml="staticfile_finders.remove",
+        default=[],
+    )
 
 
 _STATICFILE_FINDERS_CONF = _StaticfileFindersConf()
@@ -34,10 +44,14 @@ def _get_staticfile_finders(installed_apps: list[str]) -> list[str]:
             finders_to_remove.update(staticfile_finders_list)
 
     # Filter out staticfile finders whose apps are not installed or explicitly removed
-    contrib_staticfile_finders = [m for m in contrib_staticfile_finders if m not in finders_to_remove]
+    contrib_staticfile_finders = [
+        m for m in contrib_staticfile_finders if m not in finders_to_remove
+    ]
 
     # Add custom staticfile finders at the end (before browser reload if it exists)
-    all_staticfile_finders: list[str] = contrib_staticfile_finders + _STATICFILE_FINDERS_CONF.extend
+    all_staticfile_finders: list[str] = (
+        contrib_staticfile_finders + _STATICFILE_FINDERS_CONF.extend
+    )
 
     # Remove duplicates while preserving order
     return list(dict.fromkeys(all_staticfile_finders))

@@ -27,7 +27,10 @@ def main() -> None:
             try:
                 MANAGEMENT_CONF.validate()
             except ProjectValidationError as e:
-                cprint(f"Is this a valid {Package.DISPLAY_NAME} project directory?\n{e}", Text.WARNING)
+                cprint(
+                    f"Is this a valid {Package.DISPLAY_NAME} project directory?\n{e}",
+                    Text.WARNING,
+                )
                 cprint(
                     f"Assuming you have uv installed:\n"
                     f"    - run: 'uvx {Package.NAME} {InitAction.STARTPROJECT} <project_name>' to initialize a new project.\n"

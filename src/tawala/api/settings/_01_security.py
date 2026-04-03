@@ -31,15 +31,36 @@ class _SecurityConf(SettingsConf):
     verbose_name = "01. Security and Deployment Configuration"
 
     secret_key = ConfField(
-        type=str, env="SECRET_KEY", toml="secret-key", default="django-insecure-change-me-in-production-via-env-variable"
+        type=str,
+        env="SECRET_KEY",
+        toml="secret-key",
+        default="django-insecure-change-me-in-production-via-env-variable",
     )
     debug = ConfField(type=bool, env="DEBUG", toml=SecurityTomlKeys.DEBUG, default=True)
-    allowed_hosts = ConfField(type=list, env="ALLOWED_HOSTS", toml="allowed-hosts", default=["localhost", "127.0.0.1"])
-    secure_ssl_redirect = ConfField(type=bool, env="SECURE_SSL_REDIRECT", toml="secure-ssl-redirect", default=False)
-    session_cookie_secure = ConfField(type=bool, env="SESSION_COOKIE_SECURE", toml="session-cookie-secure", default=False)
-    csrf_cookie_secure = ConfField(type=bool, env="CSRF_COOKIE_SECURE", toml="csrf-cookie-secure", default=False)
-    secure_hsts_seconds = ConfField(type=int, env="SECURE_HSTS_SECONDS", toml="secure-hsts-seconds", default=0)
-    wip = ConfField(type=bool, env="WORK_IN_PROGRESS", toml=SecurityTomlKeys.WIP, default=False)
+    allowed_hosts = ConfField(
+        type=list,
+        env="ALLOWED_HOSTS",
+        toml=SecurityTomlKeys.ALLOWED_HOSTS,
+        default=["localhost", "127.0.0.1"],
+    )
+    secure_ssl_redirect = ConfField(
+        type=bool, env="SECURE_SSL_REDIRECT", toml="secure-ssl-redirect", default=False
+    )
+    session_cookie_secure = ConfField(
+        type=bool,
+        env="SESSION_COOKIE_SECURE",
+        toml="session-cookie-secure",
+        default=False,
+    )
+    csrf_cookie_secure = ConfField(
+        type=bool, env="CSRF_COOKIE_SECURE", toml="csrf-cookie-secure", default=False
+    )
+    secure_hsts_seconds = ConfField(
+        type=int, env="SECURE_HSTS_SECONDS", toml="secure-hsts-seconds", default=0
+    )
+    wip = ConfField(
+        type=bool, env="WORK_IN_PROGRESS", toml=SecurityTomlKeys.WIP, default=False
+    )
 
 
 _SECURITY = _SecurityConf()

@@ -17,14 +17,20 @@ class UsernameOrEmailAuthBackend(ModelBackend):
     """Allows login with either username or email."""
 
     def authenticate(
-        self, request: HttpRequest | None, username: str | None = None, password: str | None = None, **kwargs: Any
+        self,
+        request: HttpRequest | None,
+        username: str | None = None,
+        password: str | None = None,
+        **kwargs: Any,
     ) -> "AbstractBaseUser | None":
         """Authenticate user with username or email."""
         if username is None or password is None:
             return None
         User = get_user_model()
         try:
-            user = User.objects.get(Q(username__iexact=username) | Q(email__iexact=username))
+            user = User.objects.get(
+                Q(username__iexact=username) | Q(email__iexact=username)
+            )
             if user.check_password(password):
                 return user
             return None

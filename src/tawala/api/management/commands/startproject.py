@@ -3,11 +3,22 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from christianwhocodes import BaseCommand, ExitCode, FileGenerator, FileSpec, InitAction, PostgresFilename, Text, cprint, status
+from christianwhocodes import (
+    BaseCommand,
+    ExitCode,
+    FileGenerator,
+    FileSpec,
+    InitAction,
+    PostgresFilename,
+    Text,
+    cprint,
+    status,
+)
 
 from .... import (
     DatabaseChoices,
     DatabaseTomlKeys,
+    InternationalizationTomlKeys,
     Package,
     PostgresFlags,
     PresetChoices,
@@ -30,7 +41,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Register arguments onto the parser."""
         parser.add_argument(
-            "project_name", help="Name of the project to initialize. Can also be '.' to initialize in the current directory."
+            "project_name",
+            help="Name of the project to initialize. Can also be '.' to initialize in the current directory.",
         )
         parser.add_argument(
             "-p",
@@ -81,7 +93,10 @@ class Command(BaseCommand):
             with status("Generating preset files..."):
                 self._generate_preset_files(self._project_dir, self._validated_args)
         except (ValueError, FileExistsError, Exception) as e:
-            cprint(f"Something went wrong during project initialization:\n{e}", Text.WARNING)
+            cprint(
+                f"Something went wrong during project initialization:\n{e}",
+                Text.WARNING,
+            )
             self._revert_generated_files(self._project_dir)
             return ExitCode.ERROR
         else:
@@ -94,7 +109,9 @@ class Command(BaseCommand):
             case PresetChoices.VERCEL:
                 """Enforce postgresql and environment variable configuration for Vercel preset due to platform requirements and security best practices."""
                 if args.db == DatabaseChoices.SQLITE:
-                    raise ValueError(f"The {PresetChoices.VERCEL} preset requires {DatabaseChoices.POSTGRESQL}.")
+                    raise ValueError(
+                        f"The {PresetChoices.VERCEL} preset requires {DatabaseChoices.POSTGRESQL}."
+                    )
                 args.db = DatabaseChoices.POSTGRESQL
                 args.pg_use_vars = True
             case _:
@@ -102,7 +119,9 @@ class Command(BaseCommand):
                 if not args.db:
                     args.db = DatabaseChoices.SQLITE
         if args.pg_use_vars and not args.db == DatabaseChoices.POSTGRESQL:
-            raise ValueError(f"The {PostgresFlags.USE_VARS} flag is only supported for {DatabaseChoices.POSTGRESQL}.")
+            raise ValueError(
+                f"The {PostgresFlags.USE_VARS} flag is only supported for {DatabaseChoices.POSTGRESQL}."
+            )
         return args
 
     def _validate_project_directory(self, project_dir: Path, args: Namespace) -> None:
@@ -127,11 +146,17 @@ class Command(BaseCommand):
         # TODO: Test out using call_command 'startapp' for generating the home app files instead of manually creating them here. It would be ideal to leverage Django's built-in app generation logic if possible to reduce the amount of custom code we need to maintain for generating app files.
         home_app_dir: Path = project_dir / "home"
         files_with_content: list[tuple[Path, str]] = [
-            (project_dir / "pyproject.toml", self._get_pyproject_toml_content(project_dir, args)),
+            (
+                project_dir / "pyproject.toml",
+                self._get_pyproject_toml_content(project_dir, args),
+            ),
             (project_dir / ".gitignore", self._get_gitignore_content(args)),
             (home_app_dir / "__init__.py", ""),
             (home_app_dir / "migrations" / "__init__.py", ""),
-            (home_app_dir / "templates" / Project.HOME_APP_NAME / "index.html", self._get_home_app_index_html_content()),
+            (
+                home_app_dir / "templates" / Project.HOME_APP_NAME / "index.html",
+                self._get_home_app_index_html_content(),
+            ),
             (home_app_dir / "apps.py", self._get_home_app_apps_py_content()),
             (home_app_dir / "views.py", self._get_home_app_views_py_content()),
             (home_app_dir / "urls.py", self._get_home_app_urls_py_content(project_dir)),
@@ -144,17 +169,26 @@ class Command(BaseCommand):
 
     def _generate_preset_files(self, project_dir: Path, args: Namespace) -> None:
         """Generate preset-specific files."""
-        from .generate import get_api_server_spec, get_readme_spec, get_vercel_spec
+        from .generate import (
+            get_asgi_spec,
+            get_readme_spec,
+            get_vercel_spec,
+            get_wsgi_spec,
+        )
+
+        api_dir: Path = project_dir / "api"
+        FileGenerator(FileSpec(path=api_dir / "__init__.py", content="")).create()
+        FileGenerator(get_asgi_spec(path=api_dir / "asgi.py")).create()
+        FileGenerator(get_wsgi_spec(path=api_dir / "wsgi.py")).create()
+        FileGenerator(get_readme_spec(path=project_dir / "README.md")).create()
 
         match args.preset:
             case PresetChoices.VERCEL:
-                api_dir: Path = project_dir / "api"
-                FileGenerator(get_vercel_spec(path=project_dir / "vercel.json")).create()
-                FileGenerator(get_api_server_spec(path=api_dir / "server.py")).create()
-                FileGenerator(FileSpec(path=api_dir / "__init__.py", content="")).create()
+                FileGenerator(
+                    get_vercel_spec(path=project_dir / "vercel.json")
+                ).create()
             case _:
-                pass
-        FileGenerator(get_readme_spec(path=project_dir / "README.md")).create()
+                pass  # No additional files for the default preset
 
     def _revert_generated_files(self, project_dir: Path) -> None:
         """Remove any files that were generated before an error occurred."""
@@ -178,8 +212,16 @@ class Command(BaseCommand):
             tool_section += f"{SecurityTomlKeys.WIP} = true\n"
         if args.db == DatabaseChoices.POSTGRESQL:
             tool_section += f'db = {{ {DatabaseTomlKeys.BACKEND} = "{DatabaseChoices.POSTGRESQL}", {DatabaseTomlKeys.USE_VARS} = {"true" if args.pg_use_vars else "false"} }}\n'
+
+        allowed_hosts = ['"localhost"', '"127.0.0.1"']
         if args.preset == PresetChoices.VERCEL:
+            allowed_hosts.append('".vercel.app"')
             tool_section += f'storage = {{ {StorageTomlKeys.BACKEND} = "{StorageChoices.VERCELBLOB}", {StorageTomlKeys.BLOB_TOKEN} = "get-from-vercel-blob-storage-and-keep-private-via-env-var" }}\n'
+        tool_section += (
+            f"{SecurityTomlKeys.ALLOWED_HOSTS} = [{', '.join(allowed_hosts)}]\n"
+        )
+        tool_section += f'{InternationalizationTomlKeys.MAIN} = {{ {InternationalizationTomlKeys.TIMEZONE} = "UTC" }}\n'
+
         # final content
         return (
             "[project]\n"
@@ -202,7 +244,11 @@ class Command(BaseCommand):
 
     def _get_gitignore_content(self, args: Namespace) -> str:
         """Generate the content for .gitignore based on the provided arguments."""
-        sqlite = f"\n# SQLite database\n/db.{DatabaseChoices.SQLITE}3\n" if args.db == DatabaseChoices.SQLITE else ""
+        sqlite = (
+            f"\n# SQLite database\n/db.{DatabaseChoices.SQLITE}3\n"
+            if args.db == DatabaseChoices.SQLITE
+            else ""
+        )
         return (
             "# Python-generated files\n"
             "__pycache__/\n"
@@ -291,4 +337,6 @@ class Command(BaseCommand):
 
     def _display_successful_setup_info(self, project_dir: Path) -> None:
         """Display setup success message."""
-        cprint(f"✓ Project '{project_dir.name}' initialized successfully!", Text.SUCCESS)
+        cprint(
+            f"✓ Project '{project_dir.name}' initialized successfully!", Text.SUCCESS
+        )

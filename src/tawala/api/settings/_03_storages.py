@@ -6,13 +6,21 @@ from typing import TypedDict
 from ... import DefaultApps, Project, StorageChoices, StorageTomlKeys
 from .. import ConfField, SettingsConf
 
-__all__ = ["STORAGE_BACKEND", "BLOB_READ_WRITE_TOKEN", "STORAGES", "STATIC_ROOT", "STATIC_URL", "MEDIA_ROOT", "MEDIA_URL"]
+__all__ = [
+    "STORAGE_BACKEND",
+    "BLOB_READ_WRITE_TOKEN",
+    "STORAGES",
+    "STATIC_ROOT",
+    "STATIC_URL",
+    "MEDIA_ROOT",
+    "MEDIA_URL",
+]
 
 
 class _StorageConf(SettingsConf):
     """Files and Storage Configuration."""
 
-    verbose_name = "04. Files and Storage Configuration"
+    verbose_name = "03. Files and Storage Configuration"
     backend = ConfField(
         type=str,
         choices=[StorageChoices.FILESYSTEM, StorageChoices.VERCELBLOB],
@@ -20,7 +28,12 @@ class _StorageConf(SettingsConf):
         toml=f"storage.{StorageTomlKeys.BACKEND}",
         default=StorageChoices.FILESYSTEM,
     )
-    token = ConfField(type=str, env="BLOB_READ_WRITE_TOKEN", toml=f"storage.{StorageTomlKeys.BLOB_TOKEN}", default="")
+    token = ConfField(
+        type=str,
+        env="BLOB_READ_WRITE_TOKEN",
+        toml=f"storage.{StorageTomlKeys.BLOB_TOKEN}",
+        default="",
+    )
 
 
 _STORAGE = _StorageConf()
@@ -54,7 +67,9 @@ def _get_storages_config() -> _StoragesDict:
             raise ValueError(f"Unsupported storage backend: {STORAGE_BACKEND}")
 
     return {
-        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        },
         "default": {"BACKEND": storage_backend},
     }
 

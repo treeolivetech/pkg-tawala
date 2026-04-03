@@ -6,20 +6,19 @@ Repository = "https://github.com/treeolivetech/pkg-tawala"
 
 [project]
 name = "Tawala"
-version = "1.3.2"
+version = "1.3.3"
 description = "Build and deploy Django apps with confidence."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Treeolive Technologies", email = "hi@treeolive.tech" }]
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Environment :: Web Environment",
     "Intended Audience :: Developers",
     "Framework :: Django :: 6",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "Topic :: Internet :: WWW/HTTP",
@@ -64,9 +63,8 @@ requires = ["uv_build>=0.11.3,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.ruff]
-line-length = 130
 lint = { select = ["D"], ignore = ["D203", "D213"] }
-format = { skip-magic-trailing-comma = true, docstring-code-format = true }
+format = { docstring-code-format = true }
 
 [tool.djlint]
 ignore = "H016,H030,H031"

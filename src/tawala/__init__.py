@@ -64,23 +64,31 @@ class Middlewares(StrEnum):
     COMMON = "django.middleware.common.CommonMiddleware"  # Early - URL normalization
     CSRF = "django.middleware.csrf.CsrfViewMiddleware"  # After session - needs session data
     AUTH = f"{DjangoApps.AUTH}.middleware.AuthenticationMiddleware"  # After session - stores user in session
-    MESSAGES = f"{DjangoApps.MESSAGES}.middleware.MessageMiddleware"  # After session & auth
+    MESSAGES = (
+        f"{DjangoApps.MESSAGES}.middleware.MessageMiddleware"  # After session & auth
+    )
     CLICKJACKING = "django.middleware.clickjacking.XFrameOptionsMiddleware"  # Security headers (X-Frame-Options)
     CSP = "django.middleware.csp.ContentSecurityPolicyMiddleware"  # Security headers (Content-Security-Policy)
     HTTP_COMPRESSION = f"{VendorApps.HTTP_COMPRESSION}.middleware.HttpCompressionMiddleware"  # Before any that modify html - encodes responses (Zstandard, Brotli, Gzip)
     MINIFY_HTML = f"{VendorApps.MINIFY_HTML}.middleware.MinifyHtmlMiddleware"  # After http_compression, before HTML modifiers
-    BROWSER_RELOAD = (
-        f"{VendorApps.BROWSER_RELOAD}.middleware.BrowserReloadMiddleware"  # LAST - dev only, injects reload script into HTML
-    )
+    BROWSER_RELOAD = f"{VendorApps.BROWSER_RELOAD}.middleware.BrowserReloadMiddleware"  # LAST - dev only, injects reload script into HTML
 
 
 class ContextProcessors(StrEnum):
     """Template context processors."""
 
-    DEBUG = "django.template.context_processors.debug"  # Debug info (only in DEBUG mode)
-    REQUEST = "django.template.context_processors.request"  # Adds request object to context
-    AUTH = f"{DjangoApps.AUTH}.context_processors.auth"  # Adds user and perms to context
-    MESSAGES = f"{DjangoApps.MESSAGES}.context_processors.messages"  # Adds messages to context
+    DEBUG = (
+        "django.template.context_processors.debug"  # Debug info (only in DEBUG mode)
+    )
+    REQUEST = (
+        "django.template.context_processors.request"  # Adds request object to context
+    )
+    AUTH = (
+        f"{DjangoApps.AUTH}.context_processors.auth"  # Adds user and perms to context
+    )
+    MESSAGES = (
+        f"{DjangoApps.MESSAGES}.context_processors.messages"  # Adds messages to context
+    )
     CSP = "django.template.context_processors.csp"  # Content Security Policy
 
 
@@ -108,7 +116,10 @@ class AppDefMappings:
         VendorApps.BROWSER_RELOAD: [Middlewares.BROWSER_RELOAD],
     }
     APP_STATICFILES_FINDERS: Final[dict[VendorApps | DjangoApps, list[str]]] = {
-        DjangoApps.STATICFILES: [StaticFileFinders.FILESYSTEM, StaticFileFinders.APPDIRECTORIES],
+        DjangoApps.STATICFILES: [
+            StaticFileFinders.FILESYSTEM,
+            StaticFileFinders.APPDIRECTORIES,
+        ],
         VendorApps.SASS_PROCESSOR: [StaticFileFinders.SASS_PROCESSOR],
     }
 
@@ -117,7 +128,8 @@ class FileGenerateChoices(StrEnum):
     """Available file generation options."""
 
     README = "readme"
-    API_SERVER_PY = "api/server.py"
+    API_ASGI_PY = "api/asgi.py"
+    API_WSGI_PY = "api/wsgi.py"
     VERCEL_JSON = "vercel_json"
     PG_SERVICE = "pg_service"
     PGPASS = "pgpass"
@@ -169,3 +181,14 @@ class SecurityTomlKeys(StrEnum):
 
     DEBUG = "debug"
     WIP = "work-in-progress"
+    ALLOWED_HOSTS = "allowed-hosts"
+
+
+class InternationalizationTomlKeys(StrEnum):
+    """Keys for internationalization configuration in pyproject.toml."""
+
+    MAIN = "internationalization"
+    LANGUAGE_CODE = "language-code"
+    TIMEZONE = "timezone"
+    USE_I18N = "use-i18n"
+    USE_TZ = "use-tz"

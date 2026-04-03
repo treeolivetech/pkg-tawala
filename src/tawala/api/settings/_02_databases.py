@@ -17,7 +17,7 @@ __all__ = ["DATABASES"]
 class _DatabaseConf(SettingsConf):
     """Database settings."""
 
-    verbose_name = "03. Database Configuration"
+    verbose_name = "02. Database Configuration"
 
     backend = ConfField(
         type=str,
@@ -27,7 +27,12 @@ class _DatabaseConf(SettingsConf):
         default=DatabaseChoices.SQLITE,
     )
     # postgresql specific
-    use_vars = ConfField(type=bool, env="DB_USE_VARS", toml=f"db.{DatabaseTomlKeys.USE_VARS}", default=False)
+    use_vars = ConfField(
+        type=bool,
+        env="DB_USE_VARS",
+        toml=f"db.{DatabaseTomlKeys.USE_VARS}",
+        default=False,
+    )
     service = ConfField(type=str, env="DB_SERVICE", toml="db.service", default="")
     user = ConfField(type=str, env="DB_USER", toml="db.user", default="")
     password = ConfField(type=str, env="DB_PASSWORD", toml="db.password", default="")
@@ -100,7 +105,11 @@ def _get_databases_config() -> _DatabasesDict:
                 config = {
                     "ENGINE": f"django.db.backends.{DatabaseChoices.POSTGRESQL}",
                     "NAME": _DATABASE.name,
-                    "OPTIONS": {"pool": _DATABASE.pool, "sslmode": _DATABASE.sslmode, "service": _DATABASE.service},
+                    "OPTIONS": {
+                        "pool": _DATABASE.pool,
+                        "sslmode": _DATABASE.sslmode,
+                        "service": _DATABASE.service,
+                    },
                 }
             return {"default": config}
         case _:

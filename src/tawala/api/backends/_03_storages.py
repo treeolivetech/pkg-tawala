@@ -71,7 +71,9 @@ match STORAGE_BACKEND:
                 """Return a valid filename for storage."""
                 return name
 
-            def get_available_name(self, name: str, max_length: int | None = None) -> str:
+            def get_available_name(
+                self, name: str, max_length: int | None = None
+            ) -> str:
                 """Return an available filename (Vercel Blob handles uniqueness with add_random_suffix)."""
                 return name
 

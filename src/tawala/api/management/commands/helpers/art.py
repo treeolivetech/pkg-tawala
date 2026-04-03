@@ -98,7 +98,11 @@ class ArtPrinter:
                 "",
             ]
         else:
-            install_art = ["    █ █▄░█ █▀ ▀█▀ ▄▀█ █░░ █░░", "    █ █░▀█ ▄█ ░█░ █▀█ █▄▄ █▄▄", ""]
+            install_art = [
+                "    █ █▄░█ █▀ ▀█▀ ▄▀█ █░░ █░░",
+                "    █ █░▀█ ▄█ ░█░ █▀█ █▄▄ █▄▄",
+                "",
+            ]
 
         return run_art + install_art
 
@@ -117,7 +121,13 @@ class ArtPrinter:
 
         return getter()
 
-    def _print_banner(self, art_type: ArtType, title: str, subtitle: str | None = None, notice: str | None = None) -> None:
+    def _print_banner(
+        self,
+        art_type: ArtType,
+        title: str,
+        subtitle: str | None = None,
+        notice: str | None = None,
+    ) -> None:
         """Print an ASCII art banner with optional subtitle and notice."""
         art_lines = self._get_art(art_type)
 
@@ -155,7 +165,9 @@ class ArtPrinter:
                 notice="       Ctrl-C to quit",
             )
 
-    def print_run_process_banner(self, art_type: ArtType, display_mode: str, command_count: int) -> None:
+    def print_run_process_banner(
+        self, art_type: ArtType, display_mode: str, command_count: int
+    ) -> None:
         """Print a banner for build/install command processes."""
         if self.terminal_width >= TerminalSize.THRESHOLD:
             self._print_banner(
@@ -164,4 +176,8 @@ class ArtPrinter:
                 notice=f"           {command_count} command(s) to execute",
             )
         else:
-            self._print_banner(art_type=art_type, title=f"      🔨  {display_mode}  🔨", notice=f"    {command_count} command(s)")
+            self._print_banner(
+                art_type=art_type,
+                title=f"      🔨  {display_mode}  🔨",
+                notice=f"    {command_count} command(s)",
+            )

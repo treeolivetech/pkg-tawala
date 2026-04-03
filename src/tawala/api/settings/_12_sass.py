@@ -1,7 +1,7 @@
 """Sass Configuration."""
 
 from ... import VendorApps
-from ._07_installed_apps import INSTALLED_APPS
+from ._06_installed_apps import INSTALLED_APPS
 
 if VendorApps.SASS_PROCESSOR in INSTALLED_APPS:
     __all__ = ["SASS_PRECISION"]

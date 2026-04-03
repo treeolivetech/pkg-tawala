@@ -13,10 +13,20 @@ __all__ = ["AUTH_PASSWORD_VALIDATORS"]
 class _AuthPasswordValidatorsConf(SettingsConf):
     """Password Validators Configuration."""
 
-    verbose_name = "11. Password Validators Configuration"
+    verbose_name = "10. Password Validators Configuration"
 
-    extend = ConfField(type=list, env="AUTH_PASSWORD_VALIDATORS_EXTEND", toml="auth.password-validators.extend", default=[])
-    remove = ConfField(type=list, env="AUTH_PASSWORD_VALIDATORS_REMOVE", toml="auth.password-validators.remove", default=[])
+    extend = ConfField(
+        type=list,
+        env="AUTH_PASSWORD_VALIDATORS_EXTEND",
+        toml="auth.password-validators.extend",
+        default=[],
+    )
+    remove = ConfField(
+        type=list,
+        env="AUTH_PASSWORD_VALIDATORS_REMOVE",
+        toml="auth.password-validators.remove",
+        default=[],
+    )
 
 
 _AUTH_PASSWORD_VALIDATORS_CONF = _AuthPasswordValidatorsConf()
@@ -43,11 +53,17 @@ _base_validators: list[str] = [
 _remove_list: set[str] = set(cast(list[str], _AUTH_PASSWORD_VALIDATORS_CONF.remove))
 
 _filtered_validators: list[str] = [
-    validator for validator in _base_validators if validator not in _remove_list and validator.split(".")[-1] not in _remove_list
+    validator
+    for validator in _base_validators
+    if validator not in _remove_list and validator.split(".")[-1] not in _remove_list
 ]
 
 # Append extensions
-_final_validators: list[str] = _filtered_validators + cast(list[str], _AUTH_PASSWORD_VALIDATORS_CONF.extend)
+_final_validators: list[str] = _filtered_validators + cast(
+    list[str], _AUTH_PASSWORD_VALIDATORS_CONF.extend
+)
 
 # Convert the final list of strings into the dict structure Django expects
-AUTH_PASSWORD_VALIDATORS: list[_PasswordValidatorDict] = [{"NAME": validator} for validator in _final_validators]
+AUTH_PASSWORD_VALIDATORS: list[_PasswordValidatorDict] = [
+    {"NAME": validator} for validator in _final_validators
+]

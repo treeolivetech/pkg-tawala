@@ -61,7 +61,9 @@ class _ManagementConf:
             return
         from sys import argv
 
-        if any(arg in argv for arg in InitAction):  # Avoid validation during startproject commands
+        if any(
+            arg in argv for arg in InitAction
+        ):  # Avoid validation during startproject commands
             object.__setattr__(self, "_validated", True)
             return
         try:
@@ -80,7 +82,11 @@ class ConfField:
 
     def __init__(
         self,
-        type: type[str] | type[bool] | type[list[str]] | type[pathlib.Path] | type[int] = str,
+        type: type[str]
+        | type[bool]
+        | type[list[str]]
+        | type[pathlib.Path]
+        | type[int] = str,
         choices: list[str] | None = None,
         env: str | None = None,
         toml: str | None = None,
@@ -127,7 +133,9 @@ class ConfField:
     # ============================================================================
 
     @staticmethod
-    def convert_value(value: Any, target_type: Any, field_name: str | None = None) -> _ConfDefaultValueType:
+    def convert_value(
+        value: Any, target_type: Any, field_name: str | None = None
+    ) -> _ConfDefaultValueType:
         """Convert a raw value to the target type."""
         from christianwhocodes import TypeConverter
 
@@ -154,13 +162,17 @@ class ConfField:
                 case pathlib.Path:
                     return TypeConverter.to_path(value)
                 case _:
-                    raise ValueError(f"Unsupported target type or type not specified: {target_type}")
+                    raise ValueError(
+                        f"Unsupported target type or type not specified: {target_type}"
+                    )
         except ValueError as e:
             field_info = f" for field '{field_name}'" if field_name else ""
             raise ValueError(f"Error converting config value{field_info}: {e}") from e
 
         # This point should not be reachable; added to avoid implicit None return.
-        raise ValueError(f"Unsupported target type or conversion failure for: {target_type}")
+        raise ValueError(
+            f"Unsupported target type or conversion failure for: {target_type}"
+        )
 
     # ============================================================================
     # Descriptor Protocol
@@ -219,4 +231,6 @@ class SettingsConf:
         for subclass in cls._subclasses:
             if hasattr(subclass, "_env_fields"):
                 env_fields.extend(subclass._env_fields)
-        return sorted(env_fields, key=lambda f: f["class"])  # Sort by class name for better organization
+        return sorted(
+            env_fields, key=lambda f: f["class"]
+        )  # Sort by class name for better organization

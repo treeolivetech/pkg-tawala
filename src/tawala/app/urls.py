@@ -12,7 +12,9 @@ urlpatterns: list[URLPattern | URLResolver] = []
 # Django browser reload should be placed before the WIP catch-all
 # to ensure the development server can auto-reload the WIP page.
 if VendorApps.BROWSER_RELOAD in settings.INSTALLED_APPS:
-    urlpatterns.append(path("__reload__/", include(f"{VendorApps.BROWSER_RELOAD}.urls")))
+    urlpatterns.append(
+        path("__reload__/", include(f"{VendorApps.BROWSER_RELOAD}.urls"))
+    )
 
 if settings.WORK_IN_PROGRESS:
     # Catch-all route for WIP mode: everything not matched above goes to the WIP page.

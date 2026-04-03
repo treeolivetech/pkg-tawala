@@ -2,7 +2,7 @@
 
 from ... import AppDefMappings, Middlewares
 from .. import ConfField, SettingsConf
-from ._07_installed_apps import INSTALLED_APPS
+from ._06_installed_apps import INSTALLED_APPS
 
 __all__ = ["MIDDLEWARE"]
 
@@ -10,10 +10,14 @@ __all__ = ["MIDDLEWARE"]
 class _MiddlewareConf(SettingsConf):
     """Middleware Configuration."""
 
-    verbose_name = "08. Middleware Configuration"
+    verbose_name = "07. Middleware Configuration"
 
-    extend = ConfField(type=list, env="MIDDLEWARE_EXTEND", toml="middleware.extend", default=[])
-    remove = ConfField(type=list, env="MIDDLEWARE_REMOVE", toml="middleware.remove", default=[])
+    extend = ConfField(
+        type=list, env="MIDDLEWARE_EXTEND", toml="middleware.extend", default=[]
+    )
+    remove = ConfField(
+        type=list, env="MIDDLEWARE_REMOVE", toml="middleware.remove", default=[]
+    )
 
 
 _MIDDLEWARE_CONF = _MiddlewareConf()

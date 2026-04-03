@@ -51,7 +51,9 @@ class CommandOutput(ABC):
         pass
 
     @abstractmethod
-    def print_command_failure(self, cmd: str, error: str, index: int, total: int) -> None:
+    def print_command_failure(
+        self, cmd: str, error: str, index: int, total: int
+    ) -> None:
         """Print command failure info."""
         pass
 
@@ -74,7 +76,9 @@ class CommandExecutor:
             # Validate and parse command
             parts: list[str] = cmd.strip().split()
             if not parts:
-                return CommandResult(command=cmd, success=False, error="Empty command string")
+                return CommandResult(
+                    command=cmd, success=False, error="Empty command string"
+                )
 
             command_name: str = parts[0]
             command_args: list[str] = parts[1:]
@@ -92,7 +96,13 @@ class CommandExecutor:
 class CommandProcess:
     """Orchestrates command execution with output and progress tracking."""
 
-    def __init__(self, command: BaseCommand, output: CommandOutput, executor: CommandExecutor, mode: str) -> None:
+    def __init__(
+        self,
+        command: BaseCommand,
+        output: CommandOutput,
+        executor: CommandExecutor,
+        mode: str,
+    ) -> None:
         """Set up command, output handler, executor, and mode."""
         self.command = command
         self.output = output
@@ -125,7 +135,9 @@ class CommandProcess:
                 self.output.print_command_success(cmd, i, total)
                 completed += 1
             else:
-                self.output.print_command_failure(cmd, result.error or "Unknown error", i, total)
+                self.output.print_command_failure(
+                    cmd, result.error or "Unknown error", i, total
+                )
                 failed += 1
 
         self.output.print_summary(total, completed, failed)
@@ -184,24 +196,40 @@ class FormattedCommandOutput(CommandOutput):
         """Print header with ASCII art."""
         display_mode = "DRY RUN" if dry_run else mode
 
-        self.command.stdout.write(self.command.style.SUCCESS(f"\n✨ Starting {display_mode.lower()} process...\n"))
+        self.command.stdout.write(
+            self.command.style.SUCCESS(
+                f"\n✨ Starting {display_mode.lower()} process...\n"
+            )
+        )
 
-        self.art_printer.print_run_process_banner(self.art_type, display_mode, command_count)
+        self.art_printer.print_run_process_banner(
+            self.art_type, display_mode, command_count
+        )
 
     def print_no_commands_error(self, mode: str) -> None:
         """Print error when no commands configured."""
-        self.command.stdout.write(self.command.style.ERROR(f"\n❌ No {mode} commands configured!"))
+        self.command.stdout.write(
+            self.command.style.ERROR(f"\n❌ No {mode} commands configured!")
+        )
         self.command.stdout.write("")
 
     def print_dry_run_preview(self, commands: list[str]) -> None:
         """Print numbered command list preview."""
-        self.command.stdout.write(self.command.style.NOTICE("Commands to be executed:\n"))
+        self.command.stdout.write(
+            self.command.style.NOTICE("Commands to be executed:\n")
+        )
 
         for i, cmd in enumerate(commands, 1):
-            self.command.stdout.write(f"  {self.command.style.NOTICE(f'[{i}]')} {self.command.style.HTTP_INFO(cmd)}")
+            self.command.stdout.write(
+                f"  {self.command.style.NOTICE(f'[{i}]')} {self.command.style.HTTP_INFO(cmd)}"
+            )
 
         self.command.stdout.write("")
-        self.command.stdout.write(self.command.style.HTTP_NOT_MODIFIED("✨ Remove --dry-run flag to execute these commands"))
+        self.command.stdout.write(
+            self.command.style.HTTP_NOT_MODIFIED(
+                "✨ Remove --dry-run flag to execute these commands"
+            )
+        )
         self.command.stdout.write("")
 
     def print_command_header(self) -> None:
@@ -215,7 +243,9 @@ class FormattedCommandOutput(CommandOutput):
         self.command.stdout.write(self.command.style.SUCCESS(f"✓ Completed: {cmd}"))
         self.command.stdout.write("")
 
-    def print_command_failure(self, cmd: str, error: str, index: int, total: int) -> None:
+    def print_command_failure(
+        self, cmd: str, error: str, index: int, total: int
+    ) -> None:
         """Print failure with progress bar."""
         progress_bar = self._create_progress_bar(index, total)
         self.command.stdout.write(f"\n{progress_bar}")
@@ -227,10 +257,20 @@ class FormattedCommandOutput(CommandOutput):
         """Print final completion summary."""
         self.command.stdout.write(self.command.style.HTTP_NOT_MODIFIED("=" * 60 + "\n"))
         if failed == 0:
-            self.command.stdout.write(self.command.style.SUCCESS(f"🎉 All {completed} command(s) completed successfully!"))
+            self.command.stdout.write(
+                self.command.style.SUCCESS(
+                    f"🎉 All {completed} command(s) completed successfully!"
+                )
+            )
         else:
-            self.command.stdout.write(self.command.style.SUCCESS(f"✓ {completed}/{total} command(s) completed"))
-            self.command.stdout.write(self.command.style.ERROR(f"✗ {failed}/{total} command(s) failed"))
+            self.command.stdout.write(
+                self.command.style.SUCCESS(
+                    f"✓ {completed}/{total} command(s) completed"
+                )
+            )
+            self.command.stdout.write(
+                self.command.style.ERROR(f"✗ {failed}/{total} command(s) failed")
+            )
 
         self.command.stdout.write("")
 
@@ -241,6 +281,4 @@ class FormattedCommandOutput(CommandOutput):
         bar = "█" * filled + "░" * (bar_length - filled)
         percentage = (current / total) * 100
 
-        return (
-            f"  [{bar}] {self.command.style.HTTP_INFO(f'{current}/{total}')} ({self.command.style.NOTICE(f'{percentage:.0f}%')})"
-        )
+        return f"  [{bar}] {self.command.style.HTTP_INFO(f'{current}/{total}')} ({self.command.style.NOTICE(f'{percentage:.0f}%')})"
