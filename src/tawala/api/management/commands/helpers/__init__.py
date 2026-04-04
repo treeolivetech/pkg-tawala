@@ -1,1 +1,1 @@
-"""Helper utilities for Django management commands."""
+"""Helper utilities for management commands."""

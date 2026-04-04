@@ -3,27 +3,31 @@
 https://docs.djangoproject.com/en/stable/topics/i18n/
 """
 
-from ... import InternationalizationTomlKeys
-from .. import ConfField, SettingsConf
+from ..enums import InternationalizationTomlKeys
+from .conf import Conf, ConfField
 
 __all__ = ["LANGUAGE_CODE", "TIME_ZONE", "USE_I18N", "USE_TZ"]
 
+# ============================================================================
+# Configuration fields
+# ============================================================================
 
-class _InternationalizationConf(SettingsConf):
+
+class _InternationalizationConf(Conf):
     """Internationalization Configuration."""
 
-    verbose_name = "04. Internationalization Configuration"
+    verbose_name = "Internationalization Configuration"
 
     language_code = ConfField(
         type=str,
         env="LANGUAGE_CODE",
-        toml="internationalization.language-code",
+        toml=f"{InternationalizationTomlKeys.MAIN}.{InternationalizationTomlKeys.LANGUAGE_CODE}",
         default="en-us",
     )
     time_zone = ConfField(
         type=str,
         env="TIMEZONE",
-        toml=f"{InternationalizationTomlKeys.MAIN}.{InternationalizationTomlKeys.TIMEZONE}",
+        toml=f"{InternationalizationTomlKeys.MAIN}.{InternationalizationTomlKeys.TIME_ZONE}",
         default="UTC",
     )
     use_i18n = ConfField(
@@ -42,7 +46,15 @@ class _InternationalizationConf(SettingsConf):
 
 _INTERNATIONALIZATION = _InternationalizationConf()
 
+
+# ============================================================================
+# Public variables
+# ============================================================================
+
 LANGUAGE_CODE = _INTERNATIONALIZATION.language_code
+
 TIME_ZONE = _INTERNATIONALIZATION.time_zone
+
 USE_I18N = _INTERNATIONALIZATION.use_i18n
+
 USE_TZ = _INTERNATIONALIZATION.use_tz

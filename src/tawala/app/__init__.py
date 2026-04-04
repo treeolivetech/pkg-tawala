@@ -1,1 +1,1 @@
-"""base app."""
+# noqa: D104

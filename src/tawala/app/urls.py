@@ -1,28 +1,46 @@
-"""URL configuration for the WIP app."""
+"""URL configuration."""
+
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import TypeAlias
 
 from django.conf import settings
-from django.urls import URLPattern, URLResolver, include, path, re_path
+from django.contrib import admin
+from django.urls import URLPattern as BaseURLPattern
+from django.urls import URLResolver, include, path, re_path
 
-from .. import DjangoApps, Project, VendorApps
+from .. import PROJECT
 from .views import WIPView
 
-# Initialize the base URL patterns list
-urlpatterns: list[URLPattern | URLResolver] = []
+URLPattern: TypeAlias = BaseURLPattern | URLResolver
+_URLFactory: TypeAlias = Callable[[], URLPattern]
 
-# Django browser reload should be placed before the WIP catch-all
-# to ensure the development server can auto-reload the WIP page.
-if VendorApps.BROWSER_RELOAD in settings.INSTALLED_APPS:
-    urlpatterns.append(
-        path("__reload__/", include(f"{VendorApps.BROWSER_RELOAD}.urls"))
-    )
 
-if settings.WORK_IN_PROGRESS:
-    # Catch-all route for WIP mode: everything not matched above goes to the WIP page.
-    urlpatterns.append(re_path(r"^.*$", WIPView.as_view(), name="wip_catchall"))
-else:
-    # Optional URL additions loaded when NOT in WIP mode
-    if DjangoApps.AUTH in settings.INSTALLED_APPS:
-        urlpatterns.append(path("registration/", include(f"{DjangoApps.AUTH}.urls")))
+@dataclass
+class _URLEntry:
+    """Represents a conditional URL configuration entry."""
 
-    # The main application routes
-    urlpatterns += [path("", include(f"{Project.HOME_APP_NAME}.urls"))]
+    condition: bool
+    factory: _URLFactory
+
+
+_URL_ENTRIES: list[_URLEntry] = [
+    _URLEntry(
+        condition="django_browser_reload" in settings.INSTALLED_APPS,
+        factory=lambda: path("__reload__/", include("django_browser_reload.urls")),
+    ),
+    _URLEntry(
+        condition="django.contrib.admin" in settings.INSTALLED_APPS,
+        factory=lambda: path("__admin__/", admin.site.urls),
+    ),
+    _URLEntry(
+        condition="django.contrib.auth" in settings.INSTALLED_APPS,
+        factory=lambda: path("registration/", include("django.contrib.auth.urls")),
+    ),
+]
+
+urlpatterns = [entry.factory() for entry in _URL_ENTRIES if entry.condition] + (
+    [re_path(r"^.*$", WIPView.as_view(), name="wip_catchall")]
+    if settings.WORK_IN_PROGRESS
+    else [path("", include(f"{PROJECT.home_app}.urls"))]
+)

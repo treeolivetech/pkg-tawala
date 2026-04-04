@@ -1,194 +1,94 @@
-"""Package enumerations and constants."""
-
-from enum import StrEnum
+# noqa: D104
+from dataclasses import dataclass, field
+from functools import cached_property
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
-from christianwhocodes import Version
+from christianwhocodes import InitAction, PyProject, Version
+
+__all__ = ["ProjectValidationError", "Package", "PROJECT"]
+
+
+class ProjectValidationError(Exception):
+    """Current directory is not a valid project."""
 
 
 class Package:
-    """Package metadata and paths as enum for easy access."""
+    """Package/Project metadata."""
 
-    BASE_DIR: Final[Path] = Path(__file__).parent.resolve()
-    NAME: Final[str] = BASE_DIR.name
+    NAME: Final[str] = Path(__file__).parent.name
     DISPLAY_NAME: Final[str] = NAME.capitalize()
-    SETTINGS_MODULE: Final[str] = f"{NAME}.api.settings"
     VERSION: Final[str] = Version.get(NAME)[0]
+    APP: Final[str] = f"{NAME}.app"
+    API: Final[str] = f"{NAME}.api"
+    SETTINGS_MODULE: Final[str] = f"{API}.settings"
 
 
-class Project:
-    """Project-specific constants."""
+@dataclass(frozen=True)
+class _Project:
+    """configuration for the current working directory."""
 
-    BASE_DIR: Final[Path] = Path.cwd()
-    API_DIR: Final[Path] = BASE_DIR / "api"
-    PUBLIC_DIR: Final[Path] = BASE_DIR / "public"
-    HOME_APP_DIR: Final[Path] = BASE_DIR / "home"
-    HOME_APP_NAME: Final[str] = HOME_APP_DIR.name
+    _validated: bool = field(default=False, init=False, repr=False)
+    _toml: dict[str, Any] = field(default_factory=lambda: {}, init=False, repr=False)
+    _base_dir: Path = field(default_factory=Path.cwd)
 
+    def _load_project(self) -> None:
+        """Load and validate pyproject.toml configuration."""
+        pyproject_path = self._base_dir / "pyproject.toml"
+        pkg_name = Package.NAME
+        if not pyproject_path.exists():
+            raise FileNotFoundError(f"pyproject.toml not found at '{pyproject_path}'")
+        tool_section = PyProject(pyproject_path).data.get("tool", {})
+        if pkg_name not in tool_section:
+            raise KeyError(f"Missing 'tool.{pkg_name}' section in pyproject.toml")
+        object.__setattr__(self, "_toml", tool_section[pkg_name])
 
-class VendorApps(StrEnum):
-    """Apps loaded first."""
+    @cached_property
+    def toml(self) -> dict[str, Any]:
+        """pyproject.toml configuration (lazy-loaded)."""
+        self.validate()
+        return self._toml
 
-    BROWSER_RELOAD = "django_browser_reload"
-    WATCHFILES = "django_watchfiles"
-    MINIFY_HTML = "django_minify_html"
-    HTTP_COMPRESSION = "django_http_compression"
-    SASS_PROCESSOR = "sass_processor"
+    @cached_property
+    def env(self) -> dict[str, Any]:
+        """Combined .env and environment variables (lazy-loaded)."""
+        self.validate()
+        from os import environ
 
+        from dotenv import dotenv_values
 
-class DefaultApps(StrEnum):
-    """Apps loaded in the middle."""
+        return {**dotenv_values(self._base_dir / ".env"), **environ}
 
-    HOME = Project.HOME_APP_NAME
-    APP = f"{Package.NAME}.app"
-    API = f"{Package.NAME}.api"
+    @cached_property
+    def base_dir(self) -> Path:
+        """Base directory (lazy-loaded)."""
+        self.validate()
+        return self._base_dir
 
+    @cached_property
+    def home_app(self) -> str:
+        """Home app name."""
+        return "home"
 
-class DjangoApps(StrEnum):
-    """Apps loaded last."""
+    def validate(self) -> None:
+        """Check if the current directory is a valid project. Runs once.
 
-    ADMIN = "django.contrib.admin"
-    AUTH = "django.contrib.auth"
-    CONTENTTYPES = "django.contrib.contenttypes"
-    SESSIONS = "django.contrib.sessions"
-    MESSAGES = "django.contrib.messages"
-    STATICFILES = "django.contrib.staticfiles"
+        In CLI, we catch the exception for pretty printing.
+        In Production, this will bubble up to the WSGI/ASGI server.
+        """
+        if self._validated:
+            return
+        from sys import argv
 
-
-class Middlewares(StrEnum):
-    """Middleware classes in recommended order."""
-
-    SECURITY = "django.middleware.security.SecurityMiddleware"  # FIRST - security headers, HTTPS redirect
-    SESSION = f"{DjangoApps.SESSIONS}.middleware.SessionMiddleware"  # Early - needed by auth & messages
-    COMMON = "django.middleware.common.CommonMiddleware"  # Early - URL normalization
-    CSRF = "django.middleware.csrf.CsrfViewMiddleware"  # After session - needs session data
-    AUTH = f"{DjangoApps.AUTH}.middleware.AuthenticationMiddleware"  # After session - stores user in session
-    MESSAGES = (
-        f"{DjangoApps.MESSAGES}.middleware.MessageMiddleware"  # After session & auth
-    )
-    CLICKJACKING = "django.middleware.clickjacking.XFrameOptionsMiddleware"  # Security headers (X-Frame-Options)
-    CSP = "django.middleware.csp.ContentSecurityPolicyMiddleware"  # Security headers (Content-Security-Policy)
-    HTTP_COMPRESSION = f"{VendorApps.HTTP_COMPRESSION}.middleware.HttpCompressionMiddleware"  # Before any that modify html - encodes responses (Zstandard, Brotli, Gzip)
-    MINIFY_HTML = f"{VendorApps.MINIFY_HTML}.middleware.MinifyHtmlMiddleware"  # After http_compression, before HTML modifiers
-    BROWSER_RELOAD = f"{VendorApps.BROWSER_RELOAD}.middleware.BrowserReloadMiddleware"  # LAST - dev only, injects reload script into HTML
-
-
-class ContextProcessors(StrEnum):
-    """Template context processors."""
-
-    DEBUG = (
-        "django.template.context_processors.debug"  # Debug info (only in DEBUG mode)
-    )
-    REQUEST = (
-        "django.template.context_processors.request"  # Adds request object to context
-    )
-    AUTH = (
-        f"{DjangoApps.AUTH}.context_processors.auth"  # Adds user and perms to context
-    )
-    MESSAGES = (
-        f"{DjangoApps.MESSAGES}.context_processors.messages"  # Adds messages to context
-    )
-    CSP = "django.template.context_processors.csp"  # Content Security Policy
+        if any(arg in argv for arg in InitAction):  # Avoid validation during startproject commands
+            object.__setattr__(self, "_validated", True)
+            return
+        try:
+            self._load_project()
+        except (FileNotFoundError, KeyError) as e:
+            raise ProjectValidationError(str(e)) from e
+        else:
+            object.__setattr__(self, "_validated", True)
 
 
-class StaticFileFinders(StrEnum):
-    """Static file finders."""
-
-    FILESYSTEM = f"{DjangoApps.STATICFILES}.finders.FileSystemFinder"
-    APPDIRECTORIES = f"{DjangoApps.STATICFILES}.finders.AppDirectoriesFinder"
-    SASS_PROCESSOR = f"{VendorApps.SASS_PROCESSOR}.finders.CssFinder"
-
-
-class AppDefMappings:
-    """App definition Mappings."""
-
-    APP_CONTEXT_PROCESSOR: Final[dict[DjangoApps, list[ContextProcessors]]] = {
-        DjangoApps.AUTH: [ContextProcessors.AUTH],
-        DjangoApps.MESSAGES: [ContextProcessors.MESSAGES],
-    }
-    APP_MIDDLEWARE: Final[dict[VendorApps | DjangoApps, list[Middlewares]]] = {
-        DjangoApps.SESSIONS: [Middlewares.SESSION],
-        DjangoApps.AUTH: [Middlewares.AUTH],
-        DjangoApps.MESSAGES: [Middlewares.MESSAGES],
-        VendorApps.HTTP_COMPRESSION: [Middlewares.HTTP_COMPRESSION],
-        VendorApps.MINIFY_HTML: [Middlewares.MINIFY_HTML],
-        VendorApps.BROWSER_RELOAD: [Middlewares.BROWSER_RELOAD],
-    }
-    APP_STATICFILES_FINDERS: Final[dict[VendorApps | DjangoApps, list[str]]] = {
-        DjangoApps.STATICFILES: [
-            StaticFileFinders.FILESYSTEM,
-            StaticFileFinders.APPDIRECTORIES,
-        ],
-        VendorApps.SASS_PROCESSOR: [StaticFileFinders.SASS_PROCESSOR],
-    }
-
-
-class FileGenerateChoices(StrEnum):
-    """Available file generation options."""
-
-    README = "readme"
-    API_ASGI_PY = "api/asgi.py"
-    API_WSGI_PY = "api/wsgi.py"
-    VERCEL_JSON = "vercel_json"
-    PG_SERVICE = "pg_service"
-    PGPASS = "pgpass"
-
-
-class DatabaseChoices(StrEnum):
-    """Available database backends."""
-
-    SQLITE = "sqlite"
-    POSTGRESQL = "postgresql"
-
-
-class PostgresFlags(StrEnum):
-    """Flag to indicate whether to use env / pyproject.toml variables for PostgreSQL configuration."""
-
-    USE_VARS = "--pg-use-vars"
-
-
-class StorageChoices(StrEnum):
-    """Available storage backends."""
-
-    FILESYSTEM = "filesystem"
-    VERCELBLOB = "vercelblob"
-
-
-class PresetChoices(StrEnum):
-    """Available project presets."""
-
-    DEFAULT = "default"
-    VERCEL = "vercel"
-
-
-class StorageTomlKeys(StrEnum):
-    """Keys for storage configuration in pyproject.toml."""
-
-    BACKEND = "backend"
-    BLOB_TOKEN = "blob-token"
-
-
-class DatabaseTomlKeys(StrEnum):
-    """Keys for database configuration in pyproject.toml."""
-
-    BACKEND = "backend"
-    USE_VARS = "use-vars"
-
-
-class SecurityTomlKeys(StrEnum):
-    """Keys for security configuration in pyproject.toml."""
-
-    DEBUG = "debug"
-    WIP = "work-in-progress"
-    ALLOWED_HOSTS = "allowed-hosts"
-
-
-class InternationalizationTomlKeys(StrEnum):
-    """Keys for internationalization configuration in pyproject.toml."""
-
-    MAIN = "internationalization"
-    LANGUAGE_CODE = "language-code"
-    TIMEZONE = "timezone"
-    USE_I18N = "use-i18n"
-    USE_TZ = "use-tz"
+PROJECT: Final = _Project()

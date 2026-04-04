@@ -4,7 +4,7 @@ import sys
 
 from christianwhocodes import ExitCode, InitAction, Text, cprint
 
-from ... import Package, Project
+from ... import Package
 
 
 def main() -> None:
@@ -22,15 +22,12 @@ def main() -> None:
 
             sys.exit(Command()(sys.argv[2:]))
         case _:
-            from .. import MANAGEMENT_CONF, ProjectValidationError
+            from ... import PROJECT, ProjectValidationError
 
             try:
-                MANAGEMENT_CONF.validate()
+                PROJECT.validate()
             except ProjectValidationError as e:
-                cprint(
-                    f"Is this a valid {Package.DISPLAY_NAME} project directory?\n{e}",
-                    Text.WARNING,
-                )
+                cprint(f"Is this a valid {Package.DISPLAY_NAME} project directory?\n{e}", Text.WARNING)
                 cprint(
                     f"Assuming you have uv installed:\n"
                     f"    - run: 'uvx {Package.NAME} {InitAction.STARTPROJECT} <project_name>' to initialize a new project.\n"
@@ -46,7 +43,7 @@ def main() -> None:
 
                 from django.core.management import ManagementUtility
 
-                sys.path.insert(0, str(Project.BASE_DIR))
+                sys.path.insert(0, str(PROJECT.base_dir))
                 environ.setdefault("DJANGO_SETTINGS_MODULE", Package.SETTINGS_MODULE)
                 utility = ManagementUtility(sys.argv)
                 utility.prog_name = Package.NAME

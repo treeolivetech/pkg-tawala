@@ -10,7 +10,6 @@ __pycache__/
 # Temporary files
 /.tmp/
 /src/tmp/
-/src/mock/
 
 # Distribution files
 /dist/

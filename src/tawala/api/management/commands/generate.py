@@ -1,75 +1,58 @@
 """Management command for generating configuration files."""
 
-import builtins
-import pathlib
 from collections.abc import Callable
+from enum import StrEnum
+from pathlib import Path
 from typing import Any, cast
 
-from christianwhocodes import (
-    FileGenerator,
-    FileSpec,
-    get_pg_service_spec,
-    get_pgpass_spec,
-)
+from christianwhocodes import FileGenerator, FileSpec, get_pg_service_spec, get_pgpass_spec
 from django.core.management.base import BaseCommand, CommandParser
 
-from .... import FileGenerateChoices, Package, Project
+from .... import PROJECT, Package
 
 
-def get_asgi_spec(path: pathlib.Path = Project.API_DIR / "asgi.py") -> FileSpec:
-    """Return the FileSpec for api/asgi.py."""
-    content = (
-        '"""ASGI configuration.\n\n'
-        "For more information on this file, see\n"
-        'https://docs.djangoproject.com/en/stable/howto/deployment/asgi/\n"""\n\n'
-        "from os import environ\n\n"
-        "from django.core.asgi import get_asgi_application\n"
-        "from tawala import Package\n\n"
-        'environ.setdefault("DJANGO_SETTINGS_MODULE", Package.SETTINGS_MODULE)\n\n'
-        "app = get_asgi_application()\n"
-    )
+class _FileGenerateChoices(StrEnum):
+    """Available file generation options."""
+
+    README = "readme"
+    APP_PY = "app_py"
+    VERCEL_JSON = "vercel_json"
+    PG_SERVICE = "pg_service"
+    PGPASS = "pgpass"
+
+
+def app_py_spec(path: Path = PROJECT.base_dir / "app.py") -> FileSpec:
+    """Return the FileSpec for app.py."""
+    content = f"from {Package.API}.asgi import application\n\napp = application\n"
     return FileSpec(path=path, content=content)
 
 
-def get_wsgi_spec(path: pathlib.Path = Project.API_DIR / "wsgi.py") -> FileSpec:
-    """Return the FileSpec for api/wsgi.py."""
-    content = (
-        '"""WSGI configuration.\n\n'
-        "For more information on this file, see\n"
-        'https://docs.djangoproject.com/en/stable/howto/deployment/wsgi/\n"""\n\n'
-        "from os import environ\n\n"
-        "from django.core.wsgi import get_wsgi_application\n"
-        "from tawala import Package\n\n"
-        'environ.setdefault("DJANGO_SETTINGS_MODULE", Package.SETTINGS_MODULE)\n\n'
-        "app = get_wsgi_application()\n"
-    )
-    return FileSpec(path=path, content=content)
-
-
-def get_vercel_spec(path: pathlib.Path = Project.BASE_DIR / "vercel.json") -> FileSpec:
+def vercel_json_spec(path: Path = PROJECT.base_dir / "vercel.json") -> FileSpec:
     """Return the FileSpec for vercel.json."""
     lines = [
         "{",
         '  "$schema": "https://openapi.vercel.sh/vercel.json",',
+        '  "framework": "django",',
         f'  "installCommand": "uv run {Package.NAME} runinstall",',
-        f'  "buildCommand": "uv run {Package.NAME} runbuild",',
-        '  "rewrites": [',
-        "    {",
-        '      "source": "/(.*)",',
-        '      "destination": "/api/wsgi"',
-        "    }",
-        "  ]",
+        f'  "buildCommand": "uv run {Package.NAME} runbuild"',
         "}",
     ]
     return FileSpec(path=path, content="\n".join(lines) + "\n")
 
 
-def get_readme_spec(path: pathlib.Path = Project.BASE_DIR / "README.md") -> FileSpec:
+def readme_spec(path: Path = PROJECT.base_dir / "README.md") -> FileSpec:
     """Return the FileSpec for README.md with configuration documentation."""
     from ...settings import CONF_FIELDS
+    from .helpers.readme import (
+        readme_footer,
+        readme_header,
+        readme_section_header,
+        readme_table_header,
+        readme_table_row,
+    )
 
     lines: list[str] = []
-    lines.extend(_readme_header(path.parent.name))  # Add header
+    lines.extend(readme_header(path.parent.name))  # Add header
 
     # Group fields by class
     fields_by_class: dict[str, list[dict[str, Any]]] = {}
@@ -82,8 +65,8 @@ def get_readme_spec(path: pathlib.Path = Project.BASE_DIR / "README.md") -> File
     # Generate content for each class group
     for class_name in sorted(fields_by_class.keys()):
         fields = fields_by_class[class_name]
-        lines.extend(_readme_section_header(class_name))  # Add section header
-        lines.extend(_readme_table_header())  # Add table header
+        lines.extend(readme_section_header(class_name))  # Add section header
+        lines.extend(readme_table_header())  # Add table header
 
         # Process each field in this class
         for field in fields:
@@ -92,170 +75,41 @@ def get_readme_spec(path: pathlib.Path = Project.BASE_DIR / "README.md") -> File
             choices_key = field["choices"]
             default_value = field["default"]
             field_type = field["type"]
-            lines.append(
-                _readme_table_row(
-                    env_var, toml_key, choices_key, default_value, field_type
-                )
-            )
+            lines.append(readme_table_row(env_var, toml_key, choices_key, default_value, field_type))
         lines.append("")
 
-    lines.extend(_readme_footer())  # Add footer
+    lines.extend(readme_footer())  # Add footer
     return FileSpec(path=path, content="\n".join(lines))
-
-
-# ---------------------------------------------------------------------------
-# README.md helpers
-# ---------------------------------------------------------------------------
-
-
-def _readme_header(project_name: str) -> list[str]:
-    """File header lines."""
-    return [
-        f"# {project_name} {Package.DISPLAY_NAME} project",
-        "",
-        "## Quick Start",
-        "",
-        "- Install dependencies (e.g. `uv sync`).",
-        f"- Run the development server (`uv run {Package.NAME} runserver`).",
-        "- To configure the project, see the configuration section below.",
-        "",
-        "## Configuration",
-        "",
-        "Settings can be provided via three mechanisms, in order of precedence:",
-        "",
-        f"1. **Environment variable** — set in your `.env` file (e.g. `MY_VAR=value`)",
-        f'2. **`pyproject.toml`** — set as a key under the `[tool.{Package.NAME}]` (e.g. `my_var = "value"`)',
-        f"3. **Default** — the built-in fallback value used when nothing else is provided",
-        "",
-    ]
-
-
-def _readme_section_header(class_name: str) -> list[str]:
-    """Section header for a config class."""
-    return [f"### {class_name}", ""]
-
-
-def _readme_table_header() -> list[str]:
-    """Markdown table header row."""
-    return [
-        "| Environment Variable | TOML Key | Accepted Values | Default |",
-        "| -------------------- | -------- | --------------- | ------- |",
-    ]
-
-
-def _readme_footer() -> list[str]:
-    """File footer lines."""
-    return [
-        "---",
-        "",
-        f"> This file was generated by `{Package.NAME} generate readme`. Re-run the command to refresh it.",
-    ]
-
-
-def _readme_format_choices(choices: list[str]) -> str:
-    """Format choices as inline code alternatives."""
-    return " \\| ".join(f"`{choice}`" for choice in choices)
-
-
-def _readme_get_type_hint(field_type: type) -> str:
-    """Return a human-readable type hint for a field type."""
-    match field_type:
-        case builtins.bool:
-            return "`true` \\| `false`"
-        case builtins.int:
-            return "integer"
-        case builtins.float:
-            return "float"
-        case builtins.list:
-            return "comma-separated values"
-        case pathlib.Path:
-            return "absolute path"
-        case _:
-            return "string"
-    # Fallback return to satisfy static analysis; should be unreachable.
-    return "string"
-
-
-def _readme_format_default_value(value: Any, field_type: type) -> str:
-    """Format a default value for display in a markdown table cell."""
-    if value is None:
-        return "*(none)*"
-
-    match field_type:
-        case builtins.bool:
-            return f"`{'true' if value else 'false'}`"
-        case builtins.list:
-            if isinstance(value, list):
-                list_items = cast(list[Any], value)
-                if not list_items:
-                    return "*(empty)*"
-                return f"`{','.join(str(v) for v in list_items)}`"
-            return f"`{value}`"
-        case pathlib.Path:
-            return f"`{pathlib.PurePosixPath(value)}`"
-        case _:
-            return f"`{value}`"
-    # Fallback: ensure a string is always returned even if the match is modified in the future.
-    return f"`{value}`"
-
-
-def _readme_table_row(
-    env_var: str,
-    toml_key: str | None,
-    choices_key: list[str] | None,
-    default_value: Any,
-    field_type: type,
-) -> str:
-    """Format a single markdown table row for a config field."""
-    env_cell = f"`{env_var}`"
-    toml_cell = f"`{toml_key}`" if toml_key else "—"
-    values_cell = (
-        _readme_format_choices(choices_key)
-        if choices_key
-        else _readme_get_type_hint(field_type)
-    )
-    default_cell = _readme_format_default_value(default_value, field_type)
-    return f"| {env_cell} | {toml_cell} | {values_cell} | {default_cell} |"
-
-
-# ---------------------------------------------------------------------------
-# Command implementation
-# ---------------------------------------------------------------------------
 
 
 class Command(BaseCommand):
     """Generate configuration files."""
 
-    help: str = "Generate configuration files (e.g., README.md, vercel.json, asgi.py, wsgi.py, .pg_service.conf, pgpass.conf / .pgpass)."
+    help = "Generate configuration files."
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Add command arguments."""
         parser.add_argument(
             "file",
-            choices=[opt for opt in FileGenerateChoices],
-            type=FileGenerateChoices,
-            help=f"Which file to generate (options: {', '.join(o for o in FileGenerateChoices)}).",
+            choices=[opt for opt in _FileGenerateChoices],
+            type=_FileGenerateChoices,
+            help=f"Which file to generate (options: {', '.join(o for o in _FileGenerateChoices)}).",
         )
         parser.add_argument(
-            "-f",
-            "--force",
-            dest="force",
-            action="store_true",
-            help="Force overwrite without confirmation.",
+            "-f", "--force", dest="force", action="store_true", help="Force overwrite without confirmation."
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
         """Execute the generate command."""
-        file_option = FileGenerateChoices(options["file"])
+        file_option = _FileGenerateChoices(options["file"])
         force: bool = options["force"]
 
-        generators: dict[FileGenerateChoices, Callable[[], FileSpec]] = {
-            FileGenerateChoices.VERCEL_JSON: get_vercel_spec,
-            FileGenerateChoices.API_ASGI_PY: get_asgi_spec,
-            FileGenerateChoices.API_WSGI_PY: get_wsgi_spec,
-            FileGenerateChoices.README: get_readme_spec,
-            FileGenerateChoices.PG_SERVICE: get_pg_service_spec,
-            FileGenerateChoices.PGPASS: get_pgpass_spec,
+        generators: dict[_FileGenerateChoices, Callable[[], FileSpec]] = {
+            _FileGenerateChoices.README: readme_spec,
+            _FileGenerateChoices.APP_PY: app_py_spec,
+            _FileGenerateChoices.VERCEL_JSON: vercel_json_spec,
+            _FileGenerateChoices.PG_SERVICE: get_pg_service_spec,
+            _FileGenerateChoices.PGPASS: get_pgpass_spec,
         }
 
         spec: FileSpec = generators[file_option]()

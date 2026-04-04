@@ -2,6 +2,8 @@
 
 from django.views.generic.base import TemplateView
 
+__all__ = ["WIPView"]
+
 
 class WIPView(TemplateView):
     """Work in Progress page."""
