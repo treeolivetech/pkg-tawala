@@ -30,7 +30,7 @@ _URL_ENTRIES: list[_URLEntry] = [
     ),
     _URLEntry(
         condition="django.contrib.admin" in settings.INSTALLED_APPS,
-        factory=lambda: path("__admin__/", admin.site.urls),
+        factory=lambda: path("admin/", admin.site.urls),
     ),
     _URLEntry(
         condition="django.contrib.auth" in settings.INSTALLED_APPS,
