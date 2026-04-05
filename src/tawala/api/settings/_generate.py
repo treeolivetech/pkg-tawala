@@ -1,6 +1,4 @@
-"""Generate Configuration."""
-
-from .conf import Conf
+from ._startproject import Conf
 
 __all__ = ["CONF_FIELDS"]
 

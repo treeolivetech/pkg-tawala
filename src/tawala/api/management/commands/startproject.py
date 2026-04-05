@@ -1,7 +1,6 @@
 """initialization command."""
 
 from argparse import ArgumentParser, Namespace
-from enum import StrEnum
 from pathlib import Path
 
 from christianwhocodes import (
@@ -16,28 +15,19 @@ from christianwhocodes import (
     status,
 )
 
-from .... import PROJECT, Package
+from .... import Package
 from ...enums import (
-    DatabaseBackends,
+    DatabaseChoices,
+    DatabaseInitFlags,
     DatabaseTomlKeys,
     InternationalizationTomlKeys,
     SecurityTomlKeys,
+    StartprojectPresetChoices,
+    StartprojectPresetInitFlags,
     StorageBackends,
     StorageTomlKeys,
 )
-
-
-class _Preset(StrEnum):
-    """Available project presets."""
-
-    DEFAULT = "default"
-    VERCEL = "vercel"
-
-
-class _PGFlags(StrEnum):
-    """Flag to indicate whether to use env / pyproject.toml variables for PostgreSQL configuration."""
-
-    USE_VARS = "--pg-use-vars"
+from ...settings import MAIN_APP
 
 
 class Command(BaseCommand):
@@ -57,39 +47,36 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            "-p",
-            "--preset",
+            StartprojectPresetInitFlags.PRESET,
             dest="preset",
-            type=_Preset,
-            choices=[p for p in _Preset],
-            help="Preset to use. Defaults to the 'default' preset.",
-            default=_Preset.DEFAULT,
+            type=StartprojectPresetChoices,
+            choices=[p for p in StartprojectPresetChoices],
+            help=f"Preset to use. Defaults to the '{StartprojectPresetChoices.DEFAULT}' preset.",
+            default=StartprojectPresetChoices.DEFAULT,
         )
 
         parser.add_argument(
-            "-d",
-            "--db",
-            dest="db",
-            choices=[db for db in DatabaseBackends],
+            DatabaseInitFlags.DB,
+            choices=[db for db in DatabaseChoices],
             help=(
                 "Database backend to use. Defaults to SQLite if not specified. "
-                f"Note: the {_Preset.VERCEL} preset automatically uses {DatabaseBackends.POSTGRESQL}. "
+                f"Note: the {StartprojectPresetChoices.VERCEL} preset automatically uses {DatabaseChoices.POSTGRESQL}. "
                 "Other presets work with either database backend, "
                 "so choose based on your needs and preferences. "
-                f"Defaults to {DatabaseBackends.SQLITE} if not specified."
+                f"Defaults to {DatabaseChoices.SQLITE} if not specified."
             ),
         )
 
         parser.add_argument(
-            _PGFlags.USE_VARS,
+            DatabaseInitFlags.USE_VARS,
             action="store_true",
             help=(
                 "Use environment / pyproject.toml variables for PostgreSQL configuration. "
                 "If False, configuration will be read from "
                 f"{PostgresFilename.PGSERVICE} and {PostgresFilename.PGPASS} files. "
                 "Note: this flag is only applicable if the database backend is set to "
-                f"{DatabaseBackends.POSTGRESQL}. "
-                f"The {_Preset.VERCEL} preset automatically sets this flag to True "
+                f"{DatabaseChoices.POSTGRESQL}. "
+                f"The {StartprojectPresetChoices.VERCEL} preset automatically sets this flag to True "
                 "since Vercel requires environment variable configuration for PostgreSQL "
                 "and does not support file-based configuration."
             ),
@@ -106,7 +93,7 @@ class Command(BaseCommand):
     def handle(self, args: Namespace) -> ExitCode:
         """Execute the command logic with the parsed arguments."""
         try:
-            self._project_dir = PROJECT.base_dir / args.project_name
+            self._project_dir = Path.cwd() / args.project_name
             self._validated_args = self._validate_args(args)
             self._validate_project_directory(self._project_dir, self._validated_args)
             with status("Generating project files..."):
@@ -122,19 +109,23 @@ class Command(BaseCommand):
     def _validate_args(self, args: Namespace) -> Namespace:
         """Validate the provided arguments."""
         match args.preset:
-            case _Preset.VERCEL:
+            case StartprojectPresetChoices.VERCEL:
                 """Enforce postgresql and environment variable configuration for Vercel preset due to platform requirements and security best practices."""
-                if args.db == DatabaseBackends.SQLITE:
-                    raise ValueError(f"The {_Preset.VERCEL} preset requires {DatabaseBackends.POSTGRESQL}.")
-                args.db = DatabaseBackends.POSTGRESQL
+                if args.db == DatabaseChoices.SQLITE:
+                    raise ValueError(
+                        f"The {StartprojectPresetChoices.VERCEL} preset requires {DatabaseChoices.POSTGRESQL}."
+                    )
+                args.db = DatabaseChoices.POSTGRESQL
                 args.pg_use_vars = True
             case _:
                 """Other presets work with either database. Default to sqlite if args.db is unspecified."""
                 if not args.db:
-                    args.db = DatabaseBackends.SQLITE
+                    args.db = DatabaseChoices.SQLITE
 
-        if args.pg_use_vars and not args.db == DatabaseBackends.POSTGRESQL:
-            raise ValueError(f"The {_PGFlags.USE_VARS} flag is only supported for {DatabaseBackends.POSTGRESQL}.")
+        if args.pg_use_vars and not args.db == DatabaseChoices.POSTGRESQL:
+            raise ValueError(
+                f"The {DatabaseInitFlags.USE_VARS} flag is only supported for {DatabaseChoices.POSTGRESQL}."
+            )
 
         return args
 
@@ -167,17 +158,17 @@ class Command(BaseCommand):
         FileGenerator(app_py_spec(path=project_dir / "app.py")).create()
 
         match args.preset:
-            case _Preset.VERCEL:
+            case StartprojectPresetChoices.VERCEL:
                 FileGenerator(vercel_json_spec(path=project_dir / "vercel.json")).create()
             case _:
                 pass
 
-        home_app_dir: Path = project_dir / PROJECT.home_app
+        home_app_dir: Path = project_dir / MAIN_APP
 
         files_with_content: list[tuple[Path, str]] = [
             (project_dir / ".gitignore", self._content_gitignore(args)),
             (project_dir / "pyproject.toml", self._content_pyproject_toml(project_dir, args)),
-            (home_app_dir / "templates" / PROJECT.home_app / "index.html", self._content_home_index_html()),
+            (home_app_dir / "templates" / MAIN_APP / "index.html", self._content_home_index_html()),
             (home_app_dir / "views.py", self._content_home_views_py()),
             (home_app_dir / "urls.py", self._content_home_urls_py(project_dir)),
             (home_app_dir / "migrations" / "__init__.py", ""),
@@ -200,7 +191,7 @@ class Command(BaseCommand):
     def _content_gitignore(self, args: Namespace) -> str:
         """Generate the content for .gitignore based on the provided arguments."""
         sqlite = (
-            f"\n# SQLite database\n/db.{DatabaseBackends.SQLITE}3\n" if args.db == DatabaseBackends.SQLITE else ""
+            f"\n# SQLite database\n/db.{DatabaseChoices.SQLITE}3\n" if args.db == DatabaseChoices.SQLITE else ""
         )
         return (
             "# Python-generated files\n"
@@ -222,10 +213,10 @@ class Command(BaseCommand):
         # dependencies
         extras: list[str] = []
 
-        if args.preset == _Preset.VERCEL:
+        if args.preset == StartprojectPresetChoices.VERCEL:
             extras.append("vercel")
 
-        if args.db == DatabaseBackends.POSTGRESQL:
+        if args.db == DatabaseChoices.POSTGRESQL:
             extras.append("psycopg")
 
         extras_str = f"[{','.join(extras)}]" if extras else ""
@@ -237,10 +228,10 @@ class Command(BaseCommand):
         if args.wip:
             tool_section += f"{SecurityTomlKeys.WORK_IN_PROGRESS} = true\n"
 
-        if args.db == DatabaseBackends.POSTGRESQL:
+        if args.db == DatabaseChoices.POSTGRESQL:
             tool_section += (
                 f"{DatabaseTomlKeys.MAIN} = {{ "
-                f'{DatabaseTomlKeys.BACKEND} = "{DatabaseBackends.POSTGRESQL}", '
+                f'{DatabaseTomlKeys.BACKEND} = "{DatabaseChoices.POSTGRESQL}", '
                 f"{DatabaseTomlKeys.USE_VARS} = "
                 f"{'true' if args.pg_use_vars else 'false'} "
                 "}\n"
@@ -248,7 +239,7 @@ class Command(BaseCommand):
 
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
 
-        if args.preset == _Preset.VERCEL:
+        if args.preset == StartprojectPresetChoices.VERCEL:
             allowed_hosts.append('".vercel.app"')
             tool_section += (
                 f"{StorageTomlKeys.MAIN} = {{ "
@@ -288,7 +279,7 @@ class Command(BaseCommand):
         return (
             "from django.views.generic.base import TemplateView\n\n\n"
             "class HomeView(TemplateView):\n"
-            f'    template_name = "{PROJECT.home_app}/index.html"\n'
+            f'    template_name = "{MAIN_APP}/index.html"\n'
         )
 
     def _content_home_urls_py(self, project_dir: Path) -> str:
@@ -302,7 +293,7 @@ class Command(BaseCommand):
             "from django.urls import path\n\n"
             "from . import views\n\n"
             "urlpatterns = [\n"
-            f'    path("", views.HomeView.as_view(), name="{PROJECT.home_app}"),\n'
+            f'    path("", views.HomeView.as_view(), name="{MAIN_APP}"),\n'
             "]\n"
         )
 

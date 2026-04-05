@@ -1,10 +1,9 @@
-"""Files and Storage Configuration."""
-
 from typing import TypedDict
 
-from ... import PROJECT, Package
+from ... import Package
 from ..enums import StorageBackends, StorageTomlKeys
-from .conf import Conf, ConfField
+from ._startproject import PROJECT
+from ._startproject import Conf, ConfField
 
 __all__ = [
     "STORAGE_BACKEND",
@@ -28,7 +27,7 @@ class _StorageBackendDict(TypedDict):
     BACKEND: str
 
 
-class StoragesDict(TypedDict):
+class _StoragesDict(TypedDict):
     """STORAGES setting dict."""
 
     staticfiles: _StorageBackendDict
@@ -66,7 +65,7 @@ _STORAGE = _StorageConf()
 # ============================================================================
 
 
-def _get_storages_config(storage_backend_choice: str) -> StoragesDict:
+def _get_storages_config(storage_backend_choice: str) -> _StoragesDict:
     """Build the STORAGES setting based on configured backend."""
     storage_backend: str
 

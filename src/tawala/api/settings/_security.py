@@ -1,16 +1,13 @@
 """Security and Deployment Configuration.
 
 https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
-
-Content Security Policy (CSP).
-
 https://docs.djangoproject.com/en/stable/howto/csp/
 """
 
 from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
 
 from ..enums import SecurityTomlKeys
-from .conf import Conf, ConfField
+from ._startproject import Conf, ConfField
 
 __all__ = [
     "SECRET_KEY",

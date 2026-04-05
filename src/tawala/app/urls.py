@@ -9,7 +9,6 @@ from django.contrib import admin
 from django.urls import URLPattern as BaseURLPattern
 from django.urls import URLResolver, include, path, re_path
 
-from .. import PROJECT
 from .views import WIPView
 
 URLPattern: TypeAlias = BaseURLPattern | URLResolver
@@ -42,5 +41,5 @@ _URL_ENTRIES: list[_URLEntry] = [
 urlpatterns = [entry.factory() for entry in _URL_ENTRIES if entry.condition] + (
     [re_path(r"^.*$", WIPView.as_view(), name="wip_catchall")]
     if settings.WORK_IN_PROGRESS
-    else [path("", include(f"{PROJECT.home_app}.urls"))]
+    else [path("", include(f"{settings.MAIN_APP}.urls"))]
 )

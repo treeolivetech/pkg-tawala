@@ -22,7 +22,7 @@ def main() -> None:
 
             sys.exit(Command()(sys.argv[2:]))
         case _:
-            from ... import PROJECT, ProjectValidationError
+            from ..settings import PROJECT, ProjectValidationError
 
             try:
                 PROJECT.validate()

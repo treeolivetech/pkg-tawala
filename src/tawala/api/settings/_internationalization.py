@@ -4,7 +4,7 @@ https://docs.djangoproject.com/en/stable/topics/i18n/
 """
 
 from ..enums import InternationalizationTomlKeys
-from .conf import Conf, ConfField
+from ._startproject import Conf, ConfField
 
 __all__ = ["LANGUAGE_CODE", "TIME_ZONE", "USE_I18N", "USE_TZ"]
 

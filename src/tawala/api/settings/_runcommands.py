@@ -1,6 +1,5 @@
-"""Runcommands Configuration."""
-
-from .conf import Conf, ConfField
+from ..enums import RuncommandsTomlKeys
+from ._startproject import Conf, ConfField
 
 __all__ = ["RUNCOMMANDS"]
 
@@ -15,11 +14,16 @@ class _RunCommandsConf(Conf):
 
     verbose_name = "Runcommands Configuration"
 
-    install = ConfField(type=list, env="RUNCOMMANDS_INSTALL", toml="runcommands.install", default=[])
+    install = ConfField(
+        type=list,
+        env="RUNCOMMANDS_INSTALL",
+        toml=f"{RuncommandsTomlKeys.MAIN}.{RuncommandsTomlKeys.INSTALL}",
+        default=[],
+    )
     build = ConfField(
         type=list,
         env="RUNCOMMANDS_BUILD",
-        toml="runcommands.build",
+        toml=f"{RuncommandsTomlKeys.MAIN}.{RuncommandsTomlKeys.BUILD}",
         default=["makemigrations", "migrate", "compilescss", "collectstatic --noinput --ignore=*.scss"],
     )
 

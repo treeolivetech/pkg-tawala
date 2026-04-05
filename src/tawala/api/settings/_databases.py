@@ -8,9 +8,9 @@ https://www.postgresql.org/docs/current/libpq-pgpass.html
 from pathlib import Path
 from typing import NotRequired, TypedDict
 
-from ... import PROJECT
-from ..enums import DatabaseBackends, DatabaseTomlKeys
-from .conf import Conf, ConfField
+from ._startproject import PROJECT
+from ..enums import DatabaseChoices, DatabaseTomlKeys
+from ._startproject import Conf, ConfField
 
 __all__ = ["DATABASES"]
 
@@ -27,7 +27,7 @@ class _DatabaseOptionsDict(TypedDict, total=False):
     sslmode: str
 
 
-class DatabaseDict(TypedDict):
+class _DatabaseDict(TypedDict):
     """Single database configuration entry."""
 
     ENGINE: str
@@ -39,10 +39,10 @@ class DatabaseDict(TypedDict):
     OPTIONS: NotRequired[_DatabaseOptionsDict]
 
 
-class DatabasesDict(TypedDict):
+class _DatabasesDict(TypedDict):
     """DATABASES setting dict."""
 
-    default: DatabaseDict
+    default: _DatabaseDict
 
 
 # ============================================================================
@@ -57,10 +57,10 @@ class _DatabaseConf(Conf):
 
     backend = ConfField(
         type=str,
-        choices=[c for c in DatabaseBackends],
+        choices=[c for c in DatabaseChoices],
         env="DB_BACKEND",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.BACKEND}",
-        default=DatabaseBackends.SQLITE,
+        default=DatabaseChoices.SQLITE,
     )
     # postgresql specific
     use_vars = ConfField(
@@ -128,19 +128,19 @@ _DATABASE = _DatabaseConf()
 # ============================================================================
 
 
-def _get_databases_config() -> DatabasesDict:
+def _get_databases_config() -> _DatabasesDict:
     """Build the DATABASES setting based on configured backend."""
     backend: str = _DATABASE.backend.lower()
     match backend:
-        case DatabaseBackends.SQLITE:
+        case DatabaseChoices.SQLITE:
             return {
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
                     "NAME": PROJECT.base_dir / f"db.sqlite3",
                 }
             }
-        case DatabaseBackends.POSTGRESQL:
-            config: DatabaseDict
+        case DatabaseChoices.POSTGRESQL:
+            config: _DatabaseDict
             if _DATABASE.use_vars:
                 config = {
                     "ENGINE": f"django.db.backends.postgresql",

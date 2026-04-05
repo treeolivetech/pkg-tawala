@@ -1,8 +1,6 @@
-"""Enumerations and constants."""
-
 from enum import StrEnum
 
-__all__ = ["DatabaseTomlKeys", "DatabaseBackends"]
+__all__ = ["DatabaseTomlKeys", "DatabaseChoices", "DatabaseInitFlags"]
 
 
 class DatabaseTomlKeys(StrEnum):
@@ -21,8 +19,15 @@ class DatabaseTomlKeys(StrEnum):
     SSLMODE = "sslmode"
 
 
-class DatabaseBackends(StrEnum):
+class DatabaseChoices(StrEnum):
     """Available database backends."""
 
     SQLITE = "sqlite"
     POSTGRESQL = "postgresql"
+
+
+class DatabaseInitFlags(StrEnum):
+    """Flags used when setting up database during initialization."""
+
+    DB = "--db"
+    USE_VARS = "--pg-use-vars"

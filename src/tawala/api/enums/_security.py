@@ -1,5 +1,3 @@
-"""Enumerations and constants."""
-
 from enum import StrEnum
 
 __all__ = ["SecurityTomlKeys"]
