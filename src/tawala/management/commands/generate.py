@@ -21,7 +21,7 @@ class _FileGenerateChoices(StrEnum):
     PGPASS = "pgpass"
 
 
-def app_py_spec(path: Path) -> FileSpec:
+def api_app_py_spec(path: Path) -> FileSpec:
     """Return the FileSpec for app.py."""
     content = f"from {Package.MANAGEMENT}.asgi import application\n\napp = application\n"
     return FileSpec(path=path, content=content)
@@ -32,9 +32,15 @@ def vercel_json_spec(path: Path) -> FileSpec:
     lines = [
         "{",
         '  "$schema": "https://openapi.vercel.sh/vercel.json",',
-        '  "framework": "django",',
+        '  "framework": null,',
         f'  "installCommand": "uv run {Package.NAME} runinstall",',
-        f'  "buildCommand": "uv run {Package.NAME} runbuild"',
+        f'  "buildCommand": "uv run {Package.NAME} runbuild",',
+        '  "rewrites": [',
+        "    {",
+        '      "source": "/(.*)",',
+        '      "destination": "/api/app.py"',
+        "    }",
+        "  ]",
         "}",
     ]
     return FileSpec(path=path, content="\n".join(lines) + "\n")
@@ -106,7 +112,7 @@ class Command(BaseCommand):
 
         generators: dict[_FileGenerateChoices, Callable[[], FileSpec]] = {
             _FileGenerateChoices.README: lambda: readme_spec(PROJECT.base_dir / "readme.md"),
-            _FileGenerateChoices.APP_PY: lambda: app_py_spec(PROJECT.base_dir / "app.py"),
+            _FileGenerateChoices.APP_PY: lambda: api_app_py_spec(PROJECT.base_dir / "api" / "app.py"),
             _FileGenerateChoices.VERCEL_JSON: lambda: vercel_json_spec(PROJECT.base_dir / "vercel.json"),
             _FileGenerateChoices.PG_SERVICE: get_pg_service_spec,
             _FileGenerateChoices.PGPASS: get_pgpass_spec,

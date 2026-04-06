@@ -158,10 +158,13 @@ class Command(BaseCommand):
 
     def _generate_project_files(self, project_dir: Path, args: Namespace) -> None:
         """Generate project files."""
-        from .generate import app_py_spec, readme_spec, vercel_json_spec
+        from .generate import api_app_py_spec, readme_spec, vercel_json_spec
+
+        main_app_dir = project_dir / args.app
+        api_dir = project_dir / "api"
 
         FileGenerator(readme_spec(path=project_dir / "README.md")).create()
-        FileGenerator(app_py_spec(path=project_dir / "app.py")).create()
+        FileGenerator(api_app_py_spec(path=api_dir / "app.py")).create()
 
         match args.preset:
             case PresetOptions.VERCEL:
@@ -169,16 +172,15 @@ class Command(BaseCommand):
             case _:
                 pass
 
-        home_app_dir: Path = project_dir / args.app
-
         files_with_content: list[tuple[Path, str]] = [
             (project_dir / ".gitignore", self._content_gitignore(args)),
             (project_dir / "pyproject.toml", self._content_pyproject_toml(project_dir, args)),
-            (home_app_dir / "templates" / args.app / "index.html", self._content_home_index_html()),
-            (home_app_dir / "views.py", self._content_home_views_py(args.app)),
-            (home_app_dir / "urls.py", self._content_home_urls_py(project_dir, args.app)),
-            (home_app_dir / "migrations" / "__init__.py", ""),
-            (home_app_dir / "__init__.py", ""),
+            (main_app_dir / "templates" / args.app / "index.html", self._content_home_index_html()),
+            (main_app_dir / "views.py", self._content_home_views_py(args.app)),
+            (main_app_dir / "urls.py", self._content_home_urls_py(project_dir, args.app)),
+            (main_app_dir / "migrations" / "__init__.py", ""),
+            (main_app_dir / "__init__.py", ""),
+            (api_dir / "__init__.py", ""),
         ]
 
         for path, content in files_with_content:

@@ -54,7 +54,6 @@ INSTALLED_APPS = (
         "django_watchfiles",
         "django_minify_html",
         "django_http_compression",
-        "whitenoise.runserver_nostatic",
         "sass_processor",
     ]
     + [MAIN_APP, Package.APP, Package.NAME]
@@ -75,7 +74,6 @@ INSTALLED_APPS = (
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

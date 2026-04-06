@@ -6,7 +6,7 @@ Repository = "https://github.com/treeolivetech/pkg-tawala"
 
 [project]
 name = "Tawala"
-version = "1.4.0.dev7"
+version = "1.4.0"
 description = "Build and deploy Django apps with confidence."
 readme = "README.md"
 license = "MIT"
@@ -39,7 +39,6 @@ dependencies = [
     "pillow==12.2.0",
     "pyperclip==1.11.0",
     "python-dotenv==1.2.2",
-    "whitenoise[brotli]>=6.12.0",
 ]
 
 [project.optional-dependencies]
