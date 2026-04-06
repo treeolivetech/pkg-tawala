@@ -259,7 +259,7 @@ class Command(BaseCommand):
             'version = "0.1.0"\n'
             'description = ""\n'
             'readme = "README.md"\n'
-            'requires-python = ">=3.13"\n'
+            'requires-python = ">=3.14"\n'
             f"dependencies = [{dependencies}]\n"
             "\n"
             "[dependency-groups]\n"

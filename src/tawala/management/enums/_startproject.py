@@ -41,7 +41,7 @@ class StorageBackends(StrEnum):
     """Available storage backends."""
 
     FILESYSTEM = "filesystem"
-    VERCEL = "vercelblob"
+    VERCEL = "vercel"
 
 
 # ============================================================================
