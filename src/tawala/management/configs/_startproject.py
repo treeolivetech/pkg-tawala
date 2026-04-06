@@ -1,4 +1,4 @@
-from ..enums import DatabaseBackends, DatabaseTomlKeys, StorageBackends, StorageTomlKeys
+from ..enums import DatabaseBackendOptions, DatabaseTomlKeys, StorageBackendOptions, StorageTomlKeys
 from ._utils import Conf, ConfField
 
 __all__ = ["STORAGES_CONF", "DATABASES_CONF"]
@@ -14,10 +14,10 @@ class _StoragesConf(Conf):
     verbose_name = "Files and Storage Configuration"
     backend = ConfField(
         type=str,
-        choices=[StorageBackends.FILESYSTEM, StorageBackends.VERCEL],
+        choices=[StorageBackendOptions.FILESYSTEM, StorageBackendOptions.VERCEL],
         env="STORAGE_BACKEND",
         toml=f"{StorageTomlKeys.MAIN}.{StorageTomlKeys.BACKEND}",
-        default=StorageBackends.FILESYSTEM,
+        default=StorageBackendOptions.FILESYSTEM,
     )
     token = ConfField(
         type=str,
@@ -42,10 +42,10 @@ class _DatabasesConf(Conf):
 
     backend = ConfField(
         type=str,
-        choices=[c for c in DatabaseBackends],
+        choices=[c for c in DatabaseBackendOptions],
         env="DB_BACKEND",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.BACKEND}",
-        default=DatabaseBackends.SQLITE,
+        default=DatabaseBackendOptions.SQLITE,
     )
     # postgresql specific
     use_vars = ConfField(

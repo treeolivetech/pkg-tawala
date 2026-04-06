@@ -24,6 +24,10 @@ class Package:
 class ProjectValidationError(Exception):
     """Current directory is not a valid project."""
 
+    def __init__(self, message: str = "Base directory not set. Ensure the project is validated.") -> None:
+        """Initialize the exception with a default message."""
+        super().__init__(message)
+
 
 @dataclass(frozen=True)
 class _Project:
@@ -31,11 +35,11 @@ class _Project:
 
     _validated: bool = field(default=False, init=False, repr=False)
     _toml: dict[str, Any] = field(default_factory=lambda: {}, init=False, repr=False)
-    _base_dir: Path = field(default_factory=Path.cwd)
+    _base_dir: Path | None = field(default=None, init=False, repr=False)
 
     def _load_project(self) -> None:
         """Load and validate pyproject.toml configuration."""
-        pyproject_path = self._base_dir / "pyproject.toml"
+        pyproject_path = Path.cwd() / "pyproject.toml"
         pkg_name = Package.NAME
         if not pyproject_path.exists():
             raise FileNotFoundError(f"pyproject.toml not found at '{pyproject_path}'")
@@ -43,6 +47,7 @@ class _Project:
         if pkg_name not in tool_section:
             raise KeyError(f"Missing 'tool.{pkg_name}' section in pyproject.toml")
         object.__setattr__(self, "_toml", tool_section[pkg_name])
+        object.__setattr__(self, "_base_dir", pyproject_path.parent)
 
     @cached_property
     def toml(self) -> dict[str, Any]:
@@ -58,12 +63,17 @@ class _Project:
 
         from dotenv import dotenv_values
 
+        if self._base_dir is None:
+            raise ProjectValidationError()
+
         return {**dotenv_values(self._base_dir / ".env"), **environ}
 
     @cached_property
     def base_dir(self) -> Path:
         """Base directory (lazy-loaded)."""
         self.validate()
+        if self._base_dir is None:
+            raise ProjectValidationError()
         return self._base_dir
 
     def validate(self) -> None:
@@ -78,13 +88,13 @@ class _Project:
 
         if any(arg in argv for arg in InitAction):  # Avoid validation during startproject commands
             object.__setattr__(self, "_validated", True)
-            return
-        try:
-            self._load_project()
-        except (FileNotFoundError, KeyError) as e:
-            raise ProjectValidationError(str(e)) from e
         else:
-            object.__setattr__(self, "_validated", True)
+            try:
+                self._load_project()
+            except (FileNotFoundError, KeyError) as e:
+                raise ProjectValidationError(str(e)) from e
+            else:
+                object.__setattr__(self, "_validated", True)
 
 
 PROJECT: Final = _Project()

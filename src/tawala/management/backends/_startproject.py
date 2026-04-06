@@ -1,18 +1,16 @@
-from ..enums import StorageBackends
-from ..settings import STORAGE_BACKEND
+from ..configs import STORAGES_CONF
+from ..enums import StorageBackendOptions
 
 # ============================================================================
 # Storages
 # ============================================================================
 
-match STORAGE_BACKEND:
-    case StorageBackends.VERCEL:
+match STORAGES_CONF.backend:
+    case StorageBackendOptions.VERCEL:
         from django.core.files.base import ContentFile, File
         from django.core.files.storage import Storage
         from django.utils.deconstruct import deconstructible
         from vercel.blob import BlobClient  # pyright: ignore[reportMissingTypeStubs]
-
-        from ..settings import BLOB_READ_WRITE_TOKEN
 
         __all__ = ["VercelBlobStorageBackend"]
 
@@ -22,7 +20,7 @@ match STORAGE_BACKEND:
 
             def __init__(self) -> None:
                 """Set up Vercel Blob client."""
-                self.client: BlobClient = BlobClient(BLOB_READ_WRITE_TOKEN)
+                self.client: BlobClient = BlobClient(STORAGES_CONF.token)
 
             def _save(self, name: str, content: File) -> str:
                 """Upload file to Vercel Blob."""

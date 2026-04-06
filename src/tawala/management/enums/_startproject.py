@@ -1,24 +1,24 @@
 from enum import StrEnum
 
 __all__ = [
-    "PresetChoices",
-    "PresetInitFlags",
+    "PresetOptions",
+    "PresetFlags",
     "StorageTomlKeys",
-    "StorageBackends",
+    "StorageBackendOptions",
     "DatabaseTomlKeys",
-    "DatabaseBackends",
-    "DatabaseInitFlags",
+    "DatabaseBackendOptions",
+    "DatabaseFlags",
 ]
 
 
-class PresetChoices(StrEnum):
+class PresetOptions(StrEnum):
     """Available database backends."""
 
     DEFAULT = "default"
     VERCEL = "vercel"
 
 
-class PresetInitFlags(StrEnum):
+class PresetFlags(StrEnum):
     """Flags used when setting up preset during initialization."""
 
     PRESET = "--preset"
@@ -37,7 +37,7 @@ class StorageTomlKeys(StrEnum):
     BLOB_TOKEN = "blob-token"
 
 
-class StorageBackends(StrEnum):
+class StorageBackendOptions(StrEnum):
     """Available storage backends."""
 
     FILESYSTEM = "filesystem"
@@ -65,14 +65,14 @@ class DatabaseTomlKeys(StrEnum):
     SSLMODE = "sslmode"
 
 
-class DatabaseBackends(StrEnum):
+class DatabaseBackendOptions(StrEnum):
     """Available database backends."""
 
     SQLITE = "sqlite"
     POSTGRESQL = "postgresql"
 
 
-class DatabaseInitFlags(StrEnum):
+class DatabaseFlags(StrEnum):
     """Flags used when setting up database during initialization."""
 
     DB = "--db"

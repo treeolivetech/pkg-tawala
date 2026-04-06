@@ -1,14 +1,40 @@
 from enum import StrEnum
 
-__all__ = ["AppTomlKeys", "RuncommandsTomlKeys", "InternationalizationTomlKeys"]
+__all__ = [
+    "MainAppTomlKeys",
+    "MainAppOptions",
+    "MainAppFlags",
+    "RuncommandsTomlKeys",
+    "InternationalizationTomlKeys",
+]
 
 
-class AppTomlKeys(StrEnum):
+# ============================================================================
+# Main App
+# ============================================================================
+
+
+class MainAppTomlKeys(StrEnum):
     """Keys for security configuration in pyproject.toml."""
 
-    MAIN_APP = "main-app"
+    MAIN = "main-app"
 
 
+class MainAppOptions(StrEnum):
+    """Keys for security configuration in pyproject.toml."""
+
+    HOME = "home"
+
+
+class MainAppFlags(StrEnum):
+    """Flags used when setting up database during initialization."""
+
+    APP = "--app"
+
+
+# ============================================================================
+# Runcommands
+# ============================================================================
 class RuncommandsTomlKeys(StrEnum):
     """Keys for storage configuration in pyproject.toml."""
 
@@ -17,6 +43,9 @@ class RuncommandsTomlKeys(StrEnum):
     BUILD = "build"
 
 
+# ============================================================================
+# Internationalization
+# ============================================================================
 class InternationalizationTomlKeys(StrEnum):
     """Keys for internationalization configuration in pyproject.toml."""
 

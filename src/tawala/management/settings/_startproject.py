@@ -1,11 +1,9 @@
 from ... import PROJECT, Package
 from ..configs import DATABASES_CONF, STORAGES_CONF
-from ..enums import DatabaseBackends, StorageBackends
+from ..enums import DatabaseBackendOptions, StorageBackendOptions
 from ..typings import DatabaseDict, DatabasesDict, StoragesDict
 
 __all__ = [
-    "STORAGE_BACKEND",
-    "BLOB_READ_WRITE_TOKEN",
     "STORAGES",
     "STATIC_ROOT",
     "MEDIA_ROOT",
@@ -24,9 +22,9 @@ def get_storages_config(storage_backend_choice: str) -> StoragesDict:
     storage_backend: str
 
     match storage_backend_choice:
-        case StorageBackends.FILESYSTEM:
+        case StorageBackendOptions.FILESYSTEM:
             storage_backend = "django.core.files.storage.FileSystemStorage"
-        case StorageBackends.VERCEL:
+        case StorageBackendOptions.VERCEL:
             storage_backend = f"{Package.MANAGEMENT}.backends.VercelBlobStorageBackend"
         case _:
             raise ValueError(f"Unsupported storage backend: {storage_backend_choice}")
@@ -37,18 +35,14 @@ def get_storages_config(storage_backend_choice: str) -> StoragesDict:
     }
 
 
-STORAGE_BACKEND: str = STORAGES_CONF.backend
-
-BLOB_READ_WRITE_TOKEN: str = STORAGES_CONF.token
-
-STORAGES = get_storages_config(STORAGE_BACKEND)
+STORAGES = get_storages_config(STORAGES_CONF.backend)
 
 
 # ============================================================================
 # Static & Media
 # ============================================================================
 
-_PUBLIC_DIR = PROJECT.base_dir / (".vercel/output" if STORAGE_BACKEND == StorageBackends.VERCEL else "public")
+_PUBLIC_DIR = PROJECT.base_dir / "public"
 
 STATIC_ROOT = _PUBLIC_DIR / "static"
 
@@ -71,14 +65,14 @@ def _get_databases_config() -> DatabasesDict:
     """Build the DATABASES setting based on configured backend."""
     backend: str = DATABASES_CONF.backend.lower()
     match backend:
-        case DatabaseBackends.SQLITE:
+        case DatabaseBackendOptions.SQLITE:
             return {
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
                     "NAME": PROJECT.base_dir / f"db.sqlite3",
                 }
             }
-        case DatabaseBackends.POSTGRESQL:
+        case DatabaseBackendOptions.POSTGRESQL:
             config: DatabaseDict
             if DATABASES_CONF.use_vars:
                 config = {

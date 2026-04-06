@@ -21,13 +21,13 @@ class _FileGenerateChoices(StrEnum):
     PGPASS = "pgpass"
 
 
-def app_py_spec(path: Path = PROJECT.base_dir / "app.py") -> FileSpec:
+def app_py_spec(path: Path) -> FileSpec:
     """Return the FileSpec for app.py."""
     content = f"from {Package.MANAGEMENT}.asgi import application\n\napp = application\n"
     return FileSpec(path=path, content=content)
 
 
-def vercel_json_spec(path: Path = PROJECT.base_dir / "vercel.json") -> FileSpec:
+def vercel_json_spec(path: Path) -> FileSpec:
     """Return the FileSpec for vercel.json."""
     lines = [
         "{",
@@ -40,7 +40,7 @@ def vercel_json_spec(path: Path = PROJECT.base_dir / "vercel.json") -> FileSpec:
     return FileSpec(path=path, content="\n".join(lines) + "\n")
 
 
-def readme_spec(path: Path = PROJECT.base_dir / "README.md") -> FileSpec:
+def readme_spec(path: Path) -> FileSpec:
     """Return the FileSpec for README.md with configuration documentation."""
     from ..configs import FIELDS_CONF
     from .helpers.readme import (
@@ -105,9 +105,9 @@ class Command(BaseCommand):
         force: bool = options["force"]
 
         generators: dict[_FileGenerateChoices, Callable[[], FileSpec]] = {
-            _FileGenerateChoices.README: readme_spec,
-            _FileGenerateChoices.APP_PY: app_py_spec,
-            _FileGenerateChoices.VERCEL_JSON: vercel_json_spec,
+            _FileGenerateChoices.README: lambda: readme_spec(PROJECT.base_dir / "readme.md"),
+            _FileGenerateChoices.APP_PY: lambda: app_py_spec(PROJECT.base_dir / "app.py"),
+            _FileGenerateChoices.VERCEL_JSON: lambda: vercel_json_spec(PROJECT.base_dir / "vercel.json"),
             _FileGenerateChoices.PG_SERVICE: get_pg_service_spec,
             _FileGenerateChoices.PGPASS: get_pgpass_spec,
         }

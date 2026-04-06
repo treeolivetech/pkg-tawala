@@ -1,4 +1,4 @@
-"""URL configuration."""
+"""App URLs."""
 
 from collections.abc import Callable
 from dataclasses import dataclass

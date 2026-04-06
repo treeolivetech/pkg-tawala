@@ -1,4 +1,4 @@
-from ..enums import AppTomlKeys, InternationalizationTomlKeys, RuncommandsTomlKeys
+from ..enums import InternationalizationTomlKeys, MainAppOptions, MainAppTomlKeys, RuncommandsTomlKeys
 from ._utils import Conf, ConfField
 
 __all__ = ["MAIN_APP_CONF", "RUNCOMMANDS_CONF", "INTERNATIONALIZATION_CONF"]
@@ -16,8 +16,8 @@ class _MainAppConf(Conf):
     name = ConfField(
         type=str,
         env="MAIN_APP",
-        toml=AppTomlKeys.MAIN_APP,
-        default="home",
+        toml=MainAppTomlKeys.MAIN,
+        default=MainAppOptions.HOME,
     )
 
 
