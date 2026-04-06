@@ -24,8 +24,8 @@ from ..enums import (
     MainAppFlags,
     MainAppOptions,
     MainAppTomlKeys,
-    PresetFlags,
-    PresetOptions,
+    ProjectPresetFlags,
+    ProjectPresetOptions,
     SecurityTomlKeys,
     StorageBackendOptions,
     StorageTomlKeys,
@@ -49,10 +49,10 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            PresetFlags.PRESET,
-            choices=[p for p in PresetOptions],
-            default=PresetOptions.DEFAULT,
-            help=f"Preset to use. Defaults to the '{PresetOptions.DEFAULT}' preset.",
+            ProjectPresetFlags.PRESET,
+            choices=[p for p in ProjectPresetOptions],
+            default=ProjectPresetOptions.DEFAULT,
+            help=f"Preset to use. Defaults to the '{ProjectPresetOptions.DEFAULT}' preset.",
         )
 
         parser.add_argument(
@@ -60,7 +60,7 @@ class Command(BaseCommand):
             choices=[db for db in DatabaseBackendOptions],
             help=(
                 "Database backend to use. Defaults to SQLite if not specified. "
-                f"Note: the {PresetOptions.VERCEL} preset automatically uses {DatabaseBackendOptions.POSTGRESQL}. "
+                f"Note: the {ProjectPresetOptions.VERCEL} preset automatically uses {DatabaseBackendOptions.POSTGRESQL}. "
                 "Other presets work with either database backend, "
                 "so choose based on your needs and preferences. "
                 f"Defaults to {DatabaseBackendOptions.SQLITE} if not specified."
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                 f"{PostgresFilename.PGSERVICE} and {PostgresFilename.PGPASS} files. "
                 "Note: this flag is only applicable if the database backend is set to "
                 f"{DatabaseBackendOptions.POSTGRESQL}. "
-                f"The {PresetOptions.VERCEL} preset automatically sets this flag to True "
+                f"The {ProjectPresetOptions.VERCEL} preset automatically sets this flag to True "
                 "since Vercel requires environment variable configuration for PostgreSQL "
                 "and does not support file-based configuration."
             ),
@@ -115,11 +115,11 @@ class Command(BaseCommand):
     def _validate_args(self, args: Namespace) -> Namespace:
         """Validate the provided arguments."""
         match args.preset:
-            case PresetOptions.VERCEL:
+            case ProjectPresetOptions.VERCEL:
                 """Enforce postgresql and environment variable configuration for Vercel preset due to platform requirements and security best practices."""
                 if args.db == DatabaseBackendOptions.SQLITE:
                     raise ValueError(
-                        f"The {PresetOptions.VERCEL} preset requires {DatabaseBackendOptions.POSTGRESQL}."
+                        f"The {ProjectPresetOptions.VERCEL} preset requires {DatabaseBackendOptions.POSTGRESQL}."
                     )
                 args.db = DatabaseBackendOptions.POSTGRESQL
                 args.pg_use_vars = True
@@ -167,7 +167,7 @@ class Command(BaseCommand):
         FileGenerator(api_app_py_spec(path=api_dir / "app.py")).create()
 
         match args.preset:
-            case PresetOptions.VERCEL:
+            case ProjectPresetOptions.VERCEL:
                 FileGenerator(vercel_json_spec(path=project_dir / "vercel.json")).create()
             case _:
                 pass
@@ -203,6 +203,8 @@ class Command(BaseCommand):
             if args.db == DatabaseBackendOptions.SQLITE
             else ""
         )
+        vercel = f"\n# Vercel deployment files\n/.vercel/\n" if args.preset == ProjectPresetOptions.VERCEL else ""
+
         return (
             "# Python-generated files\n"
             "__pycache__/\n"
@@ -210,6 +212,7 @@ class Command(BaseCommand):
             "# Virtual environment\n"
             "/.venv/\n"
             f"{sqlite}"
+            f"{vercel}"
             "\n"
             "# Environment variables file\n"
             "/.env\n"
@@ -223,7 +226,7 @@ class Command(BaseCommand):
         # dependencies
         extras: list[str] = []
 
-        if args.preset == PresetOptions.VERCEL:
+        if args.preset == ProjectPresetOptions.VERCEL:
             extras.append("vercel")
 
         if args.db == DatabaseBackendOptions.POSTGRESQL:
@@ -250,7 +253,7 @@ class Command(BaseCommand):
 
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
 
-        if args.preset == PresetOptions.VERCEL:
+        if args.preset == ProjectPresetOptions.VERCEL:
             allowed_hosts.append('".vercel.app"')
             tool_section += (
                 f"{StorageTomlKeys.MAIN} = {{ "

@@ -1,8 +1,8 @@
 from enum import StrEnum
 
 __all__ = [
-    "PresetOptions",
-    "PresetFlags",
+    "ProjectPresetOptions",
+    "ProjectPresetFlags",
     "StorageTomlKeys",
     "StorageBackendOptions",
     "DatabaseTomlKeys",
@@ -11,14 +11,19 @@ __all__ = [
 ]
 
 
-class PresetOptions(StrEnum):
+# ============================================================================
+# Project Presets
+# ============================================================================
+
+
+class ProjectPresetOptions(StrEnum):
     """Available database backends."""
 
     DEFAULT = "default"
     VERCEL = "vercel"
 
 
-class PresetFlags(StrEnum):
+class ProjectPresetFlags(StrEnum):
     """Flags used when setting up preset during initialization."""
 
     PRESET = "--preset"
@@ -40,8 +45,8 @@ class StorageTomlKeys(StrEnum):
 class StorageBackendOptions(StrEnum):
     """Available storage backends."""
 
-    FILESYSTEM = "filesystem"
-    VERCEL = "vercel"
+    DEFAULT = ProjectPresetOptions.DEFAULT.value
+    VERCEL = ProjectPresetOptions.VERCEL.value
 
 
 # ============================================================================

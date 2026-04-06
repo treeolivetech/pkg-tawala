@@ -14,10 +14,10 @@ class _StoragesConf(Conf):
     verbose_name = "Files and Storage Configuration"
     backend = ConfField(
         type=str,
-        choices=[StorageBackendOptions.FILESYSTEM, StorageBackendOptions.VERCEL],
+        choices=[StorageBackendOptions.DEFAULT, StorageBackendOptions.VERCEL],
         env="STORAGE_BACKEND",
         toml=f"{StorageTomlKeys.MAIN}.{StorageTomlKeys.BACKEND}",
-        default=StorageBackendOptions.FILESYSTEM,
+        default=StorageBackendOptions.DEFAULT,
     )
     token = ConfField(
         type=str,
