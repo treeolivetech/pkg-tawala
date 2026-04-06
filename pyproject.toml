@@ -56,8 +56,8 @@ dev = [
 ]
 
 [project.scripts]
-tawala = "tawala.api.management:main"
-twl = "tawala.api.management:main"
+tawala = "tawala.management.cli:main"
+twl = "tawala.management.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.3,<0.12.0"]
