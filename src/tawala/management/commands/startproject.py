@@ -233,7 +233,7 @@ class Command(BaseCommand):
             extras.append("psycopg")
 
         extras_str = f"[{','.join(extras)}]" if extras else ""
-        dependencies = f'"{Package.NAME}{extras_str}~={Package.VERSION}"'
+        dependencies = f'"{Package.NAME}{extras_str}"'
 
         # tool section
         tool_section = f"[tool.{Package.NAME}]\n"
@@ -280,6 +280,9 @@ class Command(BaseCommand):
             "\n"
             "[dependency-groups]\n"
             'dev = ["djlint>=1.36.4"]\n'
+            "\n"
+            "[tool.uv.sources]\n"
+            f'{Package.NAME} = {{ git = "https://github.com/treeolivetech/pkg-{Package.NAME}.git", tag = "v{Package.VERSION}" }}\n'
             "\n"
             "[tool.djlint]\n"
             'blank_line_before_tag = "block,if,for"\n'
