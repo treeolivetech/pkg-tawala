@@ -6,7 +6,7 @@ Repository = "https://github.com/treeolivetech/pkg-tawala"
 
 [project]
 name = "Tawala"
-version = "1.4.0"
+version = "1.4.1.dev2"
 description = "Build and deploy Django apps with confidence."
 readme = "README.md"
 license = "MIT"
@@ -26,11 +26,11 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "christianwhocodes==1.5.5",
-    "django==6.0.3",
+    "christianwhocodes",
+    "django==6.0.4",
     "django-browser-reload==1.21.0",
     "django-compressor==4.6.0",
-    "django-http-compression[brotli]==1.2.0",
+    "django-http-compression[brotli]==1.4.0",
     "django-minify-html==1.14.0",
     "django-phonenumber-field[phonenumberslite]==8.4.0",
     "django-sass-processor==1.4.2",
@@ -42,16 +42,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-vercel = ["vercel==0.5.3"]
+vercel = ["vercel==0.5.4"]
 psycopg = ["psycopg[binary,pool]==3.3.3"]
 
 [dependency-groups]
 dev = [
     "djlint>=1.36.4",
     "psycopg[binary,pool]==3.3.3",
-    "ruff>=0.15.9",
+    "ruff>=0.15.10",
     "ty>=0.0.29",
-    "vercel==0.5.3",
+    "vercel==0.5.4",
 ]
 
 [project.scripts]
@@ -59,8 +59,11 @@ tawala = "tawala.management.cli:main"
 twl = "tawala.management.cli:main"
 
 [build-system]
-requires = ["uv_build>=0.11.3,<0.12.0"]
+requires = ["uv_build>=0.11.6,<0.12.0"]
 build-backend = "uv_build"
+
+[tool.uv.sources]
+christianwhocodes = { git = "https://github.com/treeolivetech/pkg-christianwhocodes.git", tag = "v1.5.6.dev1" }
 
 [tool.ruff]
 line-length = 114

@@ -22,7 +22,7 @@ def get_storages_config(storage_backend_choice: str) -> StoragesDict:
     storage_backend: str
 
     match storage_backend_choice:
-        case StorageBackendOptions.FILESYSTEM:
+        case StorageBackendOptions.DEFAULT:
             storage_backend = "django.core.files.storage.FileSystemStorage"
         case StorageBackendOptions.VERCEL:
             storage_backend = f"{Package.MANAGEMENT}.backends.VercelBlobStorageBackend"
@@ -76,7 +76,7 @@ def _get_databases_config() -> DatabasesDict:
             config: DatabaseDict
             if DATABASES_CONF.use_vars:
                 config = {
-                    "ENGINE": f"django.db.backends.postgresql",
+                    "ENGINE": "django.db.backends.postgresql",
                     "NAME": DATABASES_CONF.name,
                     "USER": DATABASES_CONF.user,
                     "PASSWORD": DATABASES_CONF.password,
@@ -86,7 +86,7 @@ def _get_databases_config() -> DatabasesDict:
                 }
             else:
                 config = {
-                    "ENGINE": f"django.db.backends.postgresql",
+                    "ENGINE": "django.db.backends.postgresql",
                     "NAME": DATABASES_CONF.name,
                     "OPTIONS": {
                         "pool": DATABASES_CONF.pool,

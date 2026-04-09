@@ -11,7 +11,7 @@ __all__ = ["Package", "ProjectValidationError", "PROJECT"]
 
 
 class Package:
-    """Package/Project metadata."""
+    """Package configuration."""
 
     NAME: Final[str] = Path(__file__).parent.name
     DISPLAY_NAME: Final[str] = NAME.capitalize()
@@ -31,7 +31,7 @@ class ProjectValidationError(Exception):
 
 @dataclass(frozen=True)
 class _Project:
-    """configuration for the current working directory."""
+    """Project configuration."""
 
     _validated: bool = field(default=False, init=False, repr=False)
     _toml: dict[str, Any] = field(default_factory=lambda: {}, init=False, repr=False)

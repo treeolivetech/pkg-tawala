@@ -14,10 +14,10 @@ class _StoragesConf(Conf):
     verbose_name = "Files and Storage Configuration"
     backend = ConfField(
         type=str,
-        choices=[StorageBackendOptions.FILESYSTEM, StorageBackendOptions.VERCEL],
+        choices=[StorageBackendOptions.DEFAULT, StorageBackendOptions.VERCEL],
         env="STORAGE_BACKEND",
         toml=f"{StorageTomlKeys.MAIN}.{StorageTomlKeys.BACKEND}",
-        default=StorageBackendOptions.FILESYSTEM,
+        default=StorageBackendOptions.DEFAULT,
     )
     token = ConfField(
         type=str,
@@ -56,50 +56,50 @@ class _DatabasesConf(Conf):
     )
     service = ConfField(
         type=str,
-        env="DB_SERVICE",
+        env="DB_PGSERVICE",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.SERVICE}",
         default="",
     )
     user = ConfField(
         type=str,
-        env="DB_USER",
+        env="DB_PGUSER",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.USER}",
         default="",
     )
     password = ConfField(
         type=str,
-        env="DB_PASSWORD",
+        env="DB_PGPASSWORD",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.PASSWORD}",
         default="",
     )
     name = ConfField(
         type=str,
-        env="DB_NAME",
+        env="DB_PGDATABASE",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.NAME}",
         default="",
     )
     host = ConfField(
         type=str,
-        env="DB_HOST",
+        env="DB_PGHOST",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.HOST}",
         default="localhost",
     )
     port = ConfField(
         type=int,
-        env="DB_PORT",
+        env="DB_PGPORT",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.PORT}",
         default=5432,
     )
     pool = ConfField(
         type=bool,
-        env="DB_POOL",
+        env="DB_PGPOOL",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.POOL}",
         default=False,
     )
     sslmode = ConfField(
         type=str,
         choices=["prefer", "require", "disable", "allow", "verify-ca", "verify-full"],
-        env="DB_SSLMODE",
+        env="DB_PGSSLMODE",
         toml=f"{DatabaseTomlKeys.MAIN}.{DatabaseTomlKeys.SSLMODE}",
         default="prefer",
     )
