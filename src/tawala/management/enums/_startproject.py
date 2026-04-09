@@ -60,14 +60,14 @@ class DatabaseTomlKeys(StrEnum):
     MAIN = "db"
     BACKEND = "backend"
     USE_VARS = "use-vars"
-    SERVICE = "service"
-    USER = "user"
-    PASSWORD = "password"
-    NAME = "name"
-    HOST = "host"
-    PORT = "port"
-    POOL = "pool"
-    SSLMODE = "sslmode"
+    SERVICE = "pgservice"
+    USER = "pguser"
+    PASSWORD = "pgpassword"
+    NAME = "pgdatabase"
+    HOST = "pghost"
+    PORT = "pgport"
+    POOL = "pgpool"
+    SSLMODE = "pgsslmode"
 
 
 class DatabaseBackendOptions(StrEnum):
