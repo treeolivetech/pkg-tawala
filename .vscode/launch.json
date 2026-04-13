@@ -1,0 +1,26 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: Create Default Preset App",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "tawala.management.api.cli",
+      "args": ["startproject", "default", "--wip"],
+      "cwd": "${workspaceFolder}/build",
+      "preLaunchTask": "Create build folder"
+    },
+    {
+      "name": "Python Debugger: Create Vercel Preset App",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "tawala.management.api.cli",
+      "args": ["startproject", "vercel", "--preset", "vercel", "--wip"],
+      "cwd": "${workspaceFolder}/build",
+      "preLaunchTask": "Create build folder"
+    }
+  ]
+}

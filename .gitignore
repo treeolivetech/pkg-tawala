@@ -1,15 +1,6 @@
-# Python-generated files
 __pycache__/
-
-# Virtual environment
-/.venv/
-
-# Ruff cache
+*egg-info/
 /.ruff_cache/
-
-# Temporary files
-/.tmp/
-/src/tmp/
-
-# Distribution files
+/.venv/
+/build/
 /dist/

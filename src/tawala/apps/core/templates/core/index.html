@@ -1,0 +1,43 @@
+{% load static sass_tags core_tags %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {% block meta %}
+            <meta name="description"
+                  content="App built using {% pkg_display_name %} framework." />
+            <meta name="keywords" content="" />
+            <meta name="author" content="" />
+        {% endblock meta %}
+        {% block title %}
+            <title>{% pkg_display_name %} App</title>
+        {% endblock title %}
+        {% block icons %}
+            <link rel="shortcut icon"
+                  href="{% static 'core/favicon.ico' %}"
+                  type="image/x-icon" />
+            <link rel="apple-touch-icon" href="{% static 'core/logo-180.png' %}" />
+        {% endblock icons %}
+        {% block fonts %}
+        {% endblock fonts %}
+        {% block vendor_aos %}
+            <link rel="stylesheet" href='{% static "core/aos.min.css" %}' />
+            <script defer src='{% static "core/aos.min.js" %}'></script>
+            <script defer src='{% static "core/aos.init.js" %}'></script>
+        {% endblock vendor_aos %}
+        {% block vendor_bootstrap %}
+            <link rel="stylesheet" href='{% static "core/bootstrap-icons.min.css" %}' />
+            <link rel="stylesheet" href='{% sass_src "core/bootstrap.custom.scss" %}' />
+        {% endblock vendor_bootstrap %}
+        {% block styles %}
+        {% endblock styles %}
+        {% block deferred_scripts %}
+        {% endblock deferred_scripts %}
+    </head>
+    <body>
+        {% block main %}
+        {% endblock main %}
+    </body>
+</html>

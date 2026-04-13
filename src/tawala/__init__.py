@@ -1,100 +1,87 @@
-"""Package and project metadata."""
+"""Configuration utilities."""
 
-from dataclasses import dataclass, field
 from functools import cached_property
 from pathlib import Path
 from typing import Any, Final
 
-from christianwhocodes import InitAction, PyProject, Version
+from christianwhocodes import PyProject, Version
 
-__all__ = ["Package", "ProjectValidationError", "PROJECT"]
-
-
-class Package:
-    """Package configuration."""
-
-    NAME: Final[str] = Path(__file__).parent.name
-    DISPLAY_NAME: Final[str] = NAME.capitalize()
-    VERSION: Final[str] = Version.get(NAME)[0]
-    APP: Final[str] = f"{NAME}.app"
-    MANAGEMENT: Final[str] = f"{NAME}.management"
-    SETTINGS_MODULE: Final[str] = f"{MANAGEMENT}.settings"
+__all__ = ["ConfValidationError", "CONF"]
 
 
-class ProjectValidationError(Exception):
-    """Current directory is not a valid project."""
+class ConfValidationError(Exception):
+    """Raised when the project directory or config is invalid."""
 
-    def __init__(self, message: str = "Base directory not set. Ensure the project is validated.") -> None:
-        """Initialize the exception with a default message."""
+    def __init__(
+        self,
+        message: str = "Project directory could not be loaded. Ensure the project is validated.",
+    ) -> None:
+        """Initialize the validation error with a default message."""
         super().__init__(message)
 
 
-@dataclass(frozen=True)
-class _Project:
-    """Project configuration."""
+class _Conf:
+    """Project configuration, lazily loaded from pyproject.toml."""
 
-    _validated: bool = field(default=False, init=False, repr=False)
-    _toml: dict[str, Any] = field(default_factory=lambda: {}, init=False, repr=False)
-    _base_dir: Path | None = field(default=None, init=False, repr=False)
+    def __init__(self) -> None:
+        """Initialize project configuration for a specific package."""
+        self._validated = False
+        self._project_toml: dict[str, Any] = {}
+        self._project_dir: Path | None = None
+
+        self.pkg_name: Final[str] = "tawala"
+        self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
+        self.pkg_version: Final[str] = Version.get(self.pkg_name)[0]
+        self.alias: Final[str] = "twl"
 
     def _load_project(self) -> None:
         """Load and validate pyproject.toml configuration."""
         pyproject_path = Path.cwd() / "pyproject.toml"
-        pkg_name = Package.NAME
         if not pyproject_path.exists():
             raise FileNotFoundError(f"pyproject.toml not found at '{pyproject_path}'")
         tool_section = PyProject(pyproject_path).data.get("tool", {})
-        if pkg_name not in tool_section:
-            raise KeyError(f"Missing 'tool.{pkg_name}' section in pyproject.toml")
-        object.__setattr__(self, "_toml", tool_section[pkg_name])
-        object.__setattr__(self, "_base_dir", pyproject_path.parent)
+        if self.pkg_name not in tool_section:
+            raise KeyError(f"Missing 'tool.{self.pkg_name}' section in pyproject.toml")
+        self._project_toml = tool_section[self.pkg_name]
+        self._project_dir = pyproject_path.parent
+
+    def validate_project(self) -> None:
+        """Validate the project once; subsequent calls are no-ops."""
+        if self._validated:
+            return
+        try:
+            self._load_project()
+        except (FileNotFoundError, KeyError) as e:
+            raise ConfValidationError(str(e)) from e
+        self._validated = True
 
     @cached_property
-    def toml(self) -> dict[str, Any]:
-        """pyproject.toml configuration (lazy-loaded)."""
-        self.validate()
-        return self._toml
+    def base_toml(self) -> dict[str, Any]:
+        """pyproject.toml config section for this package (lazy-loaded)."""
+        self.validate_project()
+        return self._project_toml
 
     @cached_property
-    def env(self) -> dict[str, Any]:
-        """Combined .env and environment variables (lazy-loaded)."""
-        self.validate()
+    def base_dir(self) -> Path:
+        """Root directory containing pyproject.toml (lazy-loaded)."""
+        self.validate_project()
+        assert self._project_dir is not None  # guaranteed after validate()
+        return self._project_dir
+
+    @cached_property
+    def base_env(self) -> dict[str, Any]:
+        """Merged .env file and process environment variables (lazy-loaded)."""
         from os import environ
 
         from dotenv import dotenv_values
 
-        if self._base_dir is None:
-            raise ProjectValidationError()
-
-        return {**dotenv_values(self._base_dir / ".env"), **environ}
+        return {**dotenv_values(self.base_dir / ".env"), **environ}
 
     @cached_property
-    def base_dir(self) -> Path:
-        """Base directory (lazy-loaded)."""
-        self.validate()
-        if self._base_dir is None:
-            raise ProjectValidationError()
-        return self._base_dir
-
-    def validate(self) -> None:
-        """Check if the current directory is a valid project. Runs once.
-
-        In CLI, we catch the exception for pretty printing.
-        In Production, this will bubble up to the WSGI/ASGI server.
-        """
-        if self._validated:
-            return
-        from sys import argv
-
-        if any(arg in argv for arg in InitAction):  # Avoid validation during startproject commands
-            object.__setattr__(self, "_validated", True)
-        else:
-            try:
-                self._load_project()
-            except (FileNotFoundError, KeyError) as e:
-                raise ProjectValidationError(str(e)) from e
-            else:
-                object.__setattr__(self, "_validated", True)
+    def base_name(self) -> str:
+        """Project name derived from the project directory name (lazy-loaded)."""
+        return self.base_dir.name
 
 
-PROJECT: Final = _Project()
+CONF = _Conf()
+"""Singleton instance of configuration and validation utilities."""

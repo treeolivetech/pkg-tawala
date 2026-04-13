@@ -2,16 +2,17 @@
 
 from typing import Any
 
-from django.contrib.staticfiles.management.commands.runserver import Command as RunserverCommand
+from django.conf import settings
+from django.contrib.staticfiles.management.commands.runserver import (
+    Command as RunserverCommand,
+)
 from django.core.management.base import CommandParser
-
-from ... import Package
 
 
 class Command(RunserverCommand):
     """Development server."""
 
-    help = f"{Package.DISPLAY_NAME} Development server"
+    help = f"{settings.PKG_DISPLAY_NAME} Development server"
 
     # Django's runserver sets these at runtime; declared here for type checking
     _raw_ipv6: bool
@@ -29,7 +30,9 @@ class Command(RunserverCommand):
         """Add custom arguments to the command."""
         super().add_arguments(parser)
         parser.add_argument(
-            "--no-clipboard", action="store_true", help="Disable copying the server URL to clipboard"
+            "--no-clipboard",
+            action="store_true",
+            help="Disable copying the server URL to clipboard",
         )
 
     def handle(self, *args: object, **options: Any) -> str | None:
@@ -56,11 +59,13 @@ class Command(RunserverCommand):
         self.stdout.write(
             self.style.NOTICE(
                 f"\nYou have {len(plan)} unapplied migration(s). "
-                f"Your project may not work properly until you apply the "
-                f"migrations for app(s): {', '.join(apps_waiting_migration)}."
+                f"Your project may not work properly until you apply all "
+                f"migrations: {', '.join(apps_waiting_migration)}."
             )
         )
-        self.stdout.write(self.style.NOTICE(f"Run {Package.NAME} migrate to apply them."))
+        self.stdout.write(
+            self.style.NOTICE(f"Run {settings.PKG_NAME} migrate to apply them.")
+        )
 
     def on_bind(self, server_port: int) -> None:
         """Display startup banner and server info."""
@@ -106,7 +111,9 @@ class Command(RunserverCommand):
 
     def _print_version(self) -> None:
         """Print version."""
-        self.stdout.write(f"  🔧 {Package.DISPLAY_NAME} version: {self.style.HTTP_NOT_MODIFIED(Package.VERSION)}")
+        self.stdout.write(
+            f"  🔧 {settings.PKG_DISPLAY_NAME} version: {self.style.HTTP_NOT_MODIFIED(settings.PKG_VERSION)}"
+        )
 
     def _print_local_url(self, server_port: int) -> None:
         """Print local server URL."""
@@ -121,9 +128,13 @@ class Command(RunserverCommand):
             hostname = gethostname()
             local_ip = gethostbyname(hostname)
             network_url = f"{self.protocol}://{local_ip}:{server_port}/"
-            self.stdout.write(f"  🌍 Network address: {self.style.SUCCESS(network_url)}")
+            self.stdout.write(
+                f"  🌍 Network address: {self.style.SUCCESS(network_url)}"
+            )
         except gaierror:
-            self.stdout.write(f"  🌍 {self.style.WARNING('Could not determine network address')}")
+            self.stdout.write(
+                f"  🌍 {self.style.WARNING('Could not determine network address')}"
+            )
 
     def _copy_to_clipboard(self, server_port: int) -> None:
         """Copy server URL to clipboard."""
@@ -134,9 +145,13 @@ class Command(RunserverCommand):
             copy(url)
             self.stdout.write(f"  📋 {self.style.SUCCESS('Copied to clipboard!')}")
         except ImportError:
-            self.stdout.write(f"  📋 {self.style.WARNING('pyperclip not installed - skipping clipboard copy')}")
+            self.stdout.write(
+                f"  📋 {self.style.WARNING('pyperclip not installed - skipping clipboard copy')}"
+            )
         except Exception as exc:
-            self.stderr.write(f"  📋 {self.style.WARNING(f'Failed to copy to clipboard: {exc!r}')}")
+            self.stderr.write(
+                f"  📋 {self.style.WARNING(f'Failed to copy to clipboard: {exc!r}')}"
+            )
 
     def _format_address(self) -> str:
         """Format address for display."""
