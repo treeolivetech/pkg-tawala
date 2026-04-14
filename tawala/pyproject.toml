@@ -1,0 +1,57 @@
+[project.urls]
+Homepage = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala#readme"
+Documentation = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala#readme"
+Repository = "https://github.com/treeolivetech/pkg-tawala"
+Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+
+[project]
+name = "Tawala"
+version = "1.5.0a4"
+description = "Build and deploy Django apps with confidence."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Kevin Wasike Wakhisi", email = "kevin@treeolive.tech" }]
+requires-python = ">=3.14"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: Django :: 6",
+    "Typing :: Typed",
+]
+dependencies = [
+    "christianwhocodes==1.5.7",
+    "django==6.0.4",
+    "django-browser-reload==1.21.0",
+    "django-compressor==4.6.0",
+    "django-http-compression[brotli]==1.4.0",
+    "django-minify-html==1.14.0",
+    "django-sass-processor==1.4.2",
+    "libsass==0.23.0",
+    "pillow==12.2.0",
+    "pyperclip==1.11.0",
+    "python-dotenv==1.2.2",
+]
+
+[project.scripts]
+"tawala" = "tawala.management.api.cli:main"
+
+[project.optional-dependencies]
+psycopg = ["psycopg[binary,pool]==3.3.3"] # Sync with dev.
+vercel = ["vercel==0.5.7"]                # Sync with dev.
+
+[build-system]
+requires = ["uv_build>=0.11.6,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "psycopg[binary,pool]==3.3.3", # Sync with optional deps.
+    "vercel==0.5.7",               # Sync with optional deps.
+]

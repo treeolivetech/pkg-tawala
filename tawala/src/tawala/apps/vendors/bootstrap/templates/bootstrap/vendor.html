@@ -1,0 +1,8 @@
+{% load static sass_tags %}
+{% block vendor_bootstrap %}
+    {% if vendor_bootstrap|default_if_none:True %}
+        <link rel="stylesheet"
+              href='{% static "bootstrap/vendor/bootstrap-icons.css" %}' />
+        <link rel="stylesheet" href='{% sass_src "bootstrap/custom.scss" %}' />
+    {% endif %}
+{% endblock vendor_bootstrap %}

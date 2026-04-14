@@ -1,0 +1,23 @@
+{% extends "base/layout.html" %}
+{% load static %}
+{% block meta %}
+    <meta name="description"
+          content='A simple "Work in Progress" page with an animated GIF display.' />
+{% endblock meta %}
+{% block styles %}
+    <style nonce="{{csp_nonce}}">
+        body {
+            background-image: url("{% static 'wip/gif.webp' %}");
+            background-size: auto;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: black;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+    </style>
+{% endblock styles %}
