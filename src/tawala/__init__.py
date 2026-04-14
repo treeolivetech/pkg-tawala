@@ -26,8 +26,8 @@ class _Conf:
     def __init__(self) -> None:
         """Initialize project configuration for a specific package."""
         self._validated = False
-        self._project_toml: dict[str, Any] = {}
-        self._project_dir: Path | None = None
+        self._base_toml: dict[str, Any] = {}
+        self._base_dir: Path | None = None
 
         self.pkg_name: Final[str] = "tawala"
         self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
@@ -42,8 +42,8 @@ class _Conf:
         tool_section = PyProject(pyproject_path).data.get("tool", {})
         if self.pkg_name not in tool_section:
             raise KeyError(f"Missing 'tool.{self.pkg_name}' section in pyproject.toml")
-        self._project_toml = tool_section[self.pkg_name]
-        self._project_dir = pyproject_path.parent
+        self._base_toml = tool_section[self.pkg_name]
+        self._base_dir = pyproject_path.parent
 
     def validate_project(self) -> None:
         """Validate the project once; subsequent calls are no-ops."""
@@ -59,14 +59,14 @@ class _Conf:
     def base_toml(self) -> dict[str, Any]:
         """pyproject.toml config section for this package (lazy-loaded)."""
         self.validate_project()
-        return self._project_toml
+        return self._base_toml
 
     @cached_property
     def base_dir(self) -> Path:
         """Root directory containing pyproject.toml (lazy-loaded)."""
         self.validate_project()
-        assert self._project_dir is not None  # guaranteed after validate()
-        return self._project_dir
+        assert self._base_dir is not None  # guaranteed after validate()
+        return self._base_dir
 
     @cached_property
     def base_env(self) -> dict[str, Any]:

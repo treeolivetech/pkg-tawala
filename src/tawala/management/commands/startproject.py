@@ -182,7 +182,7 @@ class Command(BaseCommand):
             ),
             (app_dir / "__init__.py", '"""Main App module."""'),
             (
-                app_dir / "templates" / "app" / "index.html",
+                app_dir / "templates" / "app" / "layout.html",
                 self._content_home_index_html(),
             ),
             (app_dir / "views.py", self._content_home_views_py("app")),
@@ -314,7 +314,7 @@ class Command(BaseCommand):
         return (
             "from django.views.generic.base import TemplateView\n\n\n"
             "class HomeView(TemplateView):\n"
-            f'    template_name = "{app_name}/index.html"\n'
+            f'    template_name = "{app_name}/layout.html"\n'
         )
 
     def _content_home_urls_py(self, project_dir: Path, app_name: str) -> str:
@@ -334,7 +334,7 @@ class Command(BaseCommand):
     def _content_home_index_html(self) -> str:
         """Generate starter home page template content."""
         return (
-            '{% extends "core/index.html" %}\n'
+            '{% extends "core/layout.html" %}\n'
             "{% block fonts %}\n"
             '    <link href="https://fonts.googleapis.com" rel="preconnect" />\n'
             '    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />\n'

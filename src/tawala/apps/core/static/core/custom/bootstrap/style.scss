@@ -1,0 +1,84 @@
+// Custom.scss
+// https://getbootstrap.com/docs/5.3/customize/sass/
+
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "core/vendors/bootstrap/functions";
+
+// 2. Include any default variable overrides here
+$primary: #e32636;
+$primary-rgb: 227, 38, 54;
+
+$secondary: #3a3939;
+$secondary-rgb: 58, 57, 57;
+
+$link-color: $primary;
+$link-hover-color: shade-color($primary, 20%);
+$link-decoration: none;
+$link-hover-decoration: none;
+
+@font-face {
+  font-family: "Titillium-Regular";
+  src: url("./font/Titillium-Regular.otf");
+}
+$font-sans-serif:
+  "Titillium-Regular",
+  system-ui,
+  -apple-system,
+  "Segoe UI",
+  Roboto,
+  "Helvetica Neue",
+  "Noto Sans",
+  "Liberation Sans",
+  Arial,
+  sans-serif,
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  "Segoe UI Symbol",
+  "Noto Color Emoji";
+
+// 3. Include remainder of required Bootstrap stylesheets (including any separate color mode stylesheets)
+@import "core/vendors/bootstrap/variables";
+@import "core/vendors/bootstrap/variables-dark";
+
+// 4. Include any default map overrides here
+
+// 5. Include remainder of required parts
+@import "core/vendors/bootstrap/maps";
+@import "core/vendors/bootstrap/mixins";
+@import "core/vendors/bootstrap/root";
+
+// 6. Include any other optional stylesheet partials as desired; list below is not inclusive of all available stylesheets
+@import "core/vendors/bootstrap/utilities";
+@import "core/vendors/bootstrap/reboot";
+@import "core/vendors/bootstrap/type";
+@import "core/vendors/bootstrap/images";
+@import "core/vendors/bootstrap/containers";
+@import "core/vendors/bootstrap/grid";
+@import "core/vendors/bootstrap/helpers";
+// ...
+
+// 7. Optionally include utilities API last to generate classes based on the Sass map in `_utilities.scss`
+@import "core/vendors/bootstrap/utilities/api";
+
+// 8. Add additional custom code here
+@font-face {
+  font-family: "preloslab-medium-bold";
+  src: url("./font/preloslab-bold2_1.otf");
+}
+
+:root {
+  --font-heading: "preloslab-medium-bold", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+}
+
+a {
+  transition: 0.3s;
+}

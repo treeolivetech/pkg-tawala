@@ -19,7 +19,8 @@ repos:
         types_or: [toml, scss, css, javascript, json, yaml, markdown]
         exclude: |
           (?x)^(
-            .*\.min\.(css|js)
+            .*\.min\.(css|js)|
+            .*/vendors/.*
           )$
 
   # 3. Python formatting before linting — linter sees already-formatted code

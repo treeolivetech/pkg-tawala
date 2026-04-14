@@ -16,20 +16,23 @@
         {% endblock title %}
         {% block icons %}
             <link rel="shortcut icon"
-                  href="{% static 'core/favicon.ico' %}"
+                  href="{% static 'core/img/favicon.ico' %}"
                   type="image/x-icon" />
-            <link rel="apple-touch-icon" href="{% static 'core/logo-180.png' %}" />
+            <link rel="apple-touch-icon"
+                  href="{% static 'core/img/apple-touch-icon.png' %}" />
         {% endblock icons %}
         {% block fonts %}
         {% endblock fonts %}
         {% block vendor_aos %}
-            <link rel="stylesheet" href='{% static "core/aos.min.css" %}' />
-            <script defer src='{% static "core/aos.min.js" %}'></script>
-            <script defer src='{% static "core/aos.init.js" %}'></script>
+            <link rel="stylesheet" href='{% static "core/vendors/aos/style.css" %}' />
+            <script defer src='{% static "core/vendors/aos/script.js" %}'></script>
+            <script defer src='{% static "core/custom/aos/script.js" %}'></script>
         {% endblock vendor_aos %}
         {% block vendor_bootstrap %}
-            <link rel="stylesheet" href='{% static "core/bootstrap-icons.min.css" %}' />
-            <link rel="stylesheet" href='{% sass_src "core/bootstrap.custom.scss" %}' />
+            <link rel="stylesheet"
+                  href='{% static "core/vendors/bootstrap/icons.css" %}' />
+            <link rel="stylesheet"
+                  href='{% sass_src "core/custom/bootstrap/style.scss" %}' />
         {% endblock vendor_bootstrap %}
         {% block styles %}
         {% endblock styles %}

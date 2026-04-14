@@ -38,6 +38,8 @@ _URL_ENTRIES: list[_URLEntry] = [
 ]
 
 urlpatterns = [entry.factory() for entry in _URL_ENTRIES if entry.condition] + [
-    path("", include(f"{settings.PKG_NAME}.apps.work_in_progress.urls")),
+    path(
+        "work-in-progress/", include(f"{settings.PKG_NAME}.apps.work_in_progress.urls")
+    ),
     path("", include(f"{settings.MAIN_APP}.urls")),
 ]

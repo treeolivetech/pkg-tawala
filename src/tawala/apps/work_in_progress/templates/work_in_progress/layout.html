@@ -1,4 +1,4 @@
-{% extends "core/index.html" %}
+{% extends "core/layout.html" %}
 {% load static %}
 {% block meta %}
     <meta name="description"
@@ -6,7 +6,7 @@
 {% endblock meta %}
 {% block icons %}
     <link rel="shortcut icon"
-          href="{% static 'work_in_progress/favicon.ico' %}"
+          href="{% static 'work_in_progress/icons/favicon.ico' %}"
           type="image/x-icon" />
 {% endblock icons %}
 {% block title %}
@@ -21,7 +21,7 @@
 {% block styles %}
     <style nonce="{{csp_nonce}}">
         body {
-            background-image: url("{% static 'work_in_progress/gif.webp' %}");
+            background-image: url("{% static 'work_in_progress/images/gif.webp' %}");
             background-size: auto;
             background-repeat: no-repeat;
             background-position: center;
