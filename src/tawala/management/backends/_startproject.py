@@ -1,12 +1,13 @@
-from ..configs import STORAGES_CONF
-from ..enums import StorageBackendOptions
+from django.conf import settings
+
+from .. import PresetOptions
 
 # ============================================================================
-# Storages
+# Presets & Storages
 # ============================================================================
 
-match STORAGES_CONF.backend:
-    case StorageBackendOptions.VERCEL:
+match settings.STORAGES.get("default", {}).get("BACKEND"):
+    case PresetOptions.VERCEL:
         from django.core.files.base import ContentFile, File
         from django.core.files.storage import Storage
         from django.utils.deconstruct import deconstructible
@@ -20,7 +21,7 @@ match STORAGES_CONF.backend:
 
             def __init__(self) -> None:
                 """Set up Vercel Blob client."""
-                self.client: BlobClient = BlobClient(STORAGES_CONF.token)
+                self.client: BlobClient = BlobClient(settings.BLOB_READ_WRITE_TOKEN)
 
             def _save(self, name: str, content: File) -> str:
                 """Upload file to Vercel Blob."""
@@ -71,7 +72,9 @@ match STORAGES_CONF.backend:
                 """Return a valid filename for storage."""
                 return name
 
-            def get_available_name(self, name: str, max_length: int | None = None) -> str:
+            def get_available_name(
+                self, name: str, max_length: int | None = None
+            ) -> str:
                 """Return an available filename (Vercel Blob handles uniqueness with add_random_suffix)."""
                 return name
 
