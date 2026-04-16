@@ -1,6 +1,6 @@
 [project.urls]
-Homepage = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala#readme"
-Documentation = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala#readme"
+Homepage = "https://tawala.treeolive.tech/"
+Documentation = "https://tawala.treeolive.tech/docs"
 Repository = "https://github.com/treeolivetech/pkg-tawala"
 Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 

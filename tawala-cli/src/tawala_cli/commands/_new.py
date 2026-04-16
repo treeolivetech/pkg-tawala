@@ -1,4 +1,4 @@
-"""`startproject` command/script."""
+"""`new` command/script."""
 
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
@@ -10,12 +10,13 @@ from christianwhocodes import (
     FileSpec,
     PostgresFilename,
     Text,
+    Version,
     cprint,
     status,
 )
 
 from tawala import (
-    BASE_CONF,
+    PROJECT_CONF,
     DatabaseKeys,
     DatabaseOptions,
     InternationalizationKeys,
@@ -27,18 +28,28 @@ from tawala import (
     SecurityKeys,
 )
 
+__all__ = ["NewCommand"]
 
-class StartProjectCommand(BaseCommand):
+
+class NewCommand(BaseCommand):
     """Command to initialize a new project."""
 
     _project_dir: Path
     _validated_args: Namespace
     _project_dir_existed_before: bool
-    prog = BASE_CONF.create_pkg_name
-    help = f"Initialize a new {BASE_CONF.pkg_display_name} app."
+    prog = PROJECT_CONF.cli_pkg_name
+    help = f"Initialize a new {PROJECT_CONF.pkg_display_name} app."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Register arguments onto the parser."""
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version=Version.get(PROJECT_CONF.cli_pkg_name)[0],
+            help="Show package version and exit.",
+        )
+
         parser.add_argument(
             "project_name",
             help=(
@@ -210,7 +221,7 @@ class StartProjectCommand(BaseCommand):
     def _display_successful_setup_info(self, project_dir: Path) -> None:
         """Print success output after initialization."""
         cprint(
-            f"✓ {BASE_CONF.pkg_display_name} project '{project_dir.name}' initialized successfully!",
+            f"✓ {PROJECT_CONF.pkg_display_name} project '{project_dir.name}' initialized successfully!",
             Text.SUCCESS,
         )
 
@@ -259,11 +270,11 @@ class StartProjectCommand(BaseCommand):
             extras.append("psycopg")
 
         extras_suffix = f"[{','.join(extras)}]" if extras else ""
-        dependencies = f'"{BASE_CONF.pkg_name}{extras_suffix}"'
+        dependencies = f'"{PROJECT_CONF.pkg_name}{extras_suffix}"'
 
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
         tool_lines = [
-            f"[tool.{BASE_CONF.pkg_name}]",
+            f"[tool.{PROJECT_CONF.pkg_name}]",
             (
                 f"{InternationalizationKeys.INTERNATIONALIZATION} = "
                 f'{{ {InternationalizationKeys.TIME_ZONE} = "UTC" }}'
@@ -300,9 +311,9 @@ class StartProjectCommand(BaseCommand):
         tool_section = "\n".join(tool_lines) + "\n"
 
         uv_source = (
-            f"{BASE_CONF.pkg_name} = {{ "
-            f'git = "https://github.com/treeolivetech/pkg-{BASE_CONF.pkg_name}.git", '
-            f'tag = "{BASE_CONF.pkg_version}" '
+            f"{PROJECT_CONF.pkg_name} = {{ "
+            f'git = "https://github.com/treeolivetech/pkg-{PROJECT_CONF.pkg_name}.git", '
+            f'tag = "{PROJECT_CONF.pkg_version}" '
             "}\n"
         )
 
@@ -368,14 +379,14 @@ class StartProjectCommand(BaseCommand):
     def _content_api_asgi_py(self) -> str:
         """Generate ASGI entry-point file content."""
         return (
-            f"from {BASE_CONF.pkg_name}.management.api.asgi import application\n\n"
+            f"from {PROJECT_CONF.pkg_name}.management.api.asgi import application\n\n"
             "app = application\n"
         )
 
     def _content_api_wsgi_py(self) -> str:
         """Generate WSGI entry-point file content."""
         return (
-            f"from {BASE_CONF.pkg_name}.management.api.wsgi import application\n\n"
+            f"from {PROJECT_CONF.pkg_name}.management.api.wsgi import application\n\n"
             "app = application\n"
         )
 
@@ -385,8 +396,8 @@ class StartProjectCommand(BaseCommand):
             "{",
             '  "$schema": "https://openapi.vercel.sh/vercel.json",',
             '  "framework": null,',
-            f'  "installCommand": "uv run {BASE_CONF.pkg_name} runinstall",',
-            f'  "buildCommand": "uv run {BASE_CONF.pkg_name} runbuild",',
+            f'  "installCommand": "uv run {PROJECT_CONF.pkg_name} runinstall",',
+            f'  "buildCommand": "uv run {PROJECT_CONF.pkg_name} runbuild",',
             '  "rewrites": [',
             "    {",
             '      "source": "/(.*)",',

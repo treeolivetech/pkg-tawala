@@ -1,4 +1,4 @@
-"""[BASE_CONF_IMPORT_ALLOWED_PREINIT] Main settings."""
+"""[PROJECT_CONF_IMPORT_ALLOWED_PREINIT] Main settings."""
 
 from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
@@ -6,11 +6,11 @@ from typing import NotRequired, TypeAlias, TypedDict
 from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
 
 from .conf import (
-    BASE_CONF,
     DATABASES_CONF,
     INTERNATIONALIZATION_CONF,
     LAYOUT_CONF,
     PRESETS_CONF,
+    PROJECT_CONF,
     RUNCOMMANDS_CONF,
     SECURITY_CONF,
 )
@@ -19,10 +19,10 @@ from .enums import DatabaseOptions, LayoutOptions, PresetOptions
 # ============================================================================
 # Core
 # ============================================================================
-PKG_NAME = BASE_CONF.pkg_name
-PKG_DISPLAY_NAME = BASE_CONF.pkg_display_name
-PKG_VERSION = BASE_CONF.pkg_version
-BASE_DIR = BASE_CONF.base_dir
+PKG_NAME = PROJECT_CONF.pkg_name
+PKG_DISPLAY_NAME = PROJECT_CONF.pkg_display_name
+PKG_VERSION = PROJECT_CONF.pkg_version
+BASE_DIR = PROJECT_CONF.base_dir
 
 
 # ============================================================================

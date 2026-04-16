@@ -37,8 +37,6 @@ class SchemaField:
 
 _Schema: TypeAlias = dict[str, SchemaField]
 
-# TODO: Have a way to generate this configuration on project creation for easier reference as to what settings are available and what their defaults are. This could be done by generating documentation that lists all the settings and their defaults. This would make it easier for users to understand what settings are available and how to use them without having to read through the code.
-
 # ============================================================================
 # Module Exports
 # ============================================================================
@@ -247,7 +245,7 @@ INTERNATIONALIZATION_SCHEMA: _Schema = {
     ),
     InternationalizationKeys.TIME_ZONE: SchemaField(
         type=str,
-        env="TIMEZONE",
+        env="TIME_ZONE",
         toml=f"{InternationalizationKeys.INTERNATIONALIZATION}.{InternationalizationKeys.TIME_ZONE}",
         default="UTC",
         help_text="Default time zone used for date/time handling.",

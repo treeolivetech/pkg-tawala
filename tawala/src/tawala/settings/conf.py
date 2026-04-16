@@ -34,7 +34,7 @@ from .schema import (
 # ============================================================================
 __all__ = [
     "BaseValidationError",
-    "BASE_CONF",
+    "PROJECT_CONF",
     "SECURITY_CONF",
     "DATABASES_CONF",
     "LAYOUT_CONF",
@@ -57,7 +57,7 @@ class BaseValidationError(Exception):
 # ============================================================================
 # Root
 # ============================================================================
-class _BaseConf:
+class _ProjectConf:
     """Root configuration."""
 
     def __init__(self) -> None:
@@ -70,7 +70,7 @@ class _BaseConf:
         self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
         self.pkg_version: Final[str] = Version.get(self.pkg_name)[0]
 
-        self.create_pkg_name: Final[str] = f"create-{self.pkg_name}-app"
+        self.cli_pkg_name: Final[str] = "tawala-cli"
 
     def _load_project(self) -> None:
         """Load and validate pyproject.toml configuration."""
@@ -115,16 +115,17 @@ class _BaseConf:
 
         return {**dotenv_values(self.base_dir / ".env"), **environ}
 
+    # TODO: Has this been used anywhere? If not remove it.
     @cached_property
     def base_name(self) -> str:
         """Project name derived from the project directory name (lazy-loaded)."""
         return self.base_dir.name
 
 
-BASE_CONF = _BaseConf()
+PROJECT_CONF = _ProjectConf()
 """Singleton instance of configuration and validation utilities.
 
-Policy: only modules marked with "[BASE_CONF_IMPORT_ALLOWED_PREINIT]" in
+Policy: only modules marked with "[PROJECT_CONF_IMPORT_ALLOWED_PREINIT]" in
 their module docstring should import BASE_CONF/BaseValidationError.
 If any other module needs BASE_CONF's functionality, use the ones set in
 settings.py via `from django.conf import settings`
@@ -175,7 +176,7 @@ class _ConfField:
         if self.toml is None:
             return None
         try:
-            current: Any = BASE_CONF.base_toml
+            current: Any = PROJECT_CONF.base_toml
         except BaseValidationError:
             # NOTE: Descriptors can also be touched at import
             # time while class-body defaults are being computed. If validation is
@@ -194,8 +195,8 @@ class _ConfField:
         """Fetch configuration value with fallback priority: ENV -> TOML -> default."""
         if self.env is not None:
             try:
-                if self.env in BASE_CONF.base_env:
-                    return BASE_CONF.base_env[self.env]
+                if self.env in PROJECT_CONF.base_env:
+                    return PROJECT_CONF.base_env[self.env]
             except BaseValidationError:
                 # NOTE: Descriptors can also be touched at import
                 # time while class-body defaults are being computed. If validation is

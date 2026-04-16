@@ -8,19 +8,19 @@
       "name": "Python Debugger: Create Default Preset App",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_create.cli",
-      "args": ["default", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/build",
-      "preLaunchTask": "Create build folder"
+      "module": "tawala_cli.cli",
+      "args": ["new", "default", "--layout", "wip"],
+      "cwd": "${workspaceFolder}/.tmp",
+      "preLaunchTask": "Create .tmp folder"
     },
     {
       "name": "Python Debugger: Create Vercel Preset App",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_create.cli",
-      "args": ["vercel", "--preset", "vercel", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/build",
-      "preLaunchTask": "Create build folder"
+      "module": "tawala_cli.cli",
+      "args": ["new", "vercel", "--preset", "vercel", "--layout", "wip"],
+      "cwd": "${workspaceFolder}/.tmp",
+      "preLaunchTask": "Create .tmp folder"
     }
   ]
 }

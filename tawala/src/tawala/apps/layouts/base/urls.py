@@ -39,6 +39,6 @@ _URL_ENTRIES: list[_URLEntry] = [
 
 urlpatterns: list[URLPattern] = [
     *(entry.factory() for entry in _URL_ENTRIES if entry.condition),
-    path("", include(f"{settings.PKG_NAME}.apps.layouts.work_in_progress.urls")),
+    path("", include(f"{settings.PKG_NAME}.apps.layouts.wip.urls")),
     path("", include(f"{settings.MAIN_APP}.urls")),
 ]

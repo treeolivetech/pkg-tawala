@@ -1,11 +1,11 @@
 [project.urls]
-Homepage = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala-create#readme"
-Documentation = "https://github.com/treeolivetech/pkg-tawala/tree/main/tawala-create#readme"
+Homepage = "https://tawala.treeolive.tech/"
+Documentation = "https://tawala.treeolive.tech/docs"
 Repository = "https://github.com/treeolivetech/pkg-tawala"
 Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 
 [project]
-name = "tawala-create"
+name = "tawala-cli"
 version = "1.5.0a4"
 description = "A CLI tool to create Tawala projects."
 readme = "README.md"
@@ -31,7 +31,7 @@ dependencies = [
 ]
 
 [project.scripts]
-"tawala-create" = "tawala_create.cli:main"
+"tawala-cli" = "tawala_cli.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.7,<0.12.0"]

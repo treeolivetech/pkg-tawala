@@ -1,0 +1,11 @@
+# Vercel deployment files
+/.vercel/
+
+# SQLite database file
+/db.sqlite3
+
+# Environment variables file
+/.env
+
+# Static and media files
+/public/

@@ -1,18 +1,17 @@
-"""[BASE_CONF_IMPORT_ALLOWED_PREINIT] Apps."""
+"""Apps."""
 
 from django.apps import AppConfig
-
-from ..settings.conf import BASE_CONF
+from django.conf import settings
 
 
 class AppsConfig(AppConfig):
     """Apps module."""
 
-    name = BASE_CONF.pkg_name
+    name = settings.PKG_NAME
 
     def ready(self) -> None:
         """Configure the admin site."""
         from django.contrib.admin import site
 
-        site.site_header = f"{BASE_CONF.pkg_display_name} administration"
-        site.site_title = f"{BASE_CONF.pkg_display_name} Admin Portal"
+        site.site_header = f"{settings.PKG_DISPLAY_NAME} administration"
+        site.site_title = f"{settings.PKG_DISPLAY_NAME} Admin Portal"

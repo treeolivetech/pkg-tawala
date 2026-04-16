@@ -1,26 +1,37 @@
 repos:
-  # 1. Non-Python formatting (Prettier) — before any linters read those files
+  # 1. Ensure updated dependencies
+  # uv
+  - repo: local
+    hooks:
+      - id: uv-sync
+        name: Sync dependencies with uv
+        entry: uv sync
+        language: system
+        pass_filenames: false
+        require_serial: true
+
+  # 2. Non-Python formatting (Prettier) — before any linters read those files
   # Prettier
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.8.3
     hooks:
       - id: prettier
-        types_or: [scss, css, javascript, yaml, markdown]
+        types_or: [scss, css, javascript, json, yaml, markdown]
         exclude: |
           (?x)^(
             .*/vendor/.*
           )$
 
-  # 2. Python formatting before linting — linter sees already-formatted code
+  # 3. Python formatting before linting — linter sees already-formatted code
   # Ruff
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.10
+    rev: v0.15.11
     hooks:
       - id: ruff-format
       - id: ruff-check
         args: [--fix]
 
-  # 3. Django template formatting then linting
+  # 4. Django template formatting then linting
   # djLint: https://djlint.com/docs/integrations/#pre-commit
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
@@ -28,14 +39,13 @@ repos:
       - id: djlint-reformat-django
       - id: djlint-django
 
-  # 4. Type checking last — needs clean, linted code to be meaningful
+  # 5. Type checking last — needs clean, linted code to be meaningful
   # ty : https://github.com/astral-sh/ty/issues/269
   - repo: local
     hooks:
       - id: ty-check
-        name: ty check
-        description: Type check with ty.
-        entry: uvx ty check
+        name: Type check with ty
+        entry: uv run ty check
         language: system
         pass_filenames: false
         require_serial: true

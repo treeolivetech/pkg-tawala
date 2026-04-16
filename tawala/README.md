@@ -1,22 +1,83 @@
-# Tawala
+# tawala
 
-**Build and deploy Django apps with confidence.**
+Build and deploy Django apps with confidence.
 
-Tawala is a framework and management CLI for Django projects.
+`tawala` is the core framework package that provides:
 
-## Get Started
+- Django settings and app wiring for Tawala projects
+- A project runtime command (`tawala`) with Django management subcommands
+- Additional commands such as `runserver`, `runinstall`, and `runbuild`
 
-Scaffold a new project:
+## Requirements
+
+- Python 3.14+
+- A valid Tawala project configuration in `pyproject.toml` under `[tool.tawala]`
+
+## Install
+
+With uv:
 
 ```bash
-uvx tawala-create my-new-project
+uv add tawala
 ```
 
-Explore available commands:
+With pip:
+
+```bash
+pip install tawala
+```
+
+## Quick Start
+
+Scaffold a new project with the CLI:
+
+```bash
+uvx tawala-cli new my-new-project
+cd my-new-project
+uv sync
+uv run tawala migrate
+uv run tawala runserver
+```
+
+## Core Commands
+
+Show all available commands:
 
 ```bash
 tawala --help
 ```
+
+Run development server:
+
+```bash
+tawala runserver
+```
+
+Run configured install/build pipelines:
+
+```bash
+tawala runinstall --dry
+tawala runbuild --dry
+```
+
+## Optional Extras
+
+PostgreSQL support:
+
+```bash
+uv add "tawala[psycopg]"
+```
+
+Vercel tooling support:
+
+```bash
+uv add "tawala[vercel]"
+```
+
+## Related Packages
+
+- [`tawala-cli`](../tawala-cli/README.md)
+- [`tawala-docs`](../tawala-docs/README.md)
 
 ## License
 

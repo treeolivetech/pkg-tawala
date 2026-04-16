@@ -1,15 +1,18 @@
 [tool.uv.workspace]
-members = ["tawala", "tawala-create"]
+members = ["tawala", "tawala-cli", "tawala-docs"]
 
 [dependency-groups]
-dev = ["pre-commit>=4.5.1"]
+dev = ["pre-commit>=4.5.1", "ty>=0.0.31"]
 
 [tool.djlint]
 ignore = "H016,H030,H031"
 
-[tool.ruff]
-lint = { select = ["D"], ignore = ["D203", "D213"] }
-format = { docstring-code-format = true }
+[tool.ruff.format]
+preview = true
+
+[tool.ruff.lint]
+select = ["D"]
+ignore = ["D203", "D213"]
 
 [[tool.uv.index]]
 name = "testpypi"

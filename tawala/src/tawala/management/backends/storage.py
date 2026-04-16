@@ -1,4 +1,4 @@
-"""[BASE_CONF_IMPORT_ALLOWED_PREINIT] Storage backends."""
+"""[PROJECT_CONF_IMPORT_ALLOWED_PREINIT] Storage backends."""
 
 from ...settings.conf import PRESETS_CONF
 from ...settings.enums import PresetOptions
