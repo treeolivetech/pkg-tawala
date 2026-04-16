@@ -47,7 +47,7 @@ psycopg = ["psycopg[binary,pool]==3.3.3"] # Sync with dev.
 vercel = ["vercel==0.5.7"]                # Sync with dev.
 
 [build-system]
-requires = ["uv_build>=0.11.6,<0.12.0"]
+requires = ["uv_build>=0.11.7,<0.12.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
