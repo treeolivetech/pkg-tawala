@@ -9,7 +9,7 @@ Tawala is a framework and management CLI for Django projects.
 Scaffold a new project:
 
 ```bash
-uvx create-tawala-app my-new-project
+uvx tawala-create my-new-project
 ```
 
 Explore available commands:

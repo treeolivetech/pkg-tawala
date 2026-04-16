@@ -2,10 +2,10 @@
 
 Monorepo for the Tawala ecosystem.
 
-| Package                                            | Description                       |
-| -------------------------------------------------- | --------------------------------- |
-| [`create-tawala-app`](create-tawala-app/README.md) | CLI scaffolding tool              |
-| [`tawala`](tawala/README.md)                       | Django framework & management CLI |
+| Package                                    | Description                       |
+| ------------------------------------------ | --------------------------------- |
+| [`tawala-create`](tawala-create/README.md) | CLI scaffolding tool              |
+| [`tawala`](tawala/README.md)               | Django framework & management CLI |
 
 ## License
 

@@ -4,8 +4,8 @@ requires-python = ">=3.14"
 
 [manifest]
 members = [
-    "create-tawala-app",
     "tawala",
+    "tawala-create",
 ]
 
 [manifest.dependency-groups]
@@ -104,21 +104,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3a/cf/96ed47d75050ed3c4ed61ca5bc64f26caae94fb8538d388a7b2ad9b90259/christianwhocodes-1.5.7.tar.gz", hash = "sha256:79f758df0ceb0a3db8a587d566e6d66c0b3554381094c55f46395313a6c868de", size = 12341, upload-time = "2026-04-16T11:02:29.881Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/32/36/2976955ecbe46023934430ff62865931f97479efe656f47ed0483477124d/christianwhocodes-1.5.7-py3-none-any.whl", hash = "sha256:7437348f3df11f1e05fb95a8fee1aa4054e9d913932e789726ecfa5b1580860b", size = 20680, upload-time = "2026-04-16T11:02:28.876Z" },
-]
-
-[[package]]
-name = "create-tawala-app"
-version = "1.5.0a4"
-source = { editable = "create-tawala-app" }
-dependencies = [
-    { name = "christianwhocodes" },
-    { name = "tawala" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "christianwhocodes", specifier = "==1.5.7" },
-    { name = "tawala", editable = "tawala" },
 ]
 
 [[package]]
@@ -694,6 +679,21 @@ provides-extras = ["psycopg", "vercel"]
 dev = [
     { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.3" },
     { name = "vercel", specifier = "==0.5.7" },
+]
+
+[[package]]
+name = "tawala-create"
+version = "1.5.0a4"
+source = { editable = "tawala-create" }
+dependencies = [
+    { name = "christianwhocodes" },
+    { name = "tawala" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "christianwhocodes", specifier = "==1.5.7" },
+    { name = "tawala", editable = "tawala" },
 ]
 
 [[package]]

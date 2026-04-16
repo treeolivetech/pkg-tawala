@@ -1,9 +1,9 @@
-# create-tawala-app
+# tawala-create
 
 **Scaffold a new Tawala project in seconds.**
 
 ```bash
-uvx create-tawala-app my-new-project
+uvx tawala-create my-new-project
 ```
 
 ## License
