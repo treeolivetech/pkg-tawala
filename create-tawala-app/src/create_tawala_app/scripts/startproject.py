@@ -1,3 +1,5 @@
+"""`startproject` command/script."""
+
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
@@ -25,16 +27,14 @@ from tawala import (
     SecurityKeys,
 )
 
-__all__ = ["StartProject"]
 
-
-class StartProject(BaseCommand):
+class StartProjectCommand(BaseCommand):
     """Command to initialize a new project."""
 
     _project_dir: Path
     _validated_args: Namespace
     _project_dir_existed_before: bool
-    prog = f"create-tawala-app"
+    prog = BASE_CONF.create_pkg_name
     help = f"Initialize a new {BASE_CONF.pkg_display_name} app."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
@@ -66,7 +66,7 @@ class StartProject(BaseCommand):
         )
 
         parser.add_argument(
-            f"--{DatabaseKeys.USE_VARS}",
+            f"--{DatabaseKeys.USE_VARS_OPTION}",
             action="store_true",
             help=(
                 "Use environment / pyproject.toml variables for PostgreSQL configuration. "
@@ -116,7 +116,7 @@ class StartProject(BaseCommand):
                         f"The {PresetOptions.VERCEL} preset requires {DatabaseOptions.POSTGRESQL}."
                     )
                 setattr(args, DatabaseKeys.DB, DatabaseOptions.POSTGRESQL)
-                setattr(args, DatabaseKeys.USE_VARS, True)
+                setattr(args, DatabaseKeys.USE_VARS_OPTION, True)
             case _:
                 # Other presets work with either database.
                 # Default to sqlite if getattr(args, DatabaseKeys.DB) is unspecified.
@@ -128,11 +128,11 @@ class StartProject(BaseCommand):
                     )
 
         if (
-            getattr(args, DatabaseKeys.USE_VARS)
+            getattr(args, DatabaseKeys.USE_VARS_OPTION)
             and not getattr(args, DatabaseKeys.DB) == DatabaseOptions.POSTGRESQL
         ):
             raise ValueError(
-                f"The --{DatabaseKeys.USE_VARS} flag is only supported for {DatabaseOptions.POSTGRESQL}."
+                f"The --{DatabaseKeys.USE_VARS_OPTION} flag is only supported for {DatabaseOptions.POSTGRESQL}."
             )
 
         return args
@@ -247,7 +247,7 @@ class StartProject(BaseCommand):
         """Generate pyproject.toml content for the initialized project."""
         preset = getattr(args, PresetKeys.PRESET)
         db_backend = getattr(args, DatabaseKeys.DB)
-        pg_use_vars = getattr(args, DatabaseKeys.USE_VARS)
+        pg_use_vars = getattr(args, DatabaseKeys.USE_VARS_OPTION)
         is_vercel = preset == PresetOptions.VERCEL
         uses_postgresql = db_backend == DatabaseOptions.POSTGRESQL
         layout = getattr(args, LayoutKeys.LAYOUT)
@@ -274,15 +274,15 @@ class StartProject(BaseCommand):
             allowed_hosts.append('".vercel.app"')
             tool_lines.append(
                 f"{PresetKeys.PRESET} = {{ "
-                f'{PresetKeys.BACKEND} = "{PresetOptions.VERCEL}", '
+                f'{PresetKeys.OPTION} = "{PresetOptions.VERCEL}", '
                 f'{PresetKeys.BLOB_TOKEN} = "{PresetBlobTokenDefaults.GET_FROM_VERCEL}" '
                 "}"
             )
         elif uses_postgresql:
             tool_lines.append(
                 f"{DatabaseKeys.DB} = {{ "
-                f'{DatabaseKeys.BACKEND} = "{DatabaseOptions.POSTGRESQL}", '
-                f"{DatabaseKeys.USE_VARS} = "
+                f'{DatabaseKeys.OPTION} = "{DatabaseOptions.POSTGRESQL}", '
+                f"{DatabaseKeys.USE_VARS_OPTION} = "
                 f"{'true' if pg_use_vars else 'false'} "
                 "}"
             )
@@ -290,7 +290,7 @@ class StartProject(BaseCommand):
         if layout == LayoutOptions.WIP:
             tool_lines.append(
                 f"{LayoutKeys.LAYOUT} = {{ "
-                f'{LayoutKeys.BACKEND} = "{LayoutOptions.WIP}" '
+                f'{LayoutKeys.OPTION} = "{LayoutOptions.WIP}" '
                 "}"
             )
 

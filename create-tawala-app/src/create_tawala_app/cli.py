@@ -15,13 +15,14 @@ def main() -> NoReturn:
     match argv[1]:
         case "-v" | "--ver" | "--version" | "version":
             from christianwhocodes import print_version
+
             from tawala import BASE_CONF
 
             exit(print_version(BASE_CONF.create_pkg_name))
         case _:
-            from .scripts import StartProject
+            from .scripts.startproject import StartProjectCommand
 
-            exit(StartProject()(argv[1:]))
+            exit(StartProjectCommand()(argv[1:]))
 
 
 if __name__ == "__main__":

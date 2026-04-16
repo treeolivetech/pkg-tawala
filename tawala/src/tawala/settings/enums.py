@@ -6,7 +6,6 @@ from enum import Enum, StrEnum
 # Module Exports
 # ============================================================================
 __all__ = [
-    "ConfFieldKeys",
     "SecurityKeys",
     "SecurityDebugOptions",
     "SecurityAllowedHostsDefaults",
@@ -20,24 +19,10 @@ __all__ = [
     "DatabaseSSlModeOptions",
     "LayoutKeys",
     "LayoutOptions",
+    "LayoutAlwaysShowAdminOptions",
     "InternationalizationKeys",
     "RuncommandKeys",
 ]
-
-
-# ============================================================================
-# ConfField
-# ============================================================================
-class ConfFieldKeys(StrEnum):
-    """Canonical keys used by configuration field metadata."""
-
-    TYPE = "type"
-    ENV = "env"
-    TOML = "toml"
-    DEFAULT = "default"
-    OPTIONS = "options"
-
-    # TODO: Add a key for HELP_TEXT or DESCRIPTION, which can be used to provide a description for the field when generating documentation or error messages. This would make it easier for users to understand what each field is for and how to use it.
 
 
 # ============================================================================
@@ -47,7 +32,7 @@ class SecurityKeys(StrEnum):
     """Keys for security configuration in pyproject.toml."""
 
     SECRET_KEY = "secret_key"
-    DEBUG = "debug"
+    DEBUG_OPTION = "debug"
     ALLOWED_HOSTS = "allowed_hosts"
     SECURE_SSL_REDIRECT = "secure_ssl_redirect"
     SESSION_COOKIE_SECURE = "session_cookie_secure"
@@ -76,7 +61,7 @@ class PresetKeys(StrEnum):
     """Keys for preset configuration in pyproject.toml."""
 
     PRESET = "preset"
-    BACKEND = "backend"
+    OPTION = "option"
     BLOB_TOKEN = "token"
 
 
@@ -100,16 +85,16 @@ class DatabaseKeys(StrEnum):
     """Keys for database configuration in pyproject.toml."""
 
     DB = "db"
-    BACKEND = "backend"
-    USE_VARS = "pg_use_vars"
+    OPTION = "option"
+    USE_VARS_OPTION = "pg_use_vars"
     SERVICE = "pg_service"
     USER = "pg_user"
     PASSWORD = "pg_password"
     NAME = "pg_database"
     HOST = "pg_host"
     PORT = "pg_port"
-    POOL = "pg_pool"
-    SSLMODE = "pg_sslmode"
+    POOL_OPTION = "pg_pool"
+    SSLMODE_OPTION = "pg_sslmode"
 
 
 class DatabaseOptions(StrEnum):
@@ -151,8 +136,8 @@ class LayoutKeys(StrEnum):
     """Keys for layout configuration in pyproject.toml."""
 
     LAYOUT = "layout"
-    BACKEND = "backend"
-    ALWAYS_SHOW_ADMIN = "always_show_admin"
+    OPTION = "option"
+    ALWAYS_SHOW_ADMIN_OPTION = "always_show_admin"
 
 
 class LayoutOptions(StrEnum):
@@ -160,6 +145,13 @@ class LayoutOptions(StrEnum):
 
     DEFAULT_BASE = "base"
     WIP = "wip"
+
+
+class LayoutAlwaysShowAdminOptions(Enum):
+    """Options for always showing admin link in layout."""
+
+    ENABLED = True
+    DEFAULT_DISABLED = False
 
 
 # ============================================================================

@@ -1,7 +1,7 @@
+.tmp/
 __pycache__/
 *egg-info/
 /.ruff_cache/
 /.venv/
-/.tmp/
 /build/
 /dist/

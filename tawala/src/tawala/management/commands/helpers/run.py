@@ -147,7 +147,7 @@ class CommandGenerator(ABC):
     """Base class for building command execution processes."""
 
     def __init__(self, dj_command: BaseCommand) -> None:
-        """Store the Django management command reference."""
+        """Store the management command reference."""
         self.dj_command = dj_command
 
     @abstractmethod

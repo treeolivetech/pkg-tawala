@@ -2,6 +2,7 @@
 
 import builtins
 import pathlib
+from dataclasses import replace
 from enum import Enum
 from functools import cached_property
 from typing import Any, Final, TypeAlias, cast
@@ -9,7 +10,6 @@ from typing import Any, Final, TypeAlias, cast
 from christianwhocodes import PyProject, Version
 
 from .enums import (
-    ConfFieldKeys,
     DatabaseKeys,
     DatabaseOptions,
     InternationalizationKeys,
@@ -26,6 +26,7 @@ from .schema import (
     PRESETS_SCHEMA,
     RUNCOMMANDS_SCHEMA,
     SECURITY_SCHEMA,
+    SchemaField,
 )
 
 # ============================================================================
@@ -250,15 +251,15 @@ class _ConfField:
         )
 
 
-def _build_conf_field(schema: Any, field_name: str) -> _ConfField:
+def _build_conf_field(schema: dict[str, SchemaField], field_name: str) -> _ConfField:
     """Build a config field from centralized metadata."""
     field_config = schema[field_name]
     return _ConfField(
-        type=field_config.get(ConfFieldKeys.TYPE),
-        env=field_config.get(ConfFieldKeys.ENV),
-        toml=field_config.get(ConfFieldKeys.TOML),
-        default=field_config.get(ConfFieldKeys.DEFAULT),
-        options=field_config.get(ConfFieldKeys.OPTIONS),
+        type=field_config.type,
+        env=field_config.env,
+        toml=field_config.toml,
+        default=field_config.default,
+        options=field_config.options,
     )
 
 
@@ -269,7 +270,7 @@ class _SecurityConf:
     """Security and Deployment Configuration."""
 
     secret_key = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.SECRET_KEY)
-    debug = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.DEBUG)
+    debug_option = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.DEBUG_OPTION)
     allowed_hosts = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.ALLOWED_HOSTS)
     secure_ssl_redirect = _build_conf_field(
         SECURITY_SCHEMA, SecurityKeys.SECURE_SSL_REDIRECT
@@ -290,13 +291,13 @@ SECURITY_CONF = _SecurityConf()
 
 # ============================================================================
 # Presets & Storages
-# NOTE: Must be defined before _DatabasesConf — its backend value is read at
+# NOTE: Must be defined before _DatabasesConf and _LayoutConf — its backend value is read at
 # class body evaluation time to set database defaults.
 # ============================================================================
 class _PresetsConf:
     """Presets and Storages Configuration."""
 
-    backend = _build_conf_field(PRESETS_SCHEMA, PresetKeys.BACKEND)
+    option = _build_conf_field(PRESETS_SCHEMA, PresetKeys.OPTION)
     blob_read_write_token = _build_conf_field(PRESETS_SCHEMA, PresetKeys.BLOB_TOKEN)
 
 
@@ -305,43 +306,44 @@ PRESETS_CONF = _PresetsConf()
 
 # ============================================================================
 # Databases
-# NOTE: Must be defined after _PresetsConf since it reads the preset backend value
-# at class body evaluation time to set defaults for database backend and variable-based configuration.
+# NOTE: Must be defined after _PresetsConf since it reads the preset backend value.
 # ============================================================================
 class _DatabasesConf:
     """Database Configuration."""
 
-    # This check happens when the module is imported, so these are startup defaults.
-    _is_vercel_preset = PRESETS_CONF.backend == PresetOptions.VERCEL
-    # Start from a copy of the shared mapping so we can safely customize defaults for
-    # this class without changing DATABASES_CONF_MAPPING for any other consumer.
-    _field_mapping = {
-        field_name: field_config.copy()
+    _is_vercel_preset = PRESETS_CONF.option == PresetOptions.VERCEL
+    # Start from a copy so the shared schema stays unchanged for other consumers.
+    _field_schema = {
+        field_name: replace(field_config)
         for field_name, field_config in DATABASES_SCHEMA.items()
     }
     # Only the fallback defaults are changed here. Runtime precedence is still:
     # environment variable -> pyproject.toml -> default.
     # Vercel preset defaults to PostgreSQL and enables variable-based PG settings.
-    _field_mapping[DatabaseKeys.BACKEND][ConfFieldKeys.DEFAULT] = (
-        DatabaseOptions.POSTGRESQL
-        if _is_vercel_preset
-        else DatabaseOptions.DEFAULT_SQLITE
+    _field_schema[DatabaseKeys.OPTION] = replace(
+        _field_schema[DatabaseKeys.OPTION],
+        default=(
+            DatabaseOptions.POSTGRESQL
+            if _is_vercel_preset
+            else DatabaseOptions.DEFAULT_SQLITE
+        ),
     )
-    _field_mapping[DatabaseKeys.USE_VARS][ConfFieldKeys.DEFAULT] = _is_vercel_preset
+    _field_schema[DatabaseKeys.USE_VARS_OPTION] = replace(
+        _field_schema[DatabaseKeys.USE_VARS_OPTION],
+        default=_is_vercel_preset,
+    )
 
-    # Build each descriptor from the adjusted mapping so conversion and resolution
-    # logic remains centralized in _build_conf_field/_ConfField.
-    backend = _build_conf_field(_field_mapping, DatabaseKeys.BACKEND)
+    option = _build_conf_field(_field_schema, DatabaseKeys.OPTION)
     # PostgreSQL connection fields (used when backend resolves to PostgreSQL).
-    pg_use_vars = _build_conf_field(_field_mapping, DatabaseKeys.USE_VARS)
-    pg_service = _build_conf_field(_field_mapping, DatabaseKeys.SERVICE)
-    pg_user = _build_conf_field(_field_mapping, DatabaseKeys.USER)
-    pg_password = _build_conf_field(_field_mapping, DatabaseKeys.PASSWORD)
-    pg_database = _build_conf_field(_field_mapping, DatabaseKeys.NAME)
-    pg_host = _build_conf_field(_field_mapping, DatabaseKeys.HOST)
-    pg_port = _build_conf_field(_field_mapping, DatabaseKeys.PORT)
-    pg_pool = _build_conf_field(_field_mapping, DatabaseKeys.POOL)
-    pg_sslmode = _build_conf_field(_field_mapping, DatabaseKeys.SSLMODE)
+    pg_use_vars = _build_conf_field(_field_schema, DatabaseKeys.USE_VARS_OPTION)
+    pg_service = _build_conf_field(_field_schema, DatabaseKeys.SERVICE)
+    pg_user = _build_conf_field(_field_schema, DatabaseKeys.USER)
+    pg_password = _build_conf_field(_field_schema, DatabaseKeys.PASSWORD)
+    pg_database = _build_conf_field(_field_schema, DatabaseKeys.NAME)
+    pg_host = _build_conf_field(_field_schema, DatabaseKeys.HOST)
+    pg_port = _build_conf_field(_field_schema, DatabaseKeys.PORT)
+    pg_pool = _build_conf_field(_field_schema, DatabaseKeys.POOL_OPTION)
+    pg_sslmode = _build_conf_field(_field_schema, DatabaseKeys.SSLMODE_OPTION)
 
 
 DATABASES_CONF = _DatabasesConf()
@@ -349,22 +351,26 @@ DATABASES_CONF = _DatabasesConf()
 
 # ============================================================================
 # Layout
+# NOTE: Must be defined after _PresetsConf since it reads the preset backend value.
 # ============================================================================
 class _LayoutConf:
     """Layout Configuration."""
 
     # Start from a copy so the shared schema stays unchanged for other consumers.
-    _field_mapping = {
-        field_name: field_config.copy()
+    _field_schema = {
+        field_name: replace(field_config)
         for field_name, field_config in LAYOUT_SCHEMA.items()
     }
     # The fallback default is resolved at import time from the security config.
-    _field_mapping[LayoutKeys.ALWAYS_SHOW_ADMIN][ConfFieldKeys.DEFAULT] = (
-        SECURITY_CONF.debug
+    _field_schema[LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION] = replace(
+        _field_schema[LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION],
+        default=SECURITY_CONF.debug_option,
     )
 
-    backend = _build_conf_field(_field_mapping, LayoutKeys.BACKEND)
-    always_show_admin = _build_conf_field(_field_mapping, LayoutKeys.ALWAYS_SHOW_ADMIN)
+    option = _build_conf_field(_field_schema, LayoutKeys.OPTION)
+    always_show_admin = _build_conf_field(
+        _field_schema, LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION
+    )
 
 
 LAYOUT_CONF = _LayoutConf()

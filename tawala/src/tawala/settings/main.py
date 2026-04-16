@@ -31,7 +31,7 @@ BASE_DIR = BASE_CONF.base_dir
 # https://docs.djangoproject.com/en/stable/howto/csp/
 # ============================================================================
 SECRET_KEY = SECURITY_CONF.secret_key
-DEBUG = SECURITY_CONF.debug
+DEBUG = SECURITY_CONF.debug_option
 ALLOWED_HOSTS = SECURITY_CONF.allowed_hosts
 SECURE_SSL_REDIRECT = SECURITY_CONF.secure_ssl_redirect
 SESSION_COOKIE_SECURE = SECURITY_CONF.session_cookie_secure
@@ -160,10 +160,9 @@ TEMPLATES: _TemplatesDict = [
 # ============================================================================
 # Staticfiles, Media & Sass
 # ============================================================================
-_PUBLIC_DIR = BASE_DIR / "public"
-
-STATIC_ROOT = _PUBLIC_DIR / "static"
-MEDIA_ROOT = _PUBLIC_DIR / "media"
+PUBLIC_DIR = BASE_DIR / "public"
+STATIC_ROOT = PUBLIC_DIR / "static"
+MEDIA_ROOT = PUBLIC_DIR / "media"
 
 STATIC_URL = "static/"
 MEDIA_URL = "media/"
@@ -193,11 +192,11 @@ class _StoragesDict(TypedDict):
     default: _StorageBackendDict
 
 
-def get_storages_config(preset_backend_choice: str) -> _StoragesDict:
+def get_storages_config(preset_option: str) -> _StoragesDict:
     """Build the STORAGES setting based on configured backend."""
     storage_backend: str
 
-    match preset_backend_choice:
+    match preset_option:
         case PresetOptions.DEFAULT:
             storage_backend = "django.core.files.storage.FileSystemStorage"
         case PresetOptions.VERCEL:
@@ -205,7 +204,7 @@ def get_storages_config(preset_backend_choice: str) -> _StoragesDict:
                 f"{PKG_NAME}.management.backends.storage.VercelBlobStorageBackend"
             )
         case _:
-            raise ValueError(f"Unsupported storage backend: {preset_backend_choice}")
+            raise ValueError(f"Unsupported storage backend: {preset_option}")
 
     return {
         "staticfiles": {
@@ -215,7 +214,7 @@ def get_storages_config(preset_backend_choice: str) -> _StoragesDict:
     }
 
 
-STORAGES = get_storages_config(PRESETS_CONF.backend)
+STORAGES = get_storages_config(PRESETS_CONF.option)
 BLOB_READ_WRITE_TOKEN = PRESETS_CONF.blob_read_write_token
 
 
@@ -225,7 +224,7 @@ BLOB_READ_WRITE_TOKEN = PRESETS_CONF.blob_read_write_token
 # https://www.postgresql.org/docs/current/libpq-pgservice.html
 # https://www.postgresql.org/docs/current/libpq-pgpass.html
 # ============================================================================
-class _DatabaseOptionsDict(TypedDict, total=False):
+class _DatabaseMoreOptionsDict(TypedDict, total=False):
     """Database OPTIONS dict."""
 
     service: str
@@ -242,7 +241,7 @@ class _DatabaseDict(TypedDict):
     PASSWORD: NotRequired[str | None]
     HOST: NotRequired[str | None]
     PORT: NotRequired[str | None]
-    OPTIONS: NotRequired[_DatabaseOptionsDict]
+    OPTIONS: NotRequired[_DatabaseMoreOptionsDict]
 
 
 class _DatabasesDict(TypedDict):
@@ -253,7 +252,7 @@ class _DatabasesDict(TypedDict):
 
 def _get_databases_config() -> _DatabasesDict:
     """Build the DATABASES setting based on configured backend."""
-    backend: str = DATABASES_CONF.backend.lower()
+    backend: str = DATABASES_CONF.option.lower()
     match backend:
         case DatabaseOptions.DEFAULT_SQLITE:
             return {
@@ -330,8 +329,6 @@ RUNBUILD = RUNCOMMANDS_CONF.build
 # ============================================================================
 # Layout
 # ============================================================================
-_LAYOUT_BACKEND = LAYOUT_CONF.backend
-
 LAYOUT_ALWAYS_SHOW_ADMIN = LAYOUT_CONF.always_show_admin
-LAYOUT_BASE = _LAYOUT_BACKEND == LayoutOptions.DEFAULT_BASE
-LAYOUT_WIP = _LAYOUT_BACKEND == LayoutOptions.WIP
+LAYOUT_BASE = LAYOUT_CONF.option == LayoutOptions.DEFAULT_BASE
+LAYOUT_WIP = LAYOUT_CONF.option == LayoutOptions.WIP

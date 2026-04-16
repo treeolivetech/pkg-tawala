@@ -14,7 +14,7 @@ class Command(RunserverCommand):
 
     help = f"{settings.PKG_DISPLAY_NAME} Development server"
 
-    # Django's runserver sets these at runtime; declared here for type checking
+    # runserver sets these at runtime; declared here for type checking
     _raw_ipv6: bool
     addr: str
     port: str
