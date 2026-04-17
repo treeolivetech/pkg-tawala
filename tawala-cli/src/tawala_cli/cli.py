@@ -11,7 +11,7 @@ def _build_parser() -> ArgumentParser:
     """Create and configure the top-level CLI parser."""
     from tawala import PROJECT_CONF
 
-    from .commands import NewCommand
+    from .commands import GenerateCommand, NewCommand
 
     parser = ArgumentParser(
         prog=PROJECT_CONF.cli_pkg_name,
@@ -24,8 +24,9 @@ def _build_parser() -> ArgumentParser:
         version=Version.get(PROJECT_CONF.cli_pkg_name)[0],
         help="Show package version and exit.",
     )
-
     subparsers = parser.add_subparsers(dest="command")
+
+    # new
     new_command = NewCommand()
     new_parser = subparsers.add_parser(
         "new",
@@ -34,6 +35,16 @@ def _build_parser() -> ArgumentParser:
     )
     new_command.add_arguments(new_parser)
     new_parser.set_defaults(command_handler=new_command.handle)
+
+    # generate
+    generate_command = GenerateCommand()
+    generate_parser = subparsers.add_parser(
+        "generate",
+        help=generate_command.help,
+        description=generate_command.help,
+    )
+    generate_command.add_arguments(generate_parser)
+    generate_parser.set_defaults(command_handler=generate_command.handle)
 
     return parser
 

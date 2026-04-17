@@ -2,12 +2,12 @@
 
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
+from subprocess import CalledProcessError, run
+from sys import executable
 
 from christianwhocodes import (
     BaseCommand,
     ExitCode,
-    FileGenerator,
-    FileSpec,
     PostgresFilename,
     Text,
     Version,
@@ -19,13 +19,10 @@ from tawala import (
     PROJECT_CONF,
     DatabaseKeys,
     DatabaseOptions,
-    InternationalizationKeys,
     LayoutKeys,
     LayoutOptions,
-    PresetBlobTokenDefaults,
     PresetKeys,
     PresetOptions,
-    SecurityKeys,
 )
 
 __all__ = ["NewCommand"]
@@ -170,42 +167,52 @@ class NewCommand(BaseCommand):
             )
 
     def _generate_project_files(self, project_dir: Path, args: Namespace) -> None:
-        """Create all project files and folders for the selected options."""
-        app_dir = project_dir / "app"
-        api_dir = project_dir / "api"
+        """Generate project scaffold by delegating to the CLI generate command."""
+        self._run_generate_subprocess(
+            target="all",
+            project_dir=project_dir,
+            args=args,
+        )
 
-        match getattr(args, PresetKeys.PRESET):
-            case PresetOptions.VERCEL:
-                vercel_json_spec = FileSpec(
-                    path=project_dir / "vercel.json",
-                    content=self._content_vercel_json(),
-                )
-                FileGenerator(vercel_json_spec).create()
-            case _:
-                pass
-
-        content_files: list[tuple[Path, str]] = [
-            (api_dir / "__init__.py", '"""API module."""'),
-            (api_dir / "asgi.py", self._content_api_asgi_py()),
-            (api_dir / "wsgi.py", self._content_api_wsgi_py()),
-            (project_dir / ".gitignore", self._content_gitignore(args)),
-            (
-                project_dir / "pyproject.toml",
-                self._content_pyproject_toml(project_dir, args),
-            ),
-            (app_dir / "__init__.py", '"""Main App module."""'),
-            (
-                app_dir / "templates" / "app" / "layout.html",
-                self._content_home_index_html(),
-            ),
-            (app_dir / "views.py", self._content_home_views_py("app")),
-            (app_dir / "urls.py", self._content_home_urls_py(project_dir, "app")),
-            (app_dir / "migrations" / "__init__.py", '"""App migrations."""'),
-            (project_dir / "README.md", self._content_readme_md(project_dir)),
+    def _run_generate_subprocess(
+        self,
+        target: str,
+        project_dir: Path,
+        args: Namespace,
+    ) -> None:
+        """Invoke the generate subcommand in a subprocess for decoupled scaffolding."""
+        command = [
+            executable,
+            "-m",
+            "tawala_cli.cli",
+            "generate",
+            target,
+            "--output-dir",
+            str(project_dir),
+            "--project-name",
+            project_dir.name,
+            f"--{PresetKeys.PRESET}",
+            str(getattr(args, PresetKeys.PRESET)),
+            f"--{DatabaseKeys.DB}",
+            str(getattr(args, DatabaseKeys.DB)),
         ]
 
-        for path, content in content_files:
-            FileGenerator(FileSpec(path=path, content=content)).create()
+        layout = getattr(args, LayoutKeys.LAYOUT)
+        if layout:
+            command.extend([f"--{LayoutKeys.LAYOUT}", str(layout)])
+
+        if getattr(args, DatabaseKeys.USE_VARS_OPTION):
+            command.append(f"--{DatabaseKeys.USE_VARS_OPTION}")
+
+        try:
+            run(command, check=True, capture_output=True, text=True)
+        except CalledProcessError as e:
+            stderr = (e.stderr or "").strip()
+            stdout = (e.stdout or "").strip()
+            details = stderr or stdout or str(e)
+            raise RuntimeError(
+                f"Generate command failed for target '{target}': {details}"
+            ) from e
 
     def _revert_generated_files(self, project_dir: Path) -> None:
         """Delete generated files only when the target directory was newly created."""
@@ -224,190 +231,3 @@ class NewCommand(BaseCommand):
             f"✓ {PROJECT_CONF.pkg_display_name} project '{project_dir.name}' initialized successfully!",
             Text.SUCCESS,
         )
-
-    def _content_gitignore(self, args: Namespace) -> str:
-        """Generate .gitignore content."""
-        sqlite = (
-            f"\n# SQLite database\n/db.{DatabaseOptions.DEFAULT_SQLITE}3\n"
-            if getattr(args, DatabaseKeys.DB) == DatabaseOptions.DEFAULT_SQLITE
-            else ""
-        )
-        vercel = (
-            "\n# Vercel deployment files\n/.vercel/\n"
-            if getattr(args, PresetKeys.PRESET) == PresetOptions.VERCEL
-            else ""
-        )
-
-        return (
-            "# Python-generated files\n"
-            "__pycache__/\n"
-            "\n"
-            "# Virtual environment\n"
-            "/.venv/\n"
-            f"{sqlite}"
-            f"{vercel}"
-            "\n"
-            "# Environment variables file\n"
-            "/.env\n"
-            "\n"
-            "# Static and media files\n"
-            "/public/\n"
-        )
-
-    def _content_pyproject_toml(self, project_dir: Path, args: Namespace) -> str:
-        """Generate pyproject.toml content for the initialized project."""
-        preset = getattr(args, PresetKeys.PRESET)
-        db_backend = getattr(args, DatabaseKeys.DB)
-        pg_use_vars = getattr(args, DatabaseKeys.USE_VARS_OPTION)
-        is_vercel = preset == PresetOptions.VERCEL
-        uses_postgresql = db_backend == DatabaseOptions.POSTGRESQL
-        layout = getattr(args, LayoutKeys.LAYOUT)
-
-        extras: list[str] = []
-        if is_vercel:
-            extras.append("vercel")
-        if uses_postgresql:
-            extras.append("psycopg")
-
-        extras_suffix = f"[{','.join(extras)}]" if extras else ""
-        dependencies = f'"{PROJECT_CONF.pkg_name}{extras_suffix}"'
-
-        allowed_hosts = ['"localhost"', '"127.0.0.1"']
-        tool_lines = [
-            f"[tool.{PROJECT_CONF.pkg_name}]",
-            (
-                f"{InternationalizationKeys.INTERNATIONALIZATION} = "
-                f'{{ {InternationalizationKeys.TIME_ZONE} = "UTC" }}'
-            ),
-        ]
-
-        if is_vercel:
-            allowed_hosts.append('".vercel.app"')
-            tool_lines.append(
-                f"{PresetKeys.PRESET} = {{ "
-                f'{PresetKeys.OPTION} = "{PresetOptions.VERCEL}", '
-                f'{PresetKeys.BLOB_TOKEN} = "{PresetBlobTokenDefaults.GET_FROM_VERCEL}" '
-                "}"
-            )
-        elif uses_postgresql:
-            tool_lines.append(
-                f"{DatabaseKeys.DB} = {{ "
-                f'{DatabaseKeys.OPTION} = "{DatabaseOptions.POSTGRESQL}", '
-                f"{DatabaseKeys.USE_VARS_OPTION} = "
-                f"{'true' if pg_use_vars else 'false'} "
-                "}"
-            )
-
-        if layout == LayoutOptions.WIP:
-            tool_lines.append(
-                f"{LayoutKeys.LAYOUT} = {{ "
-                f'{LayoutKeys.OPTION} = "{LayoutOptions.WIP}" '
-                "}"
-            )
-
-        tool_lines.append(
-            f"{SecurityKeys.ALLOWED_HOSTS} = [{', '.join(allowed_hosts)}]"
-        )
-        tool_section = "\n".join(tool_lines) + "\n"
-
-        uv_source = (
-            f"{PROJECT_CONF.pkg_name} = {{ "
-            f'git = "https://github.com/treeolivetech/pkg-{PROJECT_CONF.pkg_name}.git", '
-            f'tag = "{PROJECT_CONF.pkg_version}" '
-            "}\n"
-        )
-
-        return (
-            "[project]\n"
-            f'name = "{project_dir.name}"\n'
-            'version = "0.1.0"\n'
-            'description = ""\n'
-            'readme = "README.md"\n'
-            'requires-python = ">=3.14"\n'
-            f"dependencies = [{dependencies}]\n"
-            "\n"
-            "[dependency-groups]\n"
-            'dev = ["djlint>=1.36.4"]\n'
-            "\n"
-            "[tool.uv.sources]\n"
-            f"{uv_source}"
-            "\n"
-            f"{tool_section}"
-        )
-
-    def _content_home_views_py(self, app_name: str) -> str:
-        """Generate app view module content."""
-        return (
-            "from django.views.generic.base import TemplateView\n\n\n"
-            "class HomeView(TemplateView):\n"
-            f'    template_name = "{app_name}/layout.html"\n'
-        )
-
-    def _content_home_urls_py(self, project_dir: Path, app_name: str) -> str:
-        """Generate app URL configuration content."""
-        return (
-            f'"""URL configuration for {project_dir.name} project.\n\n'
-            "The `urlpatterns` list routes URLs to views. For more information please see:\n"
-            "    https://docs.djangoproject.com/en/stable/topics/http/urls/\n"
-            '"""\n\n'
-            "from django.urls import path\n\n"
-            "from . import views\n\n"
-            "urlpatterns = [\n"
-            f'    path("", views.HomeView.as_view(), name="home"),\n'
-            "]\n"
-        )
-
-    def _content_home_index_html(self) -> str:
-        """Generate starter home page template content."""
-        return (
-            '{% extends "base/layout.html" %}\n'
-            "{% block fonts %}\n"
-            '    <link href="https://fonts.googleapis.com" rel="preconnect" />\n'
-            '    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />\n'
-            '    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Mulish:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"\n'
-            '          rel="stylesheet" />\n'
-            "{% endblock fonts %}\n"
-            "{% block main %}\n"
-            "    <main>\n"
-            '        <section class="container">\n'
-            '            <p class="text-primary">Welcome to our App!</p>\n'
-            "        </section>\n"
-            "    </main>\n"
-            "{% endblock main %}\n"
-        )
-
-    def _content_api_asgi_py(self) -> str:
-        """Generate ASGI entry-point file content."""
-        return (
-            f"from {PROJECT_CONF.pkg_name}.management.api.asgi import application\n\n"
-            "app = application\n"
-        )
-
-    def _content_api_wsgi_py(self) -> str:
-        """Generate WSGI entry-point file content."""
-        return (
-            f"from {PROJECT_CONF.pkg_name}.management.api.wsgi import application\n\n"
-            "app = application\n"
-        )
-
-    def _content_vercel_json(self) -> str:
-        """Generate vercel.json content for Vercel preset."""
-        lines = [
-            "{",
-            '  "$schema": "https://openapi.vercel.sh/vercel.json",',
-            '  "framework": null,',
-            f'  "installCommand": "uv run {PROJECT_CONF.pkg_name} runinstall",',
-            f'  "buildCommand": "uv run {PROJECT_CONF.pkg_name} runbuild",',
-            '  "rewrites": [',
-            "    {",
-            '      "source": "/(.*)",',
-            '      "destination": "/api/asgi.py"',
-            "    }",
-            "  ]",
-            "}",
-        ]
-        return "\n".join(lines) + "\n"
-
-    def _content_readme_md(self, project_dir: Path) -> str:
-        """Generate README content for the initialized project."""
-        return f"# {project_dir.name}\n"

@@ -5,22 +5,88 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python Debugger: Create Default Preset App",
+      "name": "CLI Smoke: new default (uv)",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_cli.cli",
-      "args": ["new", "default", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/.tmp",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["new-default"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
       "preLaunchTask": "Create .tmp folder"
     },
     {
-      "name": "Python Debugger: Create Vercel Preset App",
+      "name": "CLI Smoke: new vercel (uv)",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_cli.cli",
-      "args": ["new", "vercel", "--preset", "vercel", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/.tmp",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["new-vercel"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
       "preLaunchTask": "Create .tmp folder"
+    },
+    {
+      "name": "CLI Smoke: new postgres vars wip (uv)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["new-postgres-vars-wip"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Create .tmp folder"
+    },
+    {
+      "name": "CLI Smoke: new dot (uv)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["new-dot"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Create .tmp folder"
+    },
+    {
+      "name": "CLI Smoke: generate pick target (uv)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["generate-pick", "--target", "${input:tawalaGenerateTarget}"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Create .tmp folder"
+    },
+    {
+      "name": "CLI Smoke: generate all targets sequentially (uv)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
+      "args": ["generate-all"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Create .tmp folder"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "tawalaGenerateTarget",
+      "type": "pickString",
+      "description": "Generate target",
+      "options": [
+        "all",
+        "api-init",
+        "api-asgi",
+        "api-wsgi",
+        "gitignore",
+        "pyproject",
+        "app-init",
+        "app-layout",
+        "app-views",
+        "app-urls",
+        "app-migrations-init",
+        "readme",
+        "vercel-json",
+        "config-md"
+      ],
+      "default": "all"
     }
   ]
 }
