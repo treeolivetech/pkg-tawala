@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "uv run tawala runinstall",
+  "buildCommand": "uv run tawala runbuild",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/asgi.py"
+    }
+  ]
+}
