@@ -1,5 +1,5 @@
 """Package."""
 
-from .settings.conf import *
-from .settings.enums import *
-from .settings.schema import *
+from .management.settings.fetch import *
+from .management.settings.enums import *
+from .management.settings.schema import *

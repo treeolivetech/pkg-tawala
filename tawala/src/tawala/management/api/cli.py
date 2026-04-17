@@ -1,10 +1,10 @@
-"""[PROJECT_CONF_IMPORT_ALLOWED_PREINIT] CLI entry point."""
+"""[FETCH_PROJECT_IMPORT_ALLOWED] CLI entry point."""
 
-from sys import argv, exit, path
+from sys import argv, exit
 
 from christianwhocodes import ExitCode, Text, cprint
 
-from ...settings.conf import PROJECT_CONF
+from ..settings.fetch import FETCH_PROJECT
 
 
 def main() -> None:
@@ -14,36 +14,30 @@ def main() -> None:
         exit(ExitCode.ERROR)
 
     match argv[1]:
-        case "-v" | "--ver" | "--version" | "version":
+        case "-v" | "--version" | "version":
             from christianwhocodes import print_version
 
-            exit(print_version(PROJECT_CONF.pkg_name))
+            exit(print_version(FETCH_PROJECT.pkg_name))
         case _:
-            from ...settings.conf import BaseValidationError
+            from ..settings.fetch import FetchProjectValidationError
 
             try:
-                PROJECT_CONF.validate_project()
-            except BaseValidationError as e:
-                cprint(
-                    f"Is this a valid {PROJECT_CONF.pkg_display_name} project directory?\n{e}",
-                    Text.WARNING,
-                )
-                cprint(
-                    f"Assuming you have uv installed:\n"
-                    f"    - run: 'uvx {PROJECT_CONF.cli_pkg_name} new <project_name>' to initialize a new project.\n"
-                    f"    - run: 'uvx {PROJECT_CONF.cli_pkg_name} -h' to see help on the command.",
-                    Text.INFO,
-                )
-                exit(ExitCode.ERROR)
+                FETCH_PROJECT.validate_project()
+            except FetchProjectValidationError as e:
+                from . import print_invalid_project_help
+
+                exit(print_invalid_project_help(e))
             except Exception as e:
                 cprint(f"Unexpected error during project validation:\n{e}", Text.ERROR)
                 exit(ExitCode.ERROR)
             else:
+                from sys import path
+
                 from django.core.management import ManagementUtility
 
-                path.insert(0, str(PROJECT_CONF.base_dir))
+                path.insert(0, str(FETCH_PROJECT.base_dir))
                 utility = ManagementUtility(argv)
-                utility.prog_name = PROJECT_CONF.pkg_name
+                utility.prog_name = FETCH_PROJECT.pkg_name
                 utility.execute()
 
 

@@ -1,0 +1,24 @@
+[project.urls]
+Homepage = "https://tawala.treeolive.tech/"
+Documentation = "https://tawala.treeolive.tech/docs"
+Repository = "https://github.com/treeolivetech/pkg-tawala"
+Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+
+[project]
+name = "tawala-vercel"
+version = "1.5.0a5" # Sync with main package's version.
+description = ""
+readme = "README.md"
+authors = [{ name = "Kevin Wasike Wakhisi", email = "kevin@treeolive.tech" }]
+requires-python = ">=3.14"
+dependencies = [
+    "tawala==1.5.0a5", # Sync with main package's version.
+    "vercel==0.5.7",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.7,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+tawala = { workspace = true }

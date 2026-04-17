@@ -2,7 +2,7 @@
 
 A generated reference of all supported `tool.tawala` settings, their defaults, and allowed values.
 
-Generated on: 2026-04-17 11:17:40Z
+Generated on: 2026-04-18 13:11:16Z
 
 ## Source Priority
 
@@ -16,12 +16,12 @@ Configuration is resolved in this order:
 
 | Key                     | TOML Path               | ENV                     | Type   | Default                                                    | Options       | Description                                                                 |
 | ----------------------- | ----------------------- | ----------------------- | ------ | ---------------------------------------------------------- | ------------- | --------------------------------------------------------------------------- |
-| `secret_key`            | `secret_key`            | `SECRET_KEY`            | `str`  | `django-insecure-change-me-in-production-via-env-variable` | -             | `Secret key used for cryptographic signing. Always set this in production.` |
-| `debug`                 | `debug`                 | `DEBUG_OPTION`          | `bool` | `true`                                                     | `true, false` | `Enable debug mode. Keep disabled in production environments.`              |
 | `allowed_hosts`         | `allowed_hosts`         | `ALLOWED_HOSTS`         | `list` | `[localhost, 127.0.0.1]`                                   | -             | `List of hostnames the app is allowed to serve.`                            |
-| `secure_ssl_redirect`   | `secure_ssl_redirect`   | `SECURE_SSL_REDIRECT`   | `bool` | `false`                                                    | -             | `Redirect all HTTP requests to HTTPS when enabled.`                         |
-| `session_cookie_secure` | `session_cookie_secure` | `SESSION_COOKIE_SECURE` | `bool` | `false`                                                    | -             | `Mark session cookies as secure so they are sent only over HTTPS.`          |
-| `csrf_cookie_secure`    | `csrf_cookie_secure`    | `CSRF_COOKIE_SECURE`    | `bool` | `false`                                                    | -             | `Mark CSRF cookies as secure so they are sent only over HTTPS.`             |
+| `secret_key`            | `secret_key`            | `SECRET_KEY`            | `str`  | `django-insecure-change-me-in-production-via-env-variable` | -             | `Secret key used for cryptographic signing. Always set this in production.` |
+| `debug`                 | `debug`                 | `DEBUG`                 | `bool` | `true`                                                     | `true, false` | `Enable debug mode. Keep disabled in production environments.`              |
+| `secure_ssl_redirect`   | `secure_ssl_redirect`   | `SECURE_SSL_REDIRECT`   | `bool` | `false`                                                    | `true, false` | `Redirect all HTTP requests to HTTPS when enabled.`                         |
+| `session_cookie_secure` | `session_cookie_secure` | `SESSION_COOKIE_SECURE` | `bool` | `false`                                                    | `true, false` | `Mark session cookies as secure so they are sent only over HTTPS.`          |
+| `csrf_cookie_secure`    | `csrf_cookie_secure`    | `CSRF_COOKIE_SECURE`    | `bool` | `false`                                                    | `true, false` | `Mark CSRF cookies as secure so they are sent only over HTTPS.`             |
 | `secure_hsts_seconds`   | `secure_hsts_seconds`   | `SECURE_HSTS_SECONDS`   | `int`  | `0`                                                        | -             | `HTTP Strict Transport Security max-age value in seconds.`                  |
 
 ## Presets & Storages
@@ -55,12 +55,12 @@ Configuration is resolved in this order:
 
 ## Internationalization
 
-| Key             | TOML Path                            | ENV             | Type   | Default | Options | Description                                            |
-| --------------- | ------------------------------------ | --------------- | ------ | ------- | ------- | ------------------------------------------------------ |
-| `language_code` | `internationalization.language_code` | `LANGUAGE_CODE` | `str`  | `en-us` | -       | `Default language code used for internationalization.` |
-| `time_zone`     | `internationalization.time_zone`     | `TIME_ZONE`     | `str`  | `UTC`   | -       | `Default time zone used for date/time handling.`       |
-| `use_i18n`      | `internationalization.use_i18n`      | `USE_I18N`      | `bool` | `true`  | -       | `Enable translation and locale machinery.`             |
-| `use_tz`        | `internationalization.use_tz`        | `USE_TZ`        | `bool` | `true`  | -       | `Store and handle datetimes as timezone-aware values.` |
+| Key             | TOML Path                            | ENV             | Type   | Default          | Options | Description                                            |
+| --------------- | ------------------------------------ | --------------- | ------ | ---------------- | ------- | ------------------------------------------------------ |
+| `language_code` | `internationalization.language_code` | `LANGUAGE_CODE` | `str`  | `en-us`          | -       | `Default language code used for internationalization.` |
+| `time_zone`     | `internationalization.time_zone`     | `TIME_ZONE`     | `str`  | `Africa/Nairobi` | -       | `Default time zone used for date/time handling.`       |
+| `use_i18n`      | `internationalization.use_i18n`      | `USE_I18N`      | `bool` | `true`           | -       | `Enable translation and locale machinery.`             |
+| `use_tz`        | `internationalization.use_tz`        | `USE_TZ`        | `bool` | `true`           | -       | `Store and handle datetimes as timezone-aware values.` |
 
 ## Runcommands
 

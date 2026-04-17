@@ -23,7 +23,7 @@ from .schema import (
     DATABASES_SCHEMA,
     INTERNATIONALIZATION_SCHEMA,
     LAYOUT_SCHEMA,
-    PRESETS_SCHEMA,
+    PRESET_SCHEMA,
     RUNCOMMANDS_SCHEMA,
     SECURITY_SCHEMA,
     SchemaField,
@@ -33,17 +33,18 @@ from .schema import (
 # Module Exports
 # ============================================================================
 __all__ = [
-    "BaseValidationError",
-    "PROJECT_CONF",
-    "SECURITY_CONF",
-    "DATABASES_CONF",
-    "LAYOUT_CONF",
-    "INTERNATIONALIZATION_CONF",
-    "RUNCOMMANDS_CONF",
+    "FetchProjectValidationError",
+    "FETCH_PROJECT",
+    "FETCH_SECURITY",
+    "FETCH_PRESET",
+    "FETCH_DATABASES",
+    "FETCH_LAYOUT",
+    "FETCH_INTERNATIONALIZATION",
+    "FETCH_RUNCOMMANDS",
 ]
 
 
-class BaseValidationError(Exception):
+class FetchProjectValidationError(Exception):
     """Raised when the root directory or config is invalid."""
 
     def __init__(
@@ -57,7 +58,7 @@ class BaseValidationError(Exception):
 # ============================================================================
 # Root
 # ============================================================================
-class _ProjectConf:
+class _FetchProject:
     """Root configuration."""
 
     def __init__(self) -> None:
@@ -69,8 +70,6 @@ class _ProjectConf:
         self.pkg_name: Final[str] = "tawala"
         self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
         self.pkg_version: Final[str] = Version.get(self.pkg_name)[0]
-
-        self.cli_pkg_name: Final[str] = "tawala-cli"
 
     def _load_project(self) -> None:
         """Load and validate pyproject.toml configuration."""
@@ -90,7 +89,7 @@ class _ProjectConf:
         try:
             self._load_project()
         except (FileNotFoundError, KeyError) as e:
-            raise BaseValidationError(str(e)) from e
+            raise FetchProjectValidationError(str(e)) from e
         self._validated = True
 
     @cached_property
@@ -122,22 +121,22 @@ class _ProjectConf:
         return self.base_dir.name
 
 
-PROJECT_CONF = _ProjectConf()
+FETCH_PROJECT = _FetchProject()
 """Singleton instance of configuration and validation utilities.
 
-Policy: only modules marked with "[PROJECT_CONF_IMPORT_ALLOWED_PREINIT]" in
-their module docstring should import BASE_CONF/BaseValidationError.
-If any other module needs BASE_CONF's functionality, use the ones set in
+POLICY: Inisde the this package, only modules marked with "[FETCH_PROJECT_IMPORT_ALLOWED]"
+in their module docstring should import FETCH_PROJECT/FetchProjectValidationError.
+If any other module needs FETCH_PROJECT's functionality, use the ones set in
 settings.py via `from django.conf import settings`
 """
 
 # ============================================================================
-# ConfField
+# FetchField
 # ============================================================================
-_ConfDefaultValueType: TypeAlias = str | bool | list[str] | pathlib.Path | int | None
+_FetchValueDefault: TypeAlias = str | bool | list[str] | pathlib.Path | int | None
 
 
-class _ConfField:
+class _FetchField:
     """Descriptor for a configuration field populated from env vars or TOML."""
 
     def __init__(
@@ -150,7 +149,7 @@ class _ConfField:
         options: list[str] | None = None,
         env: str | None = None,
         toml: str | None = None,
-        default: _ConfDefaultValueType = None,
+        default: _FetchValueDefault = None,
     ):
         """Set up field type, source mappings, and default value."""
         self.type = type
@@ -176,8 +175,8 @@ class _ConfField:
         if self.toml is None:
             return None
         try:
-            current: Any = PROJECT_CONF.base_toml
-        except BaseValidationError:
+            current: Any = FETCH_PROJECT.base_toml
+        except FetchProjectValidationError:
             # NOTE: Descriptors can also be touched at import
             # time while class-body defaults are being computed. If validation is
             # unavailable in that phase, continue. API entry modules (cli.py,
@@ -195,9 +194,9 @@ class _ConfField:
         """Fetch configuration value with fallback priority: ENV -> TOML -> default."""
         if self.env is not None:
             try:
-                if self.env in PROJECT_CONF.base_env:
-                    return PROJECT_CONF.base_env[self.env]
-            except BaseValidationError:
+                if self.env in FETCH_PROJECT.base_env:
+                    return FETCH_PROJECT.base_env[self.env]
+            except FetchProjectValidationError:
                 # NOTE: Descriptors can also be touched at import
                 # time while class-body defaults are being computed. If validation is
                 # unavailable in that phase, continue. API entry modules (cli.py,
@@ -212,7 +211,7 @@ class _ConfField:
     @staticmethod
     def convert_value(
         value: Any, target_type: Any, field_name: str | None = None
-    ) -> _ConfDefaultValueType:
+    ) -> _FetchValueDefault:
         """Convert a raw value to the target type."""
         from christianwhocodes import TypeConverter
 
@@ -252,10 +251,10 @@ class _ConfField:
         )
 
 
-def _build_conf_field(schema: dict[str, SchemaField], field_name: str) -> _ConfField:
+def _build_fetch_field(schema: dict[str, SchemaField], field_name: str) -> _FetchField:
     """Build a config field from centralized metadata."""
     field_config = schema[field_name]
-    return _ConfField(
+    return _FetchField(
         type=field_config.type,
         env=field_config.env,
         toml=field_config.toml,
@@ -267,52 +266,52 @@ def _build_conf_field(schema: dict[str, SchemaField], field_name: str) -> _ConfF
 # ============================================================================
 # Security & Deployment
 # ============================================================================
-class _SecurityConf:
+class _FetchSecurity:
     """Security and Deployment Configuration."""
 
-    secret_key = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.SECRET_KEY)
-    debug_option = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.DEBUG_OPTION)
-    allowed_hosts = _build_conf_field(SECURITY_SCHEMA, SecurityKeys.ALLOWED_HOSTS)
-    secure_ssl_redirect = _build_conf_field(
-        SECURITY_SCHEMA, SecurityKeys.SECURE_SSL_REDIRECT
+    secret_key = _build_fetch_field(SECURITY_SCHEMA, SecurityKeys.SECRET_KEY)
+    debug_option = _build_fetch_field(SECURITY_SCHEMA, SecurityKeys.DEBUG_OPTION)
+    allowed_hosts = _build_fetch_field(SECURITY_SCHEMA, SecurityKeys.ALLOWED_HOSTS)
+    secure_ssl_redirect = _build_fetch_field(
+        SECURITY_SCHEMA, SecurityKeys.SECURE_SSL_REDIRECT_OPTION
     )
-    session_cookie_secure = _build_conf_field(
-        SECURITY_SCHEMA, SecurityKeys.SESSION_COOKIE_SECURE
+    session_cookie_secure = _build_fetch_field(
+        SECURITY_SCHEMA, SecurityKeys.SESSION_COOKIE_SECURE_OPTION
     )
-    csrf_cookie_secure = _build_conf_field(
-        SECURITY_SCHEMA, SecurityKeys.CSRF_COOKIE_SECURE
+    csrf_cookie_secure = _build_fetch_field(
+        SECURITY_SCHEMA, SecurityKeys.CSRF_COOKIE_SECURE_OPTION
     )
-    secure_hsts_seconds = _build_conf_field(
+    secure_hsts_seconds = _build_fetch_field(
         SECURITY_SCHEMA, SecurityKeys.SECURE_HSTS_SECONDS
     )
 
 
-SECURITY_CONF = _SecurityConf()
+FETCH_SECURITY = _FetchSecurity()
 
 
 # ============================================================================
 # Presets & Storages
-# NOTE: Must be defined before _DatabasesConf and _LayoutConf — its backend value is read at
+# NOTE: Must be defined before _FetchDatabases and _FetchLayout — its backend value is read at
 # class body evaluation time to set database defaults.
 # ============================================================================
-class _PresetsConf:
+class _FetchPreset:
     """Presets and Storages Configuration."""
 
-    option = _build_conf_field(PRESETS_SCHEMA, PresetKeys.OPTION)
-    blob_read_write_token = _build_conf_field(PRESETS_SCHEMA, PresetKeys.BLOB_TOKEN)
+    option = _build_fetch_field(PRESET_SCHEMA, PresetKeys.OPTION)
+    blob_read_write_token = _build_fetch_field(PRESET_SCHEMA, PresetKeys.BLOB_TOKEN)
 
 
-PRESETS_CONF = _PresetsConf()
+FETCH_PRESET = _FetchPreset()
 
 
 # ============================================================================
 # Databases
-# NOTE: Must be defined after _PresetsConf since it reads the preset backend value.
+# NOTE: Must be defined after _FetchPreset since it reads the preset backend value.
 # ============================================================================
-class _DatabasesConf:
+class _FetchDatabases:
     """Database Configuration."""
 
-    _is_vercel_preset = PRESETS_CONF.option == PresetOptions.VERCEL
+    _is_vercel_preset = FETCH_PRESET.option == PresetOptions.VERCEL
     # Start from a copy so the shared schema stays unchanged for other consumers.
     _field_schema = {
         field_name: replace(field_config)
@@ -324,9 +323,7 @@ class _DatabasesConf:
     _field_schema[DatabaseKeys.OPTION] = replace(
         _field_schema[DatabaseKeys.OPTION],
         default=(
-            DatabaseOptions.POSTGRESQL
-            if _is_vercel_preset
-            else DatabaseOptions.DEFAULT_SQLITE
+            DatabaseOptions.POSTGRESQL if _is_vercel_preset else DatabaseOptions.SQLITE
         ),
     )
     _field_schema[DatabaseKeys.USE_VARS_OPTION] = replace(
@@ -334,27 +331,27 @@ class _DatabasesConf:
         default=_is_vercel_preset,
     )
 
-    option = _build_conf_field(_field_schema, DatabaseKeys.OPTION)
+    option = _build_fetch_field(_field_schema, DatabaseKeys.OPTION)
     # PostgreSQL connection fields (used when backend resolves to PostgreSQL).
-    pg_use_vars = _build_conf_field(_field_schema, DatabaseKeys.USE_VARS_OPTION)
-    pg_service = _build_conf_field(_field_schema, DatabaseKeys.SERVICE)
-    pg_user = _build_conf_field(_field_schema, DatabaseKeys.USER)
-    pg_password = _build_conf_field(_field_schema, DatabaseKeys.PASSWORD)
-    pg_database = _build_conf_field(_field_schema, DatabaseKeys.NAME)
-    pg_host = _build_conf_field(_field_schema, DatabaseKeys.HOST)
-    pg_port = _build_conf_field(_field_schema, DatabaseKeys.PORT)
-    pg_pool = _build_conf_field(_field_schema, DatabaseKeys.POOL_OPTION)
-    pg_sslmode = _build_conf_field(_field_schema, DatabaseKeys.SSLMODE_OPTION)
+    pg_use_vars = _build_fetch_field(_field_schema, DatabaseKeys.USE_VARS_OPTION)
+    pg_service = _build_fetch_field(_field_schema, DatabaseKeys.SERVICE)
+    pg_user = _build_fetch_field(_field_schema, DatabaseKeys.USER)
+    pg_password = _build_fetch_field(_field_schema, DatabaseKeys.PASSWORD)
+    pg_database = _build_fetch_field(_field_schema, DatabaseKeys.NAME)
+    pg_host = _build_fetch_field(_field_schema, DatabaseKeys.HOST)
+    pg_port = _build_fetch_field(_field_schema, DatabaseKeys.PORT)
+    pg_pool = _build_fetch_field(_field_schema, DatabaseKeys.POOL_OPTION)
+    pg_sslmode = _build_fetch_field(_field_schema, DatabaseKeys.SSLMODE_OPTION)
 
 
-DATABASES_CONF = _DatabasesConf()
+FETCH_DATABASES = _FetchDatabases()
 
 
 # ============================================================================
 # Layout
-# NOTE: Must be defined after _PresetsConf since it reads the preset backend value.
+# NOTE: Must be defined after _FetchPreset since it reads the preset backend value.
 # ============================================================================
-class _LayoutConf:
+class _FetchLayout:
     """Layout Configuration."""
 
     # Start from a copy so the shared schema stays unchanged for other consumers.
@@ -365,49 +362,49 @@ class _LayoutConf:
     # The fallback default is resolved at import time from the security config.
     _field_schema[LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION] = replace(
         _field_schema[LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION],
-        default=SECURITY_CONF.debug_option,
+        default=FETCH_SECURITY.debug_option,
     )
 
-    option = _build_conf_field(_field_schema, LayoutKeys.OPTION)
-    always_show_admin = _build_conf_field(
+    option = _build_fetch_field(_field_schema, LayoutKeys.OPTION)
+    always_show_admin = _build_fetch_field(
         _field_schema, LayoutKeys.ALWAYS_SHOW_ADMIN_OPTION
     )
 
 
-LAYOUT_CONF = _LayoutConf()
+FETCH_LAYOUT = _FetchLayout()
 
 
 # ============================================================================
 # Internationalization
 # ============================================================================
-class _InternationalizationConf:
+class _FetchInternationalization:
     """Internationalization Configuration."""
 
-    language_code = _build_conf_field(
+    language_code = _build_fetch_field(
         INTERNATIONALIZATION_SCHEMA, InternationalizationKeys.LANGUAGE_CODE
     )
-    time_zone = _build_conf_field(
+    time_zone = _build_fetch_field(
         INTERNATIONALIZATION_SCHEMA, InternationalizationKeys.TIME_ZONE
     )
-    use_i18n = _build_conf_field(
+    use_i18n = _build_fetch_field(
         INTERNATIONALIZATION_SCHEMA, InternationalizationKeys.USE_I18N
     )
-    use_tz = _build_conf_field(
+    use_tz = _build_fetch_field(
         INTERNATIONALIZATION_SCHEMA, InternationalizationKeys.USE_TZ
     )
 
 
-INTERNATIONALIZATION_CONF = _InternationalizationConf()
+FETCH_INTERNATIONALIZATION = _FetchInternationalization()
 
 
 # ============================================================================
 # Runcommands
 # ============================================================================
-class _RunCommandsConf:
+class _FetchRuncommands:
     """Runcommands Configuration."""
 
-    install = _build_conf_field(RUNCOMMANDS_SCHEMA, RuncommandKeys.INSTALL)
-    build = _build_conf_field(RUNCOMMANDS_SCHEMA, RuncommandKeys.BUILD)
+    install = _build_fetch_field(RUNCOMMANDS_SCHEMA, RuncommandKeys.INSTALL)
+    build = _build_fetch_field(RUNCOMMANDS_SCHEMA, RuncommandKeys.BUILD)
 
 
-RUNCOMMANDS_CONF = _RunCommandsConf()
+FETCH_RUNCOMMANDS = _FetchRuncommands()

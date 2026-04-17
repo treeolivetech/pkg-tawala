@@ -1,5 +1,9 @@
 [tool.uv.workspace]
-members = ["tawala", "tawala-cli", "tawala-docs"]
+members = [
+    "tawala",
+    "tawala-cli",
+    "tawala-vercel",
+]
 
 [dependency-groups]
 dev = ["pre-commit>=4.5.1", "ty>=0.0.31"]

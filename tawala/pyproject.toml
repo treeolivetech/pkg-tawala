@@ -6,7 +6,7 @@ Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 
 [project]
 name = "Tawala"
-version = "1.5.0a4"
+version = "1.5.0a5"
 description = "Build and deploy Django apps with confidence."
 readme = "README.md"
 license = "MIT"
@@ -35,6 +35,7 @@ dependencies = [
     "django-sass-processor==1.4.2",
     "libsass==0.23.0",
     "pillow==12.2.0",
+    "psycopg[binary,pool]==3.3.3",
     "pyperclip==1.11.0",
     "python-dotenv==1.2.2",
 ]
@@ -43,15 +44,13 @@ dependencies = [
 "tawala" = "tawala.management.api.cli:main"
 
 [project.optional-dependencies]
-psycopg = ["psycopg[binary,pool]==3.3.3"] # Sync with dev.
-vercel = ["vercel==0.5.7"]                # Sync with dev.
+cli = ["tawala-cli==1.5.0a5"]       # Sync with tawala-cli.
+vercel = ["tawala-vercel==1.5.0a5"] # Sync with tawala-vercel.
 
 [build-system]
 requires = ["uv_build>=0.11.7,<0.12.0"]
 build-backend = "uv_build"
 
-[dependency-groups]
-dev = [
-    "psycopg[binary,pool]==3.3.3", # Sync with optional deps.
-    "vercel==0.5.7",               # Sync with optional deps.
-]
+[tool.uv.sources]
+tawala-vercel = { workspace = true }
+tawala-cli = { workspace = true }

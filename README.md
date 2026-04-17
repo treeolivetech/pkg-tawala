@@ -27,7 +27,7 @@ uv run --package tawala-cli tawala-cli -h
 Scaffold a new project:
 
 ```bash
-uv run --package tawala-cli tawala-cli new my-new-app
+uv run tawala-cli new --project my-new-app
 ```
 
 Run the docs/demo app locally:

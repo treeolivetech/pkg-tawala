@@ -32,7 +32,7 @@ pip install tawala
 Scaffold a new project with the CLI:
 
 ```bash
-uvx tawala-cli new my-new-project
+uvx tawala-cli new --project my-new-project
 cd my-new-project
 uv sync
 uv run tawala migrate

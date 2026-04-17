@@ -2,11 +2,6 @@
 
 Documentation and demo site project for Tawala.
 
-This package is a runnable Tawala project configured in `pyproject.toml` with:
-
-- `preset = vercel`
-- `tawala[vercel,psycopg]`
-
 ## Requirements
 
 - Python 3.14+
@@ -14,16 +9,15 @@ This package is a runnable Tawala project configured in `pyproject.toml` with:
 
 ## Local Development
 
-```bash
+```shell
 cd tawala-docs
-uv sync
 uv run tawala migrate
 uv run tawala runserver
 ```
 
 To run on a specific address/port:
 
-```bash
+```shell
 uv run tawala runserver 0.0.0.0:8000
 ```
 
@@ -31,14 +25,14 @@ uv run tawala runserver 0.0.0.0:8000
 
 Preview configured command pipelines:
 
-```bash
+```shell
 uv run tawala runinstall --dry
 uv run tawala runbuild --dry
 ```
 
 Execute configured command pipelines:
 
-```bash
+```shell
 uv run tawala runinstall
 uv run tawala runbuild
 ```

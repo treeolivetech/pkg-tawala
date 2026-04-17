@@ -6,7 +6,7 @@ Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 
 [project]
 name = "tawala-cli"
-version = "1.5.0a4"
+version = "1.5.0a5" # Sync with main package's version.
 description = "A CLI tool to create Tawala projects."
 readme = "README.md"
 license = "MIT"
@@ -27,7 +27,7 @@ classifiers = [
 ]
 dependencies = [
     "christianwhocodes==1.5.7",
-    "tawala==1.5.0a4",          # Sync with main package's version.
+    "tawala==1.5.0a5",          # Sync with main package's version.
 ]
 
 [project.scripts]
