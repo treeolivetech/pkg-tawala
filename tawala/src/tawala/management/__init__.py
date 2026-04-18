@@ -1,1 +1,1 @@
-"""Management."""
+"""Management module."""

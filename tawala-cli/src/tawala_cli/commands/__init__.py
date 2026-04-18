@@ -1,4 +1,4 @@
 """Scripts."""
 
-from ._new import *
-from ._generate import *
+from .new import *
+from .generate import *

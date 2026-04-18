@@ -1,28 +1,28 @@
-"""[PROJECT_CONF_IMPORT_ALLOWED_PREINIT] Main settings."""
+"""[FETCH_PROJECT_IMPORT_ALLOWED] Main settings."""
 
 from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
 
 from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
 
-from .conf import (
-    DATABASES_CONF,
-    INTERNATIONALIZATION_CONF,
-    LAYOUT_CONF,
-    PRESETS_CONF,
-    PROJECT_CONF,
-    RUNCOMMANDS_CONF,
-    SECURITY_CONF,
-)
 from .enums import DatabaseOptions, LayoutOptions, PresetOptions
+from .fetch import (
+    FETCH_DATABASES,
+    FETCH_INTERNATIONALIZATION,
+    FETCH_LAYOUT,
+    FETCH_PRESET,
+    FETCH_PROJECT,
+    FETCH_RUNCOMMANDS,
+    FETCH_SECURITY,
+)
 
 # ============================================================================
 # Core
 # ============================================================================
-PKG_NAME = PROJECT_CONF.pkg_name
-PKG_DISPLAY_NAME = PROJECT_CONF.pkg_display_name
-PKG_VERSION = PROJECT_CONF.pkg_version
-BASE_DIR = PROJECT_CONF.base_dir
+PKG_NAME = FETCH_PROJECT.pkg_name
+PKG_DISPLAY_NAME = FETCH_PROJECT.pkg_display_name
+PKG_VERSION = FETCH_PROJECT.pkg_version
+BASE_DIR = FETCH_PROJECT.base_dir
 
 
 # ============================================================================
@@ -30,13 +30,13 @@ BASE_DIR = PROJECT_CONF.base_dir
 # https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
 # https://docs.djangoproject.com/en/stable/howto/csp/
 # ============================================================================
-SECRET_KEY = SECURITY_CONF.secret_key
-DEBUG = SECURITY_CONF.debug_option
-ALLOWED_HOSTS = SECURITY_CONF.allowed_hosts
-SECURE_SSL_REDIRECT = SECURITY_CONF.secure_ssl_redirect
-SESSION_COOKIE_SECURE = SECURITY_CONF.session_cookie_secure
-CSRF_COOKIE_SECURE = SECURITY_CONF.csrf_cookie_secure
-SECURE_HSTS_SECONDS = SECURITY_CONF.secure_hsts_seconds
+SECRET_KEY = FETCH_SECURITY.secret_key
+DEBUG = FETCH_SECURITY.debug_option
+ALLOWED_HOSTS = FETCH_SECURITY.allowed_hosts
+SECURE_SSL_REDIRECT = FETCH_SECURITY.secure_ssl_redirect
+SESSION_COOKIE_SECURE = FETCH_SECURITY.session_cookie_secure
+CSRF_COOKIE_SECURE = FETCH_SECURITY.csrf_cookie_secure
+SECURE_HSTS_SECONDS = FETCH_SECURITY.secure_hsts_seconds
 
 SECURE_CSP: dict[str, list[str]] = {
     "default-src": [CSP.SELF],
@@ -200,9 +200,7 @@ def get_storages_config(preset_option: str) -> _StoragesDict:
         case PresetOptions.DEFAULT:
             storage_backend = "django.core.files.storage.FileSystemStorage"
         case PresetOptions.VERCEL:
-            storage_backend = (
-                f"{PKG_NAME}.management.backends.storage.VercelBlobStorageBackend"
-            )
+            storage_backend = "tawala_vercel.storage.VercelBlobStorage"
         case _:
             raise ValueError(f"Unsupported storage backend: {preset_option}")
 
@@ -214,8 +212,8 @@ def get_storages_config(preset_option: str) -> _StoragesDict:
     }
 
 
-STORAGES = get_storages_config(PRESETS_CONF.option)
-BLOB_READ_WRITE_TOKEN = PRESETS_CONF.blob_read_write_token
+STORAGES = get_storages_config(FETCH_PRESET.option)
+BLOB_READ_WRITE_TOKEN = FETCH_PRESET.blob_read_write_token
 
 
 # ============================================================================
@@ -252,9 +250,9 @@ class _DatabasesDict(TypedDict):
 
 def _get_databases_config() -> _DatabasesDict:
     """Build the DATABASES setting based on configured backend."""
-    backend: str = DATABASES_CONF.option.lower()
+    backend: str = FETCH_DATABASES.option.lower()
     match backend:
-        case DatabaseOptions.DEFAULT_SQLITE:
+        case DatabaseOptions.SQLITE:
             return {
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
@@ -263,27 +261,27 @@ def _get_databases_config() -> _DatabasesDict:
             }
         case DatabaseOptions.POSTGRESQL:
             config: _DatabaseDict
-            if DATABASES_CONF.pg_use_vars:
+            if FETCH_DATABASES.pg_use_vars:
                 config = {
                     "ENGINE": "django.db.backends.postgresql",
-                    "NAME": DATABASES_CONF.pg_database,
-                    "USER": DATABASES_CONF.pg_user,
-                    "PASSWORD": DATABASES_CONF.pg_password,
-                    "HOST": DATABASES_CONF.pg_host,
-                    "PORT": str(DATABASES_CONF.pg_port),
+                    "NAME": FETCH_DATABASES.pg_database,
+                    "USER": FETCH_DATABASES.pg_user,
+                    "PASSWORD": FETCH_DATABASES.pg_password,
+                    "HOST": FETCH_DATABASES.pg_host,
+                    "PORT": str(FETCH_DATABASES.pg_port),
                     "OPTIONS": {
-                        "pool": DATABASES_CONF.pg_pool,
-                        "sslmode": DATABASES_CONF.pg_sslmode,
+                        "pool": FETCH_DATABASES.pg_pool,
+                        "sslmode": FETCH_DATABASES.pg_sslmode,
                     },
                 }
             else:
                 config = {
                     "ENGINE": "django.db.backends.postgresql",
-                    "NAME": DATABASES_CONF.pg_database,
+                    "NAME": FETCH_DATABASES.pg_database,
                     "OPTIONS": {
-                        "pool": DATABASES_CONF.pg_pool,
-                        "sslmode": DATABASES_CONF.pg_sslmode,
-                        "service": DATABASES_CONF.pg_service,
+                        "pool": FETCH_DATABASES.pg_pool,
+                        "sslmode": FETCH_DATABASES.pg_sslmode,
+                        "service": FETCH_DATABASES.pg_service,
                     },
                 }
             return {"default": config}
@@ -313,22 +311,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/stable/topics/i18n/
 # ============================================================================
-LANGUAGE_CODE = INTERNATIONALIZATION_CONF.language_code
-TIME_ZONE = INTERNATIONALIZATION_CONF.time_zone
-USE_I18N = INTERNATIONALIZATION_CONF.use_i18n
-USE_TZ = INTERNATIONALIZATION_CONF.use_tz
+LANGUAGE_CODE = FETCH_INTERNATIONALIZATION.language_code
+TIME_ZONE = FETCH_INTERNATIONALIZATION.time_zone
+USE_I18N = FETCH_INTERNATIONALIZATION.use_i18n
+USE_TZ = FETCH_INTERNATIONALIZATION.use_tz
 
 
 # ============================================================================
 # Runcommands
 # ============================================================================
-RUNINSTALL = RUNCOMMANDS_CONF.install
-RUNBUILD = RUNCOMMANDS_CONF.build
+RUNINSTALL = FETCH_RUNCOMMANDS.install
+RUNBUILD = FETCH_RUNCOMMANDS.build
 
 
 # ============================================================================
 # Layout
 # ============================================================================
-LAYOUT_ALWAYS_SHOW_ADMIN = LAYOUT_CONF.always_show_admin
-LAYOUT_BASE = LAYOUT_CONF.option == LayoutOptions.DEFAULT_BASE
-LAYOUT_WIP = LAYOUT_CONF.option == LayoutOptions.WIP
+LAYOUT_ALWAYS_SHOW_ADMIN = FETCH_LAYOUT.always_show_admin
+LAYOUT_BASE = FETCH_LAYOUT.option == LayoutOptions.BASE
+LAYOUT_WIP = FETCH_LAYOUT.option == LayoutOptions.WIP

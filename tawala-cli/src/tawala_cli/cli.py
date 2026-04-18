@@ -4,24 +4,25 @@ from argparse import ArgumentParser, Namespace
 from sys import argv, exit
 from typing import Callable, NoReturn, cast
 
-from christianwhocodes import ExitCode, Version
+from christianwhocodes import ExitCode
 
 
 def _build_parser() -> ArgumentParser:
     """Create and configure the top-level CLI parser."""
-    from tawala import PROJECT_CONF
+    from tawala import FETCH_PROJECT
 
+    from . import PKG_NAME, PKG_VERSION
     from .commands import GenerateCommand, NewCommand
 
     parser = ArgumentParser(
-        prog=PROJECT_CONF.cli_pkg_name,
-        description=f"{PROJECT_CONF.pkg_display_name} CLI.",
+        prog=PKG_NAME,
+        description=f"{FETCH_PROJECT.pkg_display_name} CLI.",
     )
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version=Version.get(PROJECT_CONF.cli_pkg_name)[0],
+        version=PKG_VERSION,
         help="Show package version and exit.",
     )
     subparsers = parser.add_subparsers(dest="command")

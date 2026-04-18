@@ -6,7 +6,7 @@ requires-python = ">=3.14"
 members = [
     "tawala",
     "tawala-cli",
-    "tawala-docs",
+    "tawala-vercel",
 ]
 
 [manifest.dependency-groups]
@@ -631,7 +631,7 @@ wheels = [
 
 [[package]]
 name = "tawala"
-version = "1.5.0a4"
+version = "1.5.0a5"
 source = { editable = "tawala" }
 dependencies = [
     { name = "christianwhocodes" },
@@ -643,22 +643,17 @@ dependencies = [
     { name = "django-sass-processor" },
     { name = "libsass" },
     { name = "pillow" },
+    { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pyperclip" },
     { name = "python-dotenv" },
 ]
 
 [package.optional-dependencies]
-psycopg = [
-    { name = "psycopg", extra = ["binary", "pool"] },
+cli = [
+    { name = "tawala-cli" },
 ]
 vercel = [
-    { name = "vercel" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "psycopg", extra = ["binary", "pool"] },
-    { name = "vercel" },
+    { name = "tawala-vercel" },
 ]
 
 [package.metadata]
@@ -672,22 +667,17 @@ requires-dist = [
     { name = "django-sass-processor", specifier = "==1.4.2" },
     { name = "libsass", specifier = "==0.23.0" },
     { name = "pillow", specifier = "==12.2.0" },
-    { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'psycopg'", specifier = "==3.3.3" },
+    { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.3" },
     { name = "pyperclip", specifier = "==1.11.0" },
     { name = "python-dotenv", specifier = "==1.2.2" },
-    { name = "vercel", marker = "extra == 'vercel'", specifier = "==0.5.7" },
+    { name = "tawala-cli", marker = "extra == 'cli'", editable = "tawala-cli" },
+    { name = "tawala-vercel", marker = "extra == 'vercel'", editable = "tawala-vercel" },
 ]
-provides-extras = ["psycopg", "vercel"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.3" },
-    { name = "vercel", specifier = "==0.5.7" },
-]
+provides-extras = ["cli", "vercel"]
 
 [[package]]
 name = "tawala-cli"
-version = "1.5.0a4"
+version = "1.5.0a5"
 source = { editable = "tawala-cli" }
 dependencies = [
     { name = "christianwhocodes" },
@@ -701,15 +691,19 @@ requires-dist = [
 ]
 
 [[package]]
-name = "tawala-docs"
-version = "0.1.0"
-source = { virtual = "tawala-docs" }
+name = "tawala-vercel"
+version = "1.5.0a5"
+source = { editable = "tawala-vercel" }
 dependencies = [
-    { name = "tawala", extra = ["psycopg", "vercel"] },
+    { name = "tawala" },
+    { name = "vercel" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "tawala", extras = ["vercel", "psycopg"], editable = "tawala" }]
+requires-dist = [
+    { name = "tawala", editable = "tawala" },
+    { name = "vercel", specifier = "==0.5.7" },
+]
 
 [[package]]
 name = "ty"

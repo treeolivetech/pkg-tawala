@@ -2,67 +2,92 @@
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  // NOTE: debugpy will automatically activate the selected Python environment.
+  // NOTE: temporary output setup/cleanup is handled via preLaunchTask.
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CLI Smoke: new default (uv)",
+      "name": "CLI: new default project",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["new-default"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "module": "tawala_cli.cli",
+      "args": ["new", "--project", "launch-new-default"],
+      "cwd": "${workspaceFolder}/.tmp",
+      "preLaunchTask": "CLI: new default project",
+      "console": "integratedTerminal"
     },
     {
-      "name": "CLI Smoke: new vercel (uv)",
+      "name": "CLI: new vercel project",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["new-vercel"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "module": "tawala_cli.cli",
+      "args": ["new", "--project", "launch-new-vercel", "--preset", "vercel"],
+      "cwd": "${workspaceFolder}/.tmp",
+      "preLaunchTask": "CLI: new vercel project",
+      "console": "integratedTerminal"
     },
     {
-      "name": "CLI Smoke: new postgres vars wip (uv)",
+      "name": "CLI: new postgres vars wip project",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["new-postgres-vars-wip"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "module": "tawala_cli.cli",
+      "args": [
+        "new",
+        "--project",
+        "launch-new-postgres-vars-wip",
+        "--db",
+        "postgresql",
+        "--pg_use_vars",
+        "--layout",
+        "wip"
+      ],
+      "cwd": "${workspaceFolder}/.tmp",
+      "preLaunchTask": "CLI: new postgres vars wip project",
+      "console": "integratedTerminal"
     },
     {
-      "name": "CLI Smoke: new dot (uv)",
+      "name": "CLI: new current directory",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["new-dot"],
-      "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "module": "tawala_cli.cli",
+      "args": ["new", "--project", "."],
+      "cwd": "${workspaceFolder}/.tmp/new-dot",
+      "preLaunchTask": "CLI: new current directory",
+      "console": "integratedTerminal"
     },
     {
-      "name": "CLI Smoke: generate pick target (uv)",
+      "name": "CLI: generate selected target",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["generate-pick", "--target", "${input:tawalaGenerateTarget}"],
+      "module": "tawala_cli.cli",
+      "args": [
+        "generate",
+        "${input:tawalaGenerateTarget}",
+        "--output-dir",
+        "${workspaceFolder}/.tmp/generate/out-${input:tawalaGenerateTarget}",
+        "--project-name",
+        "gen-${input:tawalaGenerateTarget}"
+      ],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "preLaunchTask": "CLI: generate selected target",
+      "console": "integratedTerminal"
     },
     {
-      "name": "CLI Smoke: generate all targets sequentially (uv)",
+      "name": "CLI: generate all targets",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/.vscode/run_cli_smoke.py",
-      "args": ["generate-all"],
+      "module": "tawala_cli.cli",
+      "args": [
+        "generate",
+        "all",
+        "--output-dir",
+        "${workspaceFolder}/.tmp/generate/all",
+        "--project-name",
+        "gen-all"
+      ],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
-      "preLaunchTask": "Create .tmp folder"
+      "preLaunchTask": "CLI: generate all targets",
+      "console": "integratedTerminal"
     }
   ],
   "inputs": [
@@ -77,11 +102,6 @@
         "api-wsgi",
         "gitignore",
         "pyproject",
-        "app-init",
-        "app-layout",
-        "app-views",
-        "app-urls",
-        "app-migrations-init",
         "readme",
         "vercel-json",
         "config-md"

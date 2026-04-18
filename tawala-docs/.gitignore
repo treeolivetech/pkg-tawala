@@ -1,11 +1,11 @@
-# Vercel deployment files
-/.vercel/
-
-# SQLite database file
-/db.sqlite3
+# Virtual Environment
+/.venv/
 
 # Environment variables file
 /.env
 
 # Static and media files
 /public/
+
+# Vercel deployment files
+/.vercel/

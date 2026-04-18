@@ -1,8 +1,6 @@
-.tmp/
-__pycache__/
-*egg-info/
-/.ruff_cache/
-/.venv/
-/build/
-/dist/
 /.env
+.tmp/
+/.venv/
+__pycache__/
+/.ruff_cache/
+/dist/

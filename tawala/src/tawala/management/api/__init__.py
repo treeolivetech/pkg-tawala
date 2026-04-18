@@ -1,9 +1,27 @@
-"""[PROJECT_CONF_IMPORT_ALLOWED_PREINIT] Management api."""
+"""Management."""
+
+"""[FETCH_PROJECT_IMPORT_ALLOWED] Management api."""
 
 from os import environ
 
-from ...settings.conf import PROJECT_CONF
+from christianwhocodes import ExitCode, Text, cprint
 
-# TODO: Test if this will work on Vercel. If not, first try using a function that sets it, then call the function in the other required modules. If it still doesn't work, try using lambdas, and it that doesn't work, just set it manually in the other modules. The goal is to avoid repeating this line in multiple modules if possible, but it may be necessary if the environment variable needs to be set before importing any api module.
+from ..settings.fetch import FETCH_PROJECT
 
-environ.setdefault("DJANGO_SETTINGS_MODULE", f"{PROJECT_CONF.pkg_name}.settings.main")
+environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", f"{FETCH_PROJECT.pkg_name}.management.settings.conf"
+)
+
+
+def print_invalid_project_help(error: Exception) -> ExitCode:
+    """Print guidance for invalid project-directory validation.
+
+    Returns:
+        ExitCode: The exit code to use after printing the guidance.
+
+    """
+    cprint(
+        f"Is this a valid {FETCH_PROJECT.pkg_display_name} project directory? {error}",
+        Text.WARNING,
+    )
+    return ExitCode.ERROR

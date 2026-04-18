@@ -1,15 +1,20 @@
 [project]
 name = "tawala-docs"
-version = "0.1.0"
+version = "1.5.0a5"
 description = "Documentation and demo site project for Tawala."
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = ["tawala[vercel,psycopg]==1.5.0a4"]
+dependencies = ["tawala[vercel,cli]==1.5.0a5"]
 
 [tool.uv.sources]
-tawala = { workspace = true }
+tawala = { git = "https://github.com/treeolivetech/pkg-tawala.git", tag = "v1.5.0a5" }
 
 [tool.tawala]
-preset = { option = "vercel", token = "get-from-vercel-blob-storage-and-keep-private-via-env-var" }
+preset = { option = "vercel" }
 layout = { option = "wip" }
-allowed_hosts = ["localhost", "127.0.0.1", ".vercel.app", "tawala.treeolive.tech"]
+allowed_hosts = [
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",
+    "tawala.treeolive.tech",
+]

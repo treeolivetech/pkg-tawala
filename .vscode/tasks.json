@@ -2,15 +2,94 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Create .tmp folder",
+      "label": "CLI: new default project",
       "type": "process",
       "command": "uv",
       "args": [
         "run",
         "python",
         "-c",
-        "from pathlib import Path; p = Path('./.tmp'); p.mkdir(exist_ok=True);"
-      ]
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-default', ignore_errors=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CLI: new vercel project",
+      "type": "process",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-c",
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-vercel', ignore_errors=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CLI: new postgres vars wip project",
+      "type": "process",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-c",
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-postgres-vars-wip', ignore_errors=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CLI: new current directory",
+      "type": "process",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-c",
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); target = tmp / 'new-dot'; shutil.rmtree(target, ignore_errors=True); target.mkdir(parents=True, exist_ok=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CLI: generate selected target",
+      "type": "process",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-c",
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'generate', ignore_errors=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "CLI: generate all targets",
+      "type": "process",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-c",
+        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'generate', ignore_errors=True)"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     }
   ]
 }
