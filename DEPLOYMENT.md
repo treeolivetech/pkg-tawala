@@ -1,0 +1,3 @@
+- [] Ensure you have updated and backed up fixtures.
+- [] Ensure no migration or fixture is committed.
+- [] Once you have confirmed everything, clear this DEPLOYMENT checks.

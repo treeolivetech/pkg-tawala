@@ -12,6 +12,8 @@ from christianwhocodes import (
 )
 
 from ..conf import (
+    API_PKG_NAME,
+    API_PKG_VERSION,
     FETCH_PROJECT,
     DatabaseHelpTexts,
     DatabaseKeys,
@@ -23,8 +25,6 @@ from ..conf import (
     PresetKeys,
     PresetOptions,
 )
-
-from .. import API_PKG_NAME, API_PKG_VERSION
 
 __all__ = ["NewCommand"]
 
@@ -80,7 +80,10 @@ class NewCommand(BaseCommand):
         parser.add_argument(
             f"--{LayoutKeys.LAYOUT}",
             choices=list(LayoutOptions),
-            help=f"Layout to use for the generated project. Defaults to the standard {LayoutOptions.BASE} layout if not specified.",
+            help=(
+                "Layout to use for the generated project. "
+                f"Defaults to the {LayoutOptions.CORE} layout if not specified."
+            ),
         )
 
     def handle(self, args: Namespace) -> ExitCode:
@@ -204,20 +207,12 @@ class NewCommand(BaseCommand):
         (app_dir / "urls.py").write_text(urls_content, encoding="utf-8")
 
         layout_html_content = (
-            '{% extends "core/base.html" %}\n'
-            "{% block fonts %}\n"
-            '    <link href="https://fonts.googleapis.com" rel="preconnect" />\n'
-            '    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />\n'
-            '    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Mulish:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"\n'
-            '          rel="stylesheet" />\n'
-            "{% endblock fonts %}\n"
-            "{% block main %}\n"
-            "    <main>\n"
-            '        <section class="container">\n'
-            '            <p class="text-primary">Welcome to our App!</p>\n'
-            "        </section>\n"
-            "    </main>\n"
-            "{% endblock main %}\n"
+            '{% extends "core/layout.html" %}\n'
+            "{% block sections %}\n"
+            '    <section class="container">\n'
+            '        <p class="text-primary">Welcome to our App!</p>\n'
+            "    </section>\n"
+            "{% endblock sections %}\n"
         )
         templates_dir = app_dir / "templates" / app_name
         templates_dir.mkdir(parents=True, exist_ok=True)

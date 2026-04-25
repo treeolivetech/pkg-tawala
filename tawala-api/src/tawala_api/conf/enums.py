@@ -14,6 +14,7 @@ __all__ = [
     "SecuritySecureSSLRedirectOptions",
     "SecuritySessionCookieSecureOptions",
     "SecurityCSRFCookieSecureOptions",
+    "SecurityServerOptions",
     "PresetKeys",
     "PresetHelpTexts",
     "PresetOptions",
@@ -52,6 +53,7 @@ class SecurityKeys(StrEnum):
     SESSION_COOKIE_SECURE_OPTION = "session_cookie_secure"
     CSRF_COOKIE_SECURE_OPTION = "csrf_cookie_secure"
     SECURE_HSTS_SECONDS = "secure_hsts_seconds"
+    SERVER_OPTION = "server"
 
 
 # ---------------------------------
@@ -89,6 +91,14 @@ class SecurityCSRFCookieSecureOptions(Enum):
     DISABLED = False
 
 
+# server
+class SecurityServerOptions(StrEnum):
+    """Options for server configuration."""
+
+    ASGI = "asgi"
+    WSGI = "wsgi"
+
+
 # ---------------------------------
 
 
@@ -102,6 +112,7 @@ class SecurityDefaults(Enum):
     SESSION_COOKIE_SECURE_OPTION = SecuritySessionCookieSecureOptions.DISABLED.value
     CSRF_COOKIE_SECURE_OPTION = SecurityCSRFCookieSecureOptions.DISABLED.value
     SECURE_HSTS_SECONDS = 0
+    SERVER_OPTION = SecurityServerOptions.WSGI.value
 
 
 class SecurityHelpTexts(StrEnum):
@@ -120,6 +131,7 @@ class SecurityHelpTexts(StrEnum):
         "Mark CSRF cookies as secure so they are sent only over HTTPS."
     )
     SECURE_HSTS_SECONDS = "HTTP Strict Transport Security max-age value in seconds."
+    SERVER_OPTION = "Type of server to run (ASGI or WSGI). ASGI is recommended for modern deployments and required for real-time features."
 
 
 # ============================================================================
@@ -278,7 +290,7 @@ class LayoutKeys(StrEnum):
 class LayoutOptions(StrEnum):
     """Available layout options."""
 
-    BASE = "base"
+    CORE = "core"
     WIP = "wip"
 
 
@@ -295,7 +307,7 @@ class LayoutAlwaysShowAdminOptions(Enum):
 class LayoutDefaults(Enum):
     """Default values for layout configuration."""
 
-    OPTION = LayoutOptions.BASE.value
+    OPTION = LayoutOptions.CORE.value
     ALWAYS_SHOW_ADMIN_OPTION = LayoutAlwaysShowAdminOptions.DISABLED.value
 
 

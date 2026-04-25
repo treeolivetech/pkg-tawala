@@ -1,11 +1,11 @@
-"""[FETCH_PROJECT_IMPORT_ALLOWED] Main settings."""
+"""Main settings."""
 
 from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
 
 from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
-from tawala_api import API_PKG_MODULE
 from tawala_api.conf import (
+    API_PKG_MODULE,
     FETCH_DATABASES,
     FETCH_INTERNATIONALIZATION,
     FETCH_LAYOUT,
@@ -14,20 +14,15 @@ from tawala_api.conf import (
     FETCH_RUNCOMMANDS,
     FETCH_SECURITY,
     DatabaseOptions,
+    LayoutOptions,
     PresetOptions,
+    SecurityServerOptions,
 )
-from tawala_vercel import VERCEL_PKG_MODULE
 
-# ============================================================================
-# Core
-# ============================================================================
 PKG_NAME = FETCH_PROJECT.pkg_name
 PKG_DISPLAY_NAME = FETCH_PROJECT.pkg_display_name
 PKG_VERSION = FETCH_PROJECT.pkg_version
 BASE_DIR = FETCH_PROJECT.base_dir
-
-CORE_APP = FETCH_PROJECT.core_app
-MAIN_APP = FETCH_PROJECT.main_app
 
 
 # ============================================================================
@@ -61,35 +56,50 @@ SECURE_CSP: dict[str, list[str]] = {
 # ============================================================================
 # Installed applications
 # ============================================================================
-VENDORS_MODULE = f"{PKG_NAME}.components.vendors"
-WIDGETS_MODULE = f"{PKG_NAME}.components.widgets"
-LAYOUTS_MODULE = f"{PKG_NAME}.components.layouts"
+_VENDORS_STR = "vendors"
+_WIDGETS_STR = "widgets"
+_LAYOUTS_STR = "layouts"
 
-INSTALLED_APPS = (
-    [
-        "django_browser_reload",
-        "django_minify_html",
-        "django_http_compression",
-    ]
-    + [MAIN_APP]
-    + [
-        f"{LAYOUTS_MODULE}.wip",
-        f"{WIDGETS_MODULE}.preloader",
-        f"{WIDGETS_MODULE}.scroll_top",
-        f"{VENDORS_MODULE}.bootstrap",
-        f"{VENDORS_MODULE}.aos",
-    ]
-    + [CORE_APP]
-    + [
-        "django.contrib.admin",
-        "django.contrib.auth",
-        "django.contrib.contenttypes",
-        "django.contrib.sessions",
-        "django.contrib.messages",
-        "sass_processor",
-        "django.contrib.staticfiles",
-    ]
-)
+VENDORS_MODULE = f"{PKG_NAME}.components.{_VENDORS_STR}"
+WIDGETS_MODULE = f"{PKG_NAME}.components.{_WIDGETS_STR}"
+LAYOUTS_MODULE = f"{PKG_NAME}.components.{_LAYOUTS_STR}"
+
+CORE_APP = FETCH_PROJECT.core_app
+MAIN_APP = FETCH_PROJECT.main_app
+
+INSTALLED_APPS = [
+    "django_browser_reload",
+    "django_minify_html",
+    "django_http_compression",
+    MAIN_APP,
+]
+
+match FETCH_LAYOUT.option:
+    case LayoutOptions.WIP.value:
+        INSTALLED_APPS.extend([f"{LAYOUTS_MODULE}.{LayoutOptions.WIP.value}"])
+    case _:
+        INSTALLED_APPS.extend([
+            f"{WIDGETS_MODULE}.addresses",
+            f"{WIDGETS_MODULE}.footer",
+            f"{WIDGETS_MODULE}.header",
+            f"{WIDGETS_MODULE}.scroll_top",
+            f"{WIDGETS_MODULE}.logout",
+            f"{WIDGETS_MODULE}.preloader",
+            f"{VENDORS_MODULE}.bootstrap",
+            f"{VENDORS_MODULE}.aos",
+        ])
+
+INSTALLED_APPS.extend([
+    CORE_APP,
+    "phonenumber_field",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "sass_processor",
+    "django.contrib.staticfiles",
+])
 
 
 # ============================================================================
@@ -113,8 +123,13 @@ MIDDLEWARE = [
 # ============================================================================
 # ASGI, WSGI
 # ============================================================================
-ASGI_APPLICATION = f"{API_PKG_MODULE}.asgi.application"
-WSGI_APPLICATION = f"{API_PKG_MODULE}.wsgi.application"
+_SERVER_APPLICATION = f"{API_PKG_MODULE}.sgi.application"
+
+match FETCH_SECURITY.server_option:
+    case SecurityServerOptions.ASGI.value:
+        ASGI_APPLICATION = _SERVER_APPLICATION
+    case _:
+        WSGI_APPLICATION = _SERVER_APPLICATION
 
 
 # ============================================================================
@@ -157,7 +172,12 @@ TEMPLATES: _TemplatesDict = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csp",
-            ]
+            ],
+            "libraries": {
+                _VENDORS_STR: f"{VENDORS_MODULE}.templatetags",
+                _WIDGETS_STR: f"{WIDGETS_MODULE}.templatetags",
+                _LAYOUTS_STR: f"{LAYOUTS_MODULE}.templatetags",
+            },
         },
     }
 ]
@@ -203,10 +223,10 @@ def get_storages_config(preset_option: str) -> _StoragesDict:
     storage_backend: str
 
     match preset_option:
-        case PresetOptions.DEFAULT:
+        case PresetOptions.DEFAULT.value:
             storage_backend = "django.core.files.storage.FileSystemStorage"
-        case PresetOptions.VERCEL:
-            storage_backend = f"{VERCEL_PKG_MODULE}.storage.VercelBlobStorage"
+        case PresetOptions.VERCEL.value:
+            storage_backend = f"{CORE_APP}.backends.VercelBlobStorage"
         case _:
             raise ValueError(f"Unsupported storage backend: {preset_option}")
 
@@ -258,14 +278,14 @@ def _get_databases_config() -> _DatabasesDict:
     """Build the DATABASES setting based on configured backend."""
     backend: str = FETCH_DATABASES.option.lower()
     match backend:
-        case DatabaseOptions.SQLITE:
+        case DatabaseOptions.SQLITE.value:
             return {
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
                     "NAME": BASE_DIR / "db.sqlite3",
                 }
             }
-        case DatabaseOptions.POSTGRESQL:
+        case DatabaseOptions.POSTGRESQL.value:
             config: _DatabaseDict
             if FETCH_DATABASES.pg_use_vars:
                 config = {

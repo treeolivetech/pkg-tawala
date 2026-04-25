@@ -9,9 +9,8 @@ from christianwhocodes import ExitCode
 
 def _build_parser() -> ArgumentParser:
     """Create and configure the top-level CLI parser."""
-    from . import API_PKG_NAME, API_PKG_VERSION
-    from .conf import FETCH_PROJECT
     from .commands import GenerateCommand, NewCommand
+    from .conf import API_PKG_NAME, API_PKG_VERSION, FETCH_PROJECT
 
     parser = ArgumentParser(
         prog=API_PKG_NAME,

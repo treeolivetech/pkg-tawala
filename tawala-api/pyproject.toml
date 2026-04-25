@@ -6,7 +6,7 @@ Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
 
 [project]
 name = "tawala-api"
-version = "1.5.0a5"                                   # Sync with main package's version.
+version = "0.0.1"
 description = "A CLI tool to create Tawala projects."
 # readme = "README.md"
 license = "MIT"

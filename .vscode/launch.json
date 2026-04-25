@@ -7,11 +7,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CLI: new default project",
+      "name": "CLI: new default project wip",
       "type": "debugpy",
       "request": "launch",
       "module": "tawala_api.cli",
-      "args": ["new", "--project", "launch-new-default"],
+      "args": ["new", "--project", "launch-new-default", "--layout", "wip"],
       "cwd": "${workspaceFolder}/.tmp",
       "preLaunchTask": "CLI: new default project",
       "console": "integratedTerminal"
@@ -98,8 +98,7 @@
       "options": [
         "all",
         "api-init",
-        "api-asgi",
-        "api-wsgi",
+        "api-server",
         "gitignore",
         "pyproject",
         "readme",

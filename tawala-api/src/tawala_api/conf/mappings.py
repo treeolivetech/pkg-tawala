@@ -33,6 +33,7 @@ from .enums import (
     SecurityKeys,
     SecuritySecureSSLRedirectOptions,
     SecuritySessionCookieSecureOptions,
+    SecurityServerOptions,
 )
 
 
@@ -118,6 +119,14 @@ SECURITY_SCHEMA: _Schema = {
         toml=SecurityKeys.SECURE_HSTS_SECONDS.value,
         default=SecurityDefaults.SECURE_HSTS_SECONDS.value,
         help_text=SecurityHelpTexts.SECURE_HSTS_SECONDS.value,
+    ),
+    SecurityKeys.SERVER_OPTION: SchemaField(
+        type=str,
+        env="SERVER_OPTION",
+        toml=SecurityKeys.SERVER_OPTION.value,
+        default=SecurityDefaults.SERVER_OPTION.value,
+        options=list(SecurityServerOptions),
+        help_text=SecurityHelpTexts.SERVER_OPTION.value,
     ),
 }
 

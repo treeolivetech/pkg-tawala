@@ -15,6 +15,9 @@ from christianwhocodes import (
 )
 
 from ..conf import (
+    API_PKG_MODULE,
+    API_PKG_NAME,
+    API_PKG_VERSION,
     DATABASES_SCHEMA,
     FETCH_PROJECT,
     INTERNATIONALIZATION_SCHEMA,
@@ -35,8 +38,6 @@ from ..conf import (
     SecurityKeys,
 )
 
-from .. import API_PKG_NAME, API_PKG_VERSION, API_PKG_MODULE
-
 __all__ = ["GenerateCommand"]
 
 
@@ -45,8 +46,7 @@ class _GenerateTargets:
 
     ALL = "all"
     API_INIT = "api-init"
-    API_ASGI = "api-asgi"
-    API_WSGI = "api-wsgi"
+    API_SERVER = "api-server"
     GITIGNORE = "gitignore"
     PYPROJECT = "pyproject"
     README = "readme"
@@ -56,8 +56,7 @@ class _GenerateTargets:
     CHOICES = [
         ALL,
         API_INIT,
-        API_ASGI,
-        API_WSGI,
+        API_SERVER,
         GITIGNORE,
         PYPROJECT,
         README,
@@ -189,11 +188,8 @@ class GenerateCommand(BaseCommand):
             _GenerateTargets.API_INIT: FileSpec(
                 path=api_dir / "__init__.py", content='"""API module."""'
             ),
-            _GenerateTargets.API_ASGI: FileSpec(
-                path=api_dir / "asgi.py", content=self._content_api_asgi_py()
-            ),
-            _GenerateTargets.API_WSGI: FileSpec(
-                path=api_dir / "wsgi.py", content=self._content_api_wsgi_py()
+            _GenerateTargets.API_SERVER: FileSpec(
+                path=api_dir / "server.py", content=self._content_api_server_py()
             ),
             _GenerateTargets.GITIGNORE: FileSpec(
                 path=output_dir / ".gitignore", content=self._content_gitignore(args)
@@ -220,8 +216,7 @@ class GenerateCommand(BaseCommand):
 
         ordered_targets = [
             _GenerateTargets.API_INIT,
-            _GenerateTargets.API_ASGI,
-            _GenerateTargets.API_WSGI,
+            _GenerateTargets.API_SERVER,
             _GenerateTargets.GITIGNORE,
             _GenerateTargets.PYPROJECT,
             _GenerateTargets.README,
@@ -271,16 +266,13 @@ class GenerateCommand(BaseCommand):
         layout = getattr(args, LayoutKeys.LAYOUT)
 
         extras: list[str] = []
-        if is_vercel:
-            extras.append("vercel")
-
-        extras_suffix = f"[{','.join(extras)}]" if extras else ""
-        dependencies = f'"{FETCH_PROJECT.pkg_name}{extras_suffix}"'
-
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
         tool_lines = [f"[tool.{FETCH_PROJECT.pkg_name}]"]
 
+        # ---------------------------------------------
+
         if is_vercel:
+            extras.append(PresetOptions.VERCEL.value)
             allowed_hosts.append('".vercel.app"')
             tool_lines.append(
                 f"{PresetKeys.PRESET} = {{ "
@@ -289,6 +281,7 @@ class GenerateCommand(BaseCommand):
                 "}"
             )
         elif uses_postgresql:
+            extras.append(DatabaseOptions.POSTGRESQL.value)
             tool_lines.append(
                 f"{DatabaseKeys.DB} = {{ "
                 f'{DatabaseKeys.OPTION} = "{DatabaseOptions.POSTGRESQL}", '
@@ -307,14 +300,14 @@ class GenerateCommand(BaseCommand):
         tool_lines.append(
             f"{SecurityKeys.ALLOWED_HOSTS} = [{', '.join(allowed_hosts)}]"
         )
-        tool_section = "\n".join(tool_lines) + "\n"
 
-        uv_source = (
-            f"{FETCH_PROJECT.pkg_name} = {{ "
-            f'git = "https://github.com/treeolivetech/pkg-{FETCH_PROJECT.pkg_name}.git", '
-            f'tag = "{FETCH_PROJECT.pkg_version}" '
-            "}\n"
+        # ---------------------------------------------
+
+        extras_suffix = f"[{','.join(extras)}]" if extras else ""
+        dependencies = (
+            f'"{FETCH_PROJECT.pkg_name}{extras_suffix}=={FETCH_PROJECT.pkg_version}"'
         )
+        tool_section = "\n".join(tool_lines) + "\n"
 
         return (
             "[project]\n"
@@ -329,18 +322,12 @@ class GenerateCommand(BaseCommand):
             'dev = ["djlint>=1.36.4"]\n'
             "\n"
             "[tool.uv.sources]\n"
-            f"{uv_source}"
-            "\n"
-            f"{tool_section}"
+            f"{tool_section}\n"
         )
 
-    def _content_api_asgi_py(self) -> str:
-        """Generate ASGI entry-point file content."""
-        return f"from {API_PKG_MODULE}.asgi import application\n\napp = application\n"
-
-    def _content_api_wsgi_py(self) -> str:
-        """Generate WSGI entry-point file content."""
-        return f"from {API_PKG_MODULE}.wsgi import application\n\napp = application\n"
+    def _content_api_server_py(self) -> str:
+        """Generate API server entry-point file content."""
+        return f"from {API_PKG_MODULE}.sgi import application\n\napp = application\n"
 
     def _content_vercel_json(self) -> str:
         """Generate vercel.json content for Vercel preset."""
@@ -353,7 +340,7 @@ class GenerateCommand(BaseCommand):
             '  "rewrites": [',
             "    {",
             '      "source": "/(.*)",',
-            '      "destination": "/api/asgi.py"',
+            '      "destination": "/api/server.py"',
             "    }",
             "  ]",
             "}",
@@ -370,7 +357,7 @@ class GenerateCommand(BaseCommand):
         lines = [
             "# Tawala Configuration Reference",
             "",
-            "A generated reference of all supported `tool.tawala` settings, their defaults, and allowed values.",
+            f"A generated reference of all supported `tool.{FETCH_PROJECT.pkg_name}` settings, their defaults, and allowed values.",
             "",
             f"Generated on: {generated_on}",
             "",
@@ -378,7 +365,7 @@ class GenerateCommand(BaseCommand):
             "",
             "Configuration is resolved in this order:",
             "1. Environment variables",
-            "2. `pyproject.toml` in `[tool.tawala]`",
+            f"2. `pyproject.toml` in `[tool.{FETCH_PROJECT.pkg_name}]` section",
             "3. Schema defaults",
             "",
         ]

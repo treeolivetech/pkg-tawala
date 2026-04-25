@@ -1,7 +1,9 @@
-"""WIP urls."""
+"""Layout Work In Progress URLs."""
 
-from django.urls import re_path
+from django.urls import path
 
 from .views import WorkInProgressLayout
 
-urlpatterns = [re_path(r"^.*$", WorkInProgressLayout.as_view(), name="wip_catchall")]
+urlpatterns = [
+    path("", WorkInProgressLayout.as_view(), name="layout_wip"),
+]

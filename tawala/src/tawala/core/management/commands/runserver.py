@@ -24,20 +24,20 @@ class Command(RunserverCommand):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the runserver command."""
         super().__init__(*args, **kwargs)
-        self.no_clipboard: bool = False
+        self.clipboard: bool = False
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Add custom arguments to the command."""
         super().add_arguments(parser)
         parser.add_argument(
-            "--no-clipboard",
+            "--clipboard",
             action="store_true",
-            help="Disable copying the server URL to clipboard",
+            help="Copy server URL to clipboard",
         )
 
     def handle(self, *args: object, **options: Any) -> str | None:
         """Handle the dev command execution."""
-        self.no_clipboard = options.get("no_clipboard", False)
+        self.clipboard = options.get("clipboard", False)
         return super().handle(*args, **options)
 
     def check_migrations(self) -> None:
@@ -72,7 +72,7 @@ class Command(RunserverCommand):
         self._print_startup_banner()
         self._print_server_info(server_port)
 
-        if not self.no_clipboard:
+        if self.clipboard:
             self._copy_to_clipboard(server_port)
 
         self.stdout.write("")

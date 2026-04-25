@@ -1,1 +1,1 @@
-"""Package."""
+# noqa: D104

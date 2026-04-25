@@ -1,4 +1,4 @@
-{% extends "core/base.html" %}
+{% extends "core/layout.html" %}
 {% load static %}
 {% block meta %}
     <meta name="description"
@@ -7,7 +7,7 @@
 {% block styles %}
     <style nonce="{{csp_nonce}}">
         body {
-            background-image: url("{% static 'core/wip/gif.webp' %}");
+            background-image: url("{% static 'wip/gif.webp' %}");
             background-size: auto;
             background-repeat: no-repeat;
             background-position: center;

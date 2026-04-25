@@ -26,25 +26,27 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+    "christianwhocodes==1.5.7",
     "django==6.0.4",
     "django-browser-reload==1.21.0",
     "django-compressor==4.6.0",
     "django-http-compression[brotli]==1.4.0",
     "django-minify-html==1.14.0",
+    "django-phonenumber-field[phonenumberslite]>=8.4.0",
     "django-sass-processor==1.4.2",
     "libsass==0.23.0",
     "pillow==12.2.0",
-    "psycopg[binary,pool]==3.3.3",
     "pyperclip==1.11.0",
-    "tawala-api==1.5.0a5",                    # Sync with tawala-api.
+    "tawala-api==0.0.1",                      # TEST: Sync with API package's version.
 ]
 
 [project.scripts]
-"tawala" = "tawala.core.management:main"
-"twl" = "tawala.core.management:main"
+"tawala" = "tawala.core.management.cli:main"
+"twl" = "tawala.core.management.cli:main"
 
-[project.optional-dependencies]
-vercel = ["tawala-vercel==1.5.0a5"] # Sync with tawala-vercel.
+[project.optional-dependencies] # Sync with dev dependencies
+postgresql = ["psycopg[binary,pool]==3.3.3"]
+vercel = ["psycopg[binary,pool]==3.3.3", "vercel==0.5.8"]
 
 [build-system]
 requires = ["uv_build>=0.11.7,<0.12.0"]
@@ -52,4 +54,6 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 tawala-api = { workspace = true }
-tawala-vercel = { workspace = true }
+
+[dependency-groups] # Sync with optional dependecies
+dev = ["psycopg[binary,pool]==3.3.3", "vercel>=0.5.8"]

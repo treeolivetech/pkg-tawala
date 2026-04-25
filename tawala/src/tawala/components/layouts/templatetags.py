@@ -1,4 +1,4 @@
-"""Base layout templatetags."""
+"""Layout templatetags."""
 
 from django.conf import settings
 from django.template import Library

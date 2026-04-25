@@ -1,7 +1,7 @@
-"""Base abstract models."""
+"""Core abstract models."""
 
+from django.conf import settings
 from django.db import models
-from django.templatetags.static import static
 
 
 class AbstractDisplayOrder(models.Model):
@@ -60,7 +60,7 @@ class AbstractImage(models.Model):
         abstract = True
 
     image = models.ImageField(
-        upload_to="images/",
+        upload_to=f"{settings.PKG_NAME}/images/",
         blank=True,
         null=True,
         help_text="Optional Image.",
@@ -74,6 +74,23 @@ class AbstractImage(models.Model):
         """Return the URL of the image if it exists."""
         if self.image and hasattr(self.image, "url"):
             return str(self.image.url)
+
+        from django.templatetags.static import static
+
         return static(
-            "core/base/default.png"
+            "core/placeholder.png"
         )  # TEST: Use findstatic to find a default image in the static files.
+
+
+class AbstractIsActive(models.Model):
+    """Abstract model providing an is_active field."""
+
+    class Meta:
+        """Model metadata."""
+
+        abstract = True
+
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Designates whether this item should be treated as active. Unselect this instead of deleting items.",
+    )

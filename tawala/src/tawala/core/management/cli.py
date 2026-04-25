@@ -1,4 +1,4 @@
-"""[FETCH_PROJECT_IMPORT_ALLOWED] CLI entry point."""
+"""CLI entry point."""
 
 from sys import argv, exit
 

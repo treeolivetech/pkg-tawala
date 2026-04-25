@@ -1,10 +1,14 @@
 """Conf."""
 
+from christianwhocodes import ExitCode, Text, Version, cprint
+
 from .enums import *
 from .fetch import *
 from .mappings import *
 
-from christianwhocodes import ExitCode, Text, cprint
+API_PKG_NAME = "tawala-api"
+API_PKG_MODULE = "tawala_api"
+API_PKG_VERSION = Version.get(API_PKG_NAME)[0]
 
 DJANGO_SETTINGS_MODULE = f"{FETCH_PROJECT.core_app}.management.conf"
 

@@ -6,7 +6,6 @@ requires-python = ">=3.14"
 members = [
     "tawala",
     "tawala-api",
-    "tawala-vercel",
 ]
 
 [manifest.dependency-groups]
@@ -207,6 +206,23 @@ wheels = [
 ]
 
 [[package]]
+name = "django-phonenumber-field"
+version = "8.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/87/bf/8aa60c9834773b955dff1ddea842e361e8daaf6b0945d5bfc29fc66d53ab/django_phonenumber_field-8.4.0.tar.gz", hash = "sha256:2b83e843dac35eec6a69880a166487235b737a71a1e38c9a52e5ad67d6996083", size = 45512, upload-time = "2025-11-24T15:09:51.904Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/a3/f6b85a9246e22cf719752ad83f5e95aa9ba12419b2f9eff70f20d30e55df/django_phonenumber_field-8.4.0-py3-none-any.whl", hash = "sha256:7a1cb3a6456edb54d879f11ffa0acb227ded08c93b587035d0f28093f0e46511", size = 69528, upload-time = "2025-11-24T15:09:45.479Z" },
+]
+
+[package.optional-dependencies]
+phonenumberslite = [
+    { name = "phonenumberslite" },
+]
+
+[[package]]
 name = "django-sass-processor"
 version = "1.4.2"
 source = { registry = "https://pypi.org/simple" }
@@ -335,6 +351,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/24/bf/d1bda4f6168e0b2e9e5958945e01910052158313224ada5ce1fb2e1113b8/nodeenv-1.10.0.tar.gz", hash = "sha256:996c191ad80897d076bdfba80a41994c2b47c68e224c542b48feba42ba00f8bb", size = 55611, upload-time = "2025-12-20T14:08:54.006Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl", hash = "sha256:5bb13e3eed2923615535339b3c620e76779af4cb4c6a90deccc9e36b274d3827", size = 23438, upload-time = "2025-12-20T14:08:52.782Z" },
+]
+
+[[package]]
+name = "phonenumberslite"
+version = "9.0.29"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f5/14/d8820aaf74275183b207c5cdd6f248ce0adb80fc688f3566602fa423dc94/phonenumberslite-9.0.29.tar.gz", hash = "sha256:9804ecca39a0b8aa735b1797c6dda11ab3e78da1b280e3defdee1a3ea94667b2", size = 288716, upload-time = "2026-04-25T05:35:17.195Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ee/3d/6faf80eab5640aafb5dcc8d1b398a338677f238e5c0b7ae46655a19a524d/phonenumberslite-9.0.29-py2.py3-none-any.whl", hash = "sha256:572760601cc45ae6578cb7493973b479d5a68ec90ca6e7db2fbce899e4ee393e", size = 473337, upload-time = "2026-04-25T05:35:15.243Z" },
 ]
 
 [[package]]
@@ -634,44 +659,64 @@ name = "tawala"
 version = "1.5.0a5"
 source = { editable = "tawala" }
 dependencies = [
+    { name = "christianwhocodes" },
     { name = "django" },
     { name = "django-browser-reload" },
     { name = "django-compressor" },
     { name = "django-http-compression", extra = ["brotli"] },
     { name = "django-minify-html" },
+    { name = "django-phonenumber-field", extra = ["phonenumberslite"] },
     { name = "django-sass-processor" },
     { name = "libsass" },
     { name = "pillow" },
-    { name = "psycopg", extra = ["binary", "pool"] },
     { name = "pyperclip" },
     { name = "tawala-api" },
 ]
 
 [package.optional-dependencies]
+postgresql = [
+    { name = "psycopg", extra = ["binary", "pool"] },
+]
 vercel = [
-    { name = "tawala-vercel" },
+    { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "vercel" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "psycopg", extra = ["binary", "pool"] },
+    { name = "vercel" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "christianwhocodes", specifier = "==1.5.7" },
     { name = "django", specifier = "==6.0.4" },
     { name = "django-browser-reload", specifier = "==1.21.0" },
     { name = "django-compressor", specifier = "==4.6.0" },
     { name = "django-http-compression", extras = ["brotli"], specifier = "==1.4.0" },
     { name = "django-minify-html", specifier = "==1.14.0" },
+    { name = "django-phonenumber-field", extras = ["phonenumberslite"], specifier = ">=8.4.0" },
     { name = "django-sass-processor", specifier = "==1.4.2" },
     { name = "libsass", specifier = "==0.23.0" },
     { name = "pillow", specifier = "==12.2.0" },
-    { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.3" },
+    { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'postgresql'", specifier = "==3.3.3" },
+    { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'vercel'", specifier = "==3.3.3" },
     { name = "pyperclip", specifier = "==1.11.0" },
     { name = "tawala-api", editable = "tawala-api" },
-    { name = "tawala-vercel", marker = "extra == 'vercel'", editable = "tawala-vercel" },
+    { name = "vercel", marker = "extra == 'vercel'", specifier = "==0.5.8" },
 ]
-provides-extras = ["vercel"]
+provides-extras = ["postgresql", "vercel"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "psycopg", extras = ["binary", "pool"], specifier = "==3.3.3" },
+    { name = "vercel", specifier = ">=0.5.8" },
+]
 
 [[package]]
 name = "tawala-api"
-version = "1.5.0a5"
+version = "0.0.1"
 source = { editable = "tawala-api" }
 dependencies = [
     { name = "christianwhocodes" },
@@ -682,21 +727,6 @@ dependencies = [
 requires-dist = [
     { name = "christianwhocodes", specifier = "==1.5.7" },
     { name = "python-dotenv", specifier = "==1.2.2" },
-]
-
-[[package]]
-name = "tawala-vercel"
-version = "1.5.0a5"
-source = { editable = "tawala-vercel" }
-dependencies = [
-    { name = "tawala" },
-    { name = "vercel" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "tawala", editable = "tawala" },
-    { name = "vercel", specifier = "==0.5.8" },
 ]
 
 [[package]]

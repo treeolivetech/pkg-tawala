@@ -117,21 +117,9 @@ class _FetchProject:
 
         return {**dotenv_values(self.base_dir / ".env"), **environ}
 
-    # TODO: Has this been used anywhere? If not remove it.
-    @cached_property
-    def base_name(self) -> str:
-        """Project name derived from the project directory name (lazy-loaded)."""
-        return self.base_dir.name
-
 
 FETCH_PROJECT = _FetchProject()
-"""Singleton instance of configuration and validation utilities.
-
-POLICY: Inisde the this package, only modules marked with "[FETCH_PROJECT_IMPORT_ALLOWED]"
-in their module docstring should import FETCH_PROJECT/FetchProjectValidationError.
-If any other module needs FETCH_PROJECT's functionality, use the ones set in
-settings.py via `from django.conf import settings`
-"""
+"""Singleton instance of configuration and validation utilities."""
 
 # ============================================================================
 # FetchField
@@ -180,11 +168,11 @@ class _FetchField:
         try:
             current: Any = FETCH_PROJECT.base_toml
         except FetchProjectValidationError:
-            # NOTE: Descriptors can also be touched at import
-            # time while class-body defaults are being computed. If validation is
-            # unavailable in that phase, continue. API entry modules (cli.py,
-            # asgi.py, wsgi.py) should perform project validation first, and
-            # _ConfField should not be responsible for surfacing that error.
+            # * Descriptors can also be touched at import
+            # * time while class-body defaults are being computed. If validation is
+            # * unavailable in that phase, continue. API entry modules (cli.py,
+            # * asgi.py, wsgi.py) should perform project validation first, and
+            # * _ConfField should not be responsible for surfacing that error.
             return None
         for k in self.toml.split("."):
             if isinstance(current, dict) and k in current:
@@ -200,11 +188,7 @@ class _FetchField:
                 if self.env in FETCH_PROJECT.base_env:
                     return FETCH_PROJECT.base_env[self.env]
             except FetchProjectValidationError:
-                # NOTE: Descriptors can also be touched at import
-                # time while class-body defaults are being computed. If validation is
-                # unavailable in that phase, continue. API entry modules (cli.py,
-                # asgi.py, wsgi.py) should perform project validation first, and
-                # _ConfField should not be responsible for surfacing that error.
+                # * Same as in _get_from_toml.
                 pass
         toml_value = self._get_from_toml()
         if toml_value is not None:
@@ -287,6 +271,7 @@ class _FetchSecurity:
     secure_hsts_seconds = _build_fetch_field(
         SECURITY_SCHEMA, SecurityKeys.SECURE_HSTS_SECONDS
     )
+    server_option = _build_fetch_field(SECURITY_SCHEMA, SecurityKeys.SERVER_OPTION)
 
 
 FETCH_SECURITY = _FetchSecurity()
@@ -294,8 +279,8 @@ FETCH_SECURITY = _FetchSecurity()
 
 # ============================================================================
 # Presets & Storages
-# NOTE: Must be defined before _FetchDatabases and _FetchLayout — its backend value is read at
-# class body evaluation time to set database defaults.
+# * Must be defined before _FetchDatabases and _FetchLayout — its backend value is read at
+# * class body evaluation time to set database defaults.
 # ============================================================================
 class _FetchPreset:
     """Presets and Storages Configuration."""
@@ -309,7 +294,7 @@ FETCH_PRESET = _FetchPreset()
 
 # ============================================================================
 # Databases
-# NOTE: Must be defined after _FetchPreset since it reads the preset backend value.
+# * Must be defined after _FetchPreset since it reads the preset backend value.
 # ============================================================================
 class _FetchDatabases:
     """Database Configuration."""
@@ -352,7 +337,6 @@ FETCH_DATABASES = _FetchDatabases()
 
 # ============================================================================
 # Layout
-# NOTE: Must be defined after _FetchPreset since it reads the preset backend value.
 # ============================================================================
 class _FetchLayout:
     """Layout Configuration."""
