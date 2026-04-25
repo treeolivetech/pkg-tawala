@@ -7,7 +7,7 @@ Monorepo for the Tawala ecosystem by Treeolive Technologies.
 | Package                                | Description                                                                 |
 | -------------------------------------- | --------------------------------------------------------------------------- |
 | [`tawala`](tawala/README.md)           | Core framework package for building and running Tawala-powered Django apps. |
-| [`tawala-cli`](tawala-cli/README.md)   | Project scaffolding CLI (`tawala-cli`).                                     |
+| [`tawala-api`](tawala-api/README.md)   | Project scaffolding CLI (`tawala-api`).                                     |
 | [`tawala-docs`](tawala-docs/README.md) | Documentation and demo site project.                                        |
 
 ## Requirements
@@ -19,7 +19,7 @@ Monorepo for the Tawala ecosystem by Treeolive Technologies.
 
 ```bash
 uv sync --all-packages
-uv run --package tawala-cli tawala-cli -h
+uv run --package tawala-api tawala-api -h
 ```
 
 ## Common Workflows
@@ -27,7 +27,7 @@ uv run --package tawala-cli tawala-cli -h
 Scaffold a new project:
 
 ```bash
-uv run tawala-cli new --project my-new-app
+uv run tawala-api new --project my-new-app
 ```
 
 Run the docs/demo app locally:

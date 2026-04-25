@@ -13,7 +13,7 @@ authors = [{ name = "Kevin Wasike Wakhisi", email = "kevin@treeolive.tech" }]
 requires-python = ">=3.14"
 dependencies = [
     "tawala==1.5.0a5", # Sync with main package's version.
-    "vercel==0.5.7",
+    "vercel==0.5.8",
 ]
 
 [build-system]

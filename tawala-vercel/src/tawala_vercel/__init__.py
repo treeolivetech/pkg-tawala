@@ -2,5 +2,6 @@
 
 from christianwhocodes import Version
 
-PKG_NAME = "tawala-vercel"
-PKG_VERSION = Version.get(PKG_NAME)[0]
+VERCEL_PKG_NAME = "tawala-vercel"
+VERCEL_PKG_MODULE = "tawala_vercel"
+VERCEL_PKG_VERSION = Version.get(VERCEL_PKG_NAME)[0]

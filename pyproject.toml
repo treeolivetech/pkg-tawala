@@ -1,15 +1,8 @@
 [tool.uv.workspace]
-members = [
-    "tawala",
-    "tawala-cli",
-    "tawala-vercel",
-]
+members = ["tawala", "tawala-api", "tawala-vercel"]
 
 [dependency-groups]
-dev = ["pre-commit>=4.5.1", "ty>=0.0.31"]
-
-[tool.djlint]
-ignore = "H016,H030,H031"
+dev = ["pre-commit>=4.6.0", "ty>=0.0.32"]
 
 [tool.ruff.format]
 preview = true

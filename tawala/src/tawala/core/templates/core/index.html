@@ -1,0 +1,34 @@
+{% load static core %}
+{% pkg_display_name as pkg_display_name %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="{{ html_id }}" class="{{ html_class }}">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description"
+              content="App built using {{ pkg_display_name }} framework." />
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <link rel="shortcut icon"
+              href="{% static site_favicon|default:'core/base/favicon.ico' %}"
+              type="image/x-icon" />
+        <link rel="apple-touch-icon"
+              href="{% static site_apple_touch_icon|default:'core/base/apple-touch-icon.png' %}" />
+        <title>{{ site_title|default:pkg_display_name }} App</title>
+        {% block fonts %}
+        {% endblock fonts %}
+        {% include "aos/vendor.html" %}
+        {% include "bootstrap/vendor.html" %}
+        {% block styles %}
+        {% endblock styles %}
+        {% block deferred_scripts %}
+        {% endblock deferred_scripts %}
+    </head>
+    <body id="{{ body_id }}" class="{{ body_class }}">
+        <main id="{{ main_id }}" class="{{ main_class }}">
+            {% block sections %}
+            {% endblock sections %}
+        </main>
+    </body>
+</html>
