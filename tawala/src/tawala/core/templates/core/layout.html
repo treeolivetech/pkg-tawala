@@ -12,11 +12,21 @@
             <meta name="keywords" content="" />
             <meta name="author" content="" />
         {% endblock meta %}
+        <link rel="icon"
+              type="image/png"
+              href="{% static 'core/favicon-96x96.png' %}?v=20260427"
+              sizes="96x96" />
+        <link rel="icon"
+              type="image/svg+xml"
+              href="{% static 'core/favicon.svg' %}?v=20260427" />
         <link rel="shortcut icon"
-              href="{% static site_favicon|default:'core/favicon.ico' %}"
-              type="image/x-icon" />
+              type="image/x-icon"
+              href="{% static 'core/favicon.ico' %}?v=20260427" />
         <link rel="apple-touch-icon"
-              href="{% static site_apple_touch_icon|default:'core/apple-touch-icon.png' %}" />
+              sizes="180x180"
+              href="{% static 'core/apple-touch-icon.png' %}?v=20260427" />
+        <meta name="apple-mobile-web-app-title" content="Treeolive" />
+        <link rel="manifest" href="{% static 'core/site.webmanifest' %}?v=20260427" />
         {% block title %}
             <title>{{ site_title|default:pkg_display_name }} App</title>
         {% endblock title %}
