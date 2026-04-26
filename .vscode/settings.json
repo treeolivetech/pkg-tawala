@@ -1,10 +1,7 @@
 {
   "material-icon-theme.folders.associations": {
     "tawala": "python",
-    "tawala-cli": "command",
-    "tawala_cli": "command",
-    "tawala-vercel": "vercel",
-    "tawala_vercel": "vercel",
-    "tawala-docs": "docs"
+    "tawala-api": "python",
+    "tawala-vercel": "python"
   }
 }

@@ -1,0 +1,6 @@
+- [] Go thorugh the logic of INSTALLED_APPS - how some apps should be dependant on others. Should you have a place where you do mapping for them, enums etc for easier management. Then it gotta be core right, or separate components into it's own pkg? Think about this well.
+- [] Finish up with the lists
+- [] See if admin can be added as a Layout Option.
+- [] After lists check out authentication.
+- [] Read on django sass processor, and see if bootstrap can be optimized / split per component. Not important though.
+- [] How should we handle site stuff - should it per layout? each layout having a model for dealing with specifics, e.g school, church etc?

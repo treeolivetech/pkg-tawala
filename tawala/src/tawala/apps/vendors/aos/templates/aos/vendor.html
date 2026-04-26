@@ -1,8 +1,0 @@
-{% load static %}
-{% block vendor_aos %}
-    {% if vendor_aos|default_if_none:True %}
-        <link rel="stylesheet" href='{% static "aos/vendor/aos.css" %}' />
-        <script defer src='{% static "aos/vendor/aos.js" %}'></script>
-        <script defer src='{% static "aos/custom.js" %}'></script>
-    {% endif %}
-{% endblock vendor_aos %}
