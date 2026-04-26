@@ -10,7 +10,7 @@
       "name": "CLI: new default project wip",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": ["new", "--project", "launch-new-default", "--layout", "wip"],
       "cwd": "${workspaceFolder}/.tmp",
       "preLaunchTask": "CLI: new default project",
@@ -20,7 +20,7 @@
       "name": "CLI: new vercel project",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": ["new", "--project", "launch-new-vercel", "--preset", "vercel"],
       "cwd": "${workspaceFolder}/.tmp",
       "preLaunchTask": "CLI: new vercel project",
@@ -30,7 +30,7 @@
       "name": "CLI: new postgres vars wip project",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": [
         "new",
         "--project",
@@ -49,7 +49,7 @@
       "name": "CLI: new current directory",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": ["new", "--project", "."],
       "cwd": "${workspaceFolder}/.tmp/new-dot",
       "preLaunchTask": "CLI: new current directory",
@@ -59,14 +59,14 @@
       "name": "CLI: generate selected target",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": [
         "generate",
-        "${input:tawalaGenerateTarget}",
+        "${input:treeoliveGenerateTarget}",
         "--output-dir",
-        "${workspaceFolder}/.tmp/generate/out-${input:tawalaGenerateTarget}",
+        "${workspaceFolder}/.tmp/generate/out-${input:treeoliveGenerateTarget}",
         "--project-name",
-        "gen-${input:tawalaGenerateTarget}"
+        "gen-${input:treeoliveGenerateTarget}"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CLI: generate selected target",
@@ -76,7 +76,7 @@
       "name": "CLI: generate all targets",
       "type": "debugpy",
       "request": "launch",
-      "module": "tawala_api.cli",
+      "module": "treeolive_api.cli",
       "args": [
         "generate",
         "all",
@@ -92,7 +92,7 @@
   ],
   "inputs": [
     {
-      "id": "tawalaGenerateTarget",
+      "id": "treeoliveGenerateTarget",
       "type": "pickString",
       "description": "Generate target",
       "options": [

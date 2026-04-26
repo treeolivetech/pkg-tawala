@@ -1,13 +1,13 @@
 [project.urls]
-Homepage = "https://tawala.treeolive.tech/"
-Documentation = "https://tawala.treeolive.tech/docs"
-Repository = "https://github.com/treeolivetech/pkg-tawala"
-Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+Homepage = "https://treeolive.tech/"
+Documentation = "https://treeolive.tech/docs"
+Repository = "https://github.com/treeolivetech/pkg-treeolive"
+Issues = "https://github.com/treeolivetech/pkg-treeolive/issues"
 
 [project]
-name = "tawala-api"
+name = "treeolive-api"
 version = "0.0.1"
-description = "A CLI tool to create Tawala projects."
+description = ""
 # readme = "README.md"
 license = "MIT"
 # license-files = ["LICENSE"]
@@ -28,7 +28,7 @@ classifiers = [
 dependencies = ["christianwhocodes==1.5.7", "python-dotenv==1.2.2"]
 
 [project.scripts]
-"tawala-api" = "tawala_api.cli:main"
+"treeolive-api" = "treeolive_api.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.11.7,<0.12.0"]

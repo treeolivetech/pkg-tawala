@@ -67,7 +67,7 @@ class _FetchProject:
         self._base_toml: dict[str, Any] = {}
         self._base_dir: pathlib.Path | None = None
 
-        self.pkg_name: Final[str] = "tawala"
+        self.pkg_name: Final[str] = "treeolive"
         self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
         self.pkg_version: Final[str] = Version.get(self.pkg_name)[0]
 

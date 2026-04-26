@@ -7,40 +7,26 @@ from typing import Any
 from django.apps import apps
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandParser
+from django.conf import settings
 
 
 class Command(BaseCommand):
-    """Management command to load multiple fixture files at once.
+    """Load fixture files from a directory or app fixtures paths."""
 
-    This command provides flexible options for loading fixtures:
-    1. Load from a specific directory
-    2. Load from a specific app's fixtures directory
-    3. Load from all apps' fixtures directories
-
-    Usage:
-        # Load from specific directory
-        python manage.py loadfixtures path/to/fixtures
-
-        # Load from specific app's fixtures directory
-        python manage.py loadfixtures --app_label=myapp
-
-        # Load all fixtures from all apps
-        python manage.py loadfixtures
-
-        # With verbose output
-        python manage.py loadfixtures --verbose
-
-        # Load YAML fixtures from an app
-        python manage.py loadfixtures --app_label=myapp --extension=yaml
-
-    Note:
-        - Fixtures are loaded in alphabetical order
-        - The command will stop on the first error encountered
-        - Use --verbose flag to see detailed loading progress
-
-    """
-
-    help = "Load all fixture files from a specified directory or from app's fixtures directories"
+    help = (
+        "Load fixture files from a specific directory, a specific app's fixtures "
+        "directory, or all app fixtures directories.\n\n"
+        "Usage:\n"
+        f"  {settings.PKG_NAME} seed path/to/fixtures\n"
+        f"  {settings.PKG_NAME} seed --app_label=myapp\n"
+        f"  {settings.PKG_NAME} seed\n"
+        f"  {settings.PKG_NAME} seed --verbose\n"
+        f"  {settings.PKG_NAME} seed --app_label=myapp --extension=yaml\n\n"
+        "Notes:\n"
+        "  - Fixtures are loaded in alphabetical order\n"
+        "  - The command stops on the first error\n"
+        "  - Use --verbose for detailed progress output"
+    )
 
     def add_arguments(self, parser: CommandParser) -> None:
         """Define the command line arguments."""

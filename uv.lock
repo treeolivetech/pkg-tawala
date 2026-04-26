@@ -4,8 +4,8 @@ requires-python = ">=3.14"
 
 [manifest]
 members = [
-    "tawala",
-    "tawala-api",
+    "treeolive",
+    "treeolive-api",
 ]
 
 [manifest.dependency-groups]
@@ -655,9 +655,9 @@ wheels = [
 ]
 
 [[package]]
-name = "tawala"
+name = "treeolive"
 version = "1.5.0a5"
-source = { editable = "tawala" }
+source = { editable = "treeolive" }
 dependencies = [
     { name = "christianwhocodes" },
     { name = "django" },
@@ -670,7 +670,7 @@ dependencies = [
     { name = "libsass" },
     { name = "pillow" },
     { name = "pyperclip" },
-    { name = "tawala-api" },
+    { name = "treeolive-api" },
 ]
 
 [package.optional-dependencies]
@@ -703,7 +703,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'postgresql'", specifier = "==3.3.3" },
     { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'vercel'", specifier = "==3.3.3" },
     { name = "pyperclip", specifier = "==1.11.0" },
-    { name = "tawala-api", editable = "tawala-api" },
+    { name = "treeolive-api", editable = "treeolive-api" },
     { name = "vercel", marker = "extra == 'vercel'", specifier = "==0.5.8" },
 ]
 provides-extras = ["postgresql", "vercel"]
@@ -715,9 +715,9 @@ dev = [
 ]
 
 [[package]]
-name = "tawala-api"
+name = "treeolive-api"
 version = "0.0.1"
-source = { editable = "tawala-api" }
+source = { editable = "treeolive-api" }
 dependencies = [
     { name = "christianwhocodes" },
     { name = "python-dotenv" },

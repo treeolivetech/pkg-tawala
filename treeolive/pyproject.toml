@@ -1,11 +1,11 @@
 [project.urls]
-Homepage = "https://tawala.treeolive.tech/"
-Documentation = "https://tawala.treeolive.tech/docs"
-Repository = "https://github.com/treeolivetech/pkg-tawala"
-Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+Homepage = "https://treeolive.tech/"
+Documentation = "https://treeolive.tech/docs"
+Repository = "https://github.com/treeolivetech/pkg-treeolive"
+Issues = "https://github.com/treeolivetech/pkg-treeolive/issues"
 
 [project]
-name = "Tawala"
+name = "treeolive"
 version = "1.5.0a5"
 description = "Build and deploy Django apps with confidence."
 # readme = "README.md"
@@ -37,12 +37,11 @@ dependencies = [
     "libsass==0.23.0",
     "pillow==12.2.0",
     "pyperclip==1.11.0",
-    "tawala-api==0.0.1",                      # TEST: Sync with API package's version.
+    "treeolive-api==0.0.1",                              # TEST: Sync with API package's version.
 ]
 
 [project.scripts]
-"tawala" = "tawala.core.management.cli:main"
-"twl" = "tawala.core.management.cli:main"
+"treeolive" = "treeolive.core.management.cli:main"
 
 [project.optional-dependencies] # Sync with dev dependencies
 postgresql = ["psycopg[binary,pool]==3.3.3"]
@@ -53,7 +52,7 @@ requires = ["uv_build>=0.11.7,<0.12.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-tawala-api = { workspace = true }
+treeolive-api = { workspace = true }
 
 [dependency-groups] # Sync with optional dependecies
 dev = ["psycopg[binary,pool]==3.3.3", "vercel>=0.5.8"]
