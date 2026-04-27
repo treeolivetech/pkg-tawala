@@ -66,10 +66,10 @@ class _GenerateTargets:
 
 
 class GenerateCommand(BaseCommand):
-    """Generate one or more scaffold files for a Tawala project."""
+    """Generate one or more scaffold project files."""
 
     prog = API_PKG_NAME
-    help = "Generate scaffold artifacts (files/docs) for a Tawala project."
+    help = "Generate scaffold artifacts (files)."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Register arguments onto the parser."""
@@ -321,7 +321,6 @@ class GenerateCommand(BaseCommand):
             "[dependency-groups]\n"
             'dev = ["djlint>=1.36.4"]\n'
             "\n"
-            "[tool.uv.sources]\n"
             f"{tool_section}\n"
         )
 
@@ -355,7 +354,7 @@ class GenerateCommand(BaseCommand):
         """Generate CONFIG.md documentation from exported setting schemas."""
         generated_on = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
         lines = [
-            "# Tawala Configuration Reference",
+            f"# {FETCH_PROJECT.pkg_display_name} Configuration Reference",
             "",
             f"A generated reference of all supported `tool.{FETCH_PROJECT.pkg_name}` settings, their defaults, and allowed values.",
             "",

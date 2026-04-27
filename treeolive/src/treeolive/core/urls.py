@@ -7,8 +7,11 @@ from django.conf import settings, urls
 from django.contrib import admin
 from django.urls import URLPattern as DjURLPattern
 from django.urls import URLResolver, include, path
-from django.views.generic.base import TemplateView
-from tawala_api.conf.enums import LayoutOptions
+from treeolive_api.conf.enums import LayoutOptions
+
+from .views import Handler404
+
+urls.handler404 = Handler404.as_view()
 
 URLPattern: TypeAlias = DjURLPattern | URLResolver
 urlpatterns: list[URLPattern]
@@ -36,5 +39,3 @@ urlpatterns += [
         else []
     ),
 ]
-
-urls.handler404 = TemplateView.as_view(template_name="core/404.html")

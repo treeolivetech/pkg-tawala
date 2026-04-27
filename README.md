@@ -1,14 +1,13 @@
-# pkg-tawala
+# pkg-treeolive
 
-Monorepo for the Tawala ecosystem by Treeolive Technologies.
+Monorepo for the `treeolive` ecosystem by Treeolive Technologies.
 
 ## Packages
 
-| Package                                | Description                                                                 |
-| -------------------------------------- | --------------------------------------------------------------------------- |
-| [`tawala`](tawala/README.md)           | Core framework package for building and running Tawala-powered Django apps. |
-| [`tawala-api`](tawala-api/README.md)   | Project scaffolding CLI (`tawala-api`).                                     |
-| [`tawala-docs`](tawala-docs/README.md) | Documentation and demo site project.                                        |
+| Package                                    | Description                                |
+| ------------------------------------------ | ------------------------------------------ |
+| [`treeolive`](treeolive/README.md)         | Core framework package.                    |
+| [`treeolive-api`](treeolive-api/README.md) | Project scaffolding CLI (`treeolive-api`). |
 
 ## Requirements
 
@@ -19,7 +18,7 @@ Monorepo for the Tawala ecosystem by Treeolive Technologies.
 
 ```bash
 uv sync --all-packages
-uv run --package tawala-api tawala-api -h
+uv run --package treeolive-api treeolive-api -h
 ```
 
 ## Common Workflows
@@ -27,23 +26,7 @@ uv run --package tawala-api tawala-api -h
 Scaffold a new project:
 
 ```bash
-uv run tawala-api new --project my-new-app
-```
-
-Run the docs/demo app locally:
-
-```bash
-cd tawala-docs
-uv run tawala migrate
-uv run tawala runserver
-```
-
-Inspect build/install command pipelines used by Tawala:
-
-```bash
-cd tawala-docs
-uv run tawala runinstall --dry
-uv run tawala runbuild --dry
+uv run treeolive-api new --project my-new-app
 ```
 
 ## License

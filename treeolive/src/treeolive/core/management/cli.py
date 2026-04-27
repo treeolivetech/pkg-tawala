@@ -3,7 +3,7 @@
 from sys import argv, exit
 
 from christianwhocodes import ExitCode, Text, cprint
-from tawala_api.conf import FETCH_PROJECT
+from treeolive_api.conf import FETCH_PROJECT
 
 
 def main() -> None:
@@ -18,7 +18,7 @@ def main() -> None:
 
             exit(print_version(FETCH_PROJECT.pkg_name))
         case _:
-            from tawala_api.conf import (
+            from treeolive_api.conf import (
                 DJANGO_SETTINGS_MODULE,
                 FetchProjectValidationError,
                 print_invalid_project_help,

@@ -186,6 +186,9 @@ class CommandGenerator(ABC):
 class FormattedCommandOutput(CommandOutput):
     """Colorful output with ASCII art, progress bars, and emojis."""
 
+    SEPARATOR_WIDTH = 60
+    PROGRESS_BAR_LENGTH = 40
+
     def __init__(self, command: BaseCommand, art_type: ArtType) -> None:
         """Set up command reference and art type."""
         super().__init__(command)
@@ -234,7 +237,9 @@ class FormattedCommandOutput(CommandOutput):
 
     def print_command_header(self) -> None:
         """Print the command header before execution."""
-        self.command.stdout.write(self.command.style.HTTP_NOT_MODIFIED("=" * 60 + "\n"))
+        self.command.stdout.write(
+            self.command.style.HTTP_NOT_MODIFIED("=" * self.SEPARATOR_WIDTH + "\n")
+        )
 
     def print_command_success(self, cmd: str, index: int, total: int) -> None:
         """Print success with progress bar."""
@@ -255,7 +260,9 @@ class FormattedCommandOutput(CommandOutput):
 
     def print_summary(self, total: int, completed: int, failed: int) -> None:
         """Print final completion summary."""
-        self.command.stdout.write(self.command.style.HTTP_NOT_MODIFIED("=" * 60 + "\n"))
+        self.command.stdout.write(
+            self.command.style.HTTP_NOT_MODIFIED("=" * self.SEPARATOR_WIDTH + "\n")
+        )
         if failed == 0:
             self.command.stdout.write(
                 self.command.style.SUCCESS(
@@ -276,7 +283,7 @@ class FormattedCommandOutput(CommandOutput):
 
     def _create_progress_bar(self, current: int, total: int) -> str:
         """Create a visual progress bar string."""
-        bar_length = 40
+        bar_length = self.PROGRESS_BAR_LENGTH
         filled = int(bar_length * current / total)
         bar = "█" * filled + "░" * (bar_length - filled)
         percentage = (current / total) * 100

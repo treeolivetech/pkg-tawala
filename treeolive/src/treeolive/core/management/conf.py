@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
 
 from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
-from tawala_api.conf import (
+from treeolive_api.conf import (
     API_PKG_MODULE,
     FETCH_DATABASES,
     FETCH_INTERNATIONALIZATION,
@@ -16,7 +16,6 @@ from tawala_api.conf import (
     DatabaseOptions,
     LayoutOptions,
     PresetOptions,
-    SecurityServerOptions,
 )
 
 PKG_NAME = FETCH_PROJECT.pkg_name
@@ -123,13 +122,8 @@ MIDDLEWARE = [
 # ============================================================================
 # ASGI, WSGI
 # ============================================================================
-_SERVER_APPLICATION = f"{API_PKG_MODULE}.sgi.application"
 
-match FETCH_SECURITY.server_option:
-    case SecurityServerOptions.ASGI.value:
-        ASGI_APPLICATION = _SERVER_APPLICATION
-    case _:
-        WSGI_APPLICATION = _SERVER_APPLICATION
+WSGI_APPLICATION = f"{API_PKG_MODULE}.sgi.application"
 
 
 # ============================================================================
