@@ -4,9 +4,11 @@ requires-python = ">=3.14"
 
 [manifest]
 members = [
-    "treeolive",
-    "treeolive-api",
-    "treeolive-ui",
+    "tawala",
+    "tawala-api",
+    "tawala-school",
+    "tawala-ui",
+    "tawala-wip",
 ]
 
 [manifest.dependency-groups]
@@ -656,48 +658,46 @@ wheels = [
 ]
 
 [[package]]
-name = "treeolive"
-version = "0.1.0b1"
-source = { editable = "treeolive" }
+name = "tawala"
+version = "0.1.0"
+source = { editable = "core/tawala" }
 dependencies = [
-    { name = "christianwhocodes" },
-    { name = "django" },
     { name = "django-browser-reload" },
     { name = "django-compressor" },
     { name = "django-http-compression", extra = ["brotli"] },
     { name = "django-minify-html" },
-    { name = "django-phonenumber-field", extra = ["phonenumberslite"] },
-    { name = "django-sass-processor" },
-    { name = "libsass" },
-    { name = "pillow" },
     { name = "pyperclip" },
-    { name = "treeolive-api" },
-    { name = "treeolive-ui" },
+    { name = "tawala-ui" },
+]
+
+[package.optional-dependencies]
+school = [
+    { name = "tawala-school" },
+]
+wip = [
+    { name = "tawala-wip" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "christianwhocodes", specifier = "==1.5.7" },
-    { name = "django", specifier = "==6.0.4" },
     { name = "django-browser-reload", specifier = "==1.21.0" },
     { name = "django-compressor", specifier = "==4.6.0" },
     { name = "django-http-compression", extras = ["brotli"], specifier = "==1.4.0" },
     { name = "django-minify-html", specifier = "==1.14.0" },
-    { name = "django-phonenumber-field", extras = ["phonenumberslite"], specifier = ">=8.4.0" },
-    { name = "django-sass-processor", specifier = "==1.4.2" },
-    { name = "libsass", specifier = "==0.23.0" },
-    { name = "pillow", specifier = "==12.2.0" },
     { name = "pyperclip", specifier = "==1.11.0" },
-    { name = "treeolive-api", editable = "treeolive-api" },
-    { name = "treeolive-ui", editable = "treeolive-ui" },
+    { name = "tawala-school", marker = "extra == 'school'", editable = "components/tawala-school" },
+    { name = "tawala-ui", editable = "core/tawala-ui" },
+    { name = "tawala-wip", marker = "extra == 'wip'", editable = "components/tawala-wip" },
 ]
+provides-extras = ["wip", "school"]
 
 [[package]]
-name = "treeolive-api"
+name = "tawala-api"
 version = "0.1.0"
-source = { editable = "treeolive-api" }
+source = { editable = "core/tawala-api" }
 dependencies = [
     { name = "christianwhocodes" },
+    { name = "django" },
     { name = "python-dotenv" },
 ]
 
@@ -719,6 +719,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "christianwhocodes", specifier = "==1.5.7" },
+    { name = "django", specifier = "==6.0.4" },
     { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'postgresql'", specifier = "==3.3.3" },
     { name = "psycopg", extras = ["binary", "pool"], marker = "extra == 'vercel'", specifier = "==3.3.3" },
     { name = "python-dotenv", specifier = "==1.2.2" },
@@ -733,19 +734,49 @@ dev = [
 ]
 
 [[package]]
-name = "treeolive-ui"
+name = "tawala-school"
 version = "0.1.0"
-source = { editable = "treeolive-ui" }
+source = { editable = "components/tawala-school" }
 dependencies = [
-    { name = "christianwhocodes" },
-    { name = "treeolive-api" },
+    { name = "pillow" },
+    { name = "tawala-api" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "christianwhocodes", specifier = "==1.5.7" },
-    { name = "treeolive-api", editable = "treeolive-api" },
+    { name = "pillow", specifier = "==12.2.0" },
+    { name = "tawala-api", editable = "core/tawala-api" },
 ]
+
+[[package]]
+name = "tawala-ui"
+version = "0.1.0"
+source = { editable = "core/tawala-ui" }
+dependencies = [
+    { name = "django-phonenumber-field", extra = ["phonenumberslite"] },
+    { name = "django-sass-processor" },
+    { name = "libsass" },
+    { name = "tawala-api" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "django-phonenumber-field", extras = ["phonenumberslite"], specifier = ">=8.4.0" },
+    { name = "django-sass-processor", specifier = "==1.4.2" },
+    { name = "libsass", specifier = "==0.23.0" },
+    { name = "tawala-api", editable = "core/tawala-api" },
+]
+
+[[package]]
+name = "tawala-wip"
+version = "0.1.0"
+source = { editable = "components/tawala-wip" }
+dependencies = [
+    { name = "tawala-api" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "tawala-api", editable = "core/tawala-api" }]
 
 [[package]]
 name = "ty"
@@ -836,7 +867,7 @@ wheels = [
 
 [[package]]
 name = "virtualenv"
-version = "21.2.4"
+version = "21.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "distlib" },
@@ -844,9 +875,9 @@ dependencies = [
     { name = "platformdirs" },
     { name = "python-discovery" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0c/98/3a7e644e19cb26133488caff231be390579860bbbb3da35913c49a1d0a46/virtualenv-21.2.4.tar.gz", hash = "sha256:b294ef68192638004d72524ce7ef303e9d0cf5a44c95ce2e54a7500a6381cada", size = 5850742, upload-time = "2026-04-14T22:15:31.438Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/8b/6331f7a7fe70131c301106ec1e7cf23e2501bf7d4ca3636805801ca191bb/virtualenv-21.3.0.tar.gz", hash = "sha256:733750db978ec95c2d8eb4feadaa57091002bce404cb39ba69899cf7bd28944e", size = 7614069, upload-time = "2026-04-27T17:05:58.927Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/27/8d/edd0bd910ff803c308ee9a6b7778621af0d10252219ad9f19ef4d4982a61/virtualenv-21.2.4-py3-none-any.whl", hash = "sha256:29d21e941795206138d0f22f4e45ff7050e5da6c6472299fb7103318763861ac", size = 5831232, upload-time = "2026-04-14T22:15:29.342Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/eb/03bfb1299d4c4510329e470f13f9a4ce793df7fcb5a2fd3510f911066f61/virtualenv-21.3.0-py3-none-any.whl", hash = "sha256:4d28ee41f6d9ec8f1f00cd472b9ffbcedda1b3d3b9a575b5c94a2d004fd51bd7", size = 7594690, upload-time = "2026-04-27T17:05:55.468Z" },
 ]
 
 [[package]]

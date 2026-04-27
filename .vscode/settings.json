@@ -1,6 +1,7 @@
 {
   "material-icon-theme.folders.associations": {
-    "treeolive-api": "api",
-    "treeolive-ui": "ui"
+    "tawala": "base",
+    "tawala-api": "api",
+    "tawala-ui": "ui"
   }
 }

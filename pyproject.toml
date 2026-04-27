@@ -1,5 +1,14 @@
 [tool.uv.workspace]
-members = ["treeolive", "treeolive-api", "treeolive-ui"]
+members = [
+    "core/tawala",
+    "core/tawala-api",
+    "core/tawala-ui",
+    "components/tawala-wip",
+    "components/tawala-school",
+    # api feeds the components, which in turn feed the base package
+    # either directly as with the case of ui
+    # or optionally as with the case of wip, school etc.
+]
 
 [dependency-groups]
 dev = ["pre-commit>=4.6.0", "ty>=0.0.32"]

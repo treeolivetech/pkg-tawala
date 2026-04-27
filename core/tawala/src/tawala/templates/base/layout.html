@@ -1,0 +1,64 @@
+{% load static base %}
+{% base_display_name as base_display_name %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="{{ html_id }}" class="{{ html_class }}">
+    <head>
+        {% block meta %}
+            <meta charset="utf-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta name="description"
+                  content="App built using {{ base_display_name }} framework." />
+            <meta name="keywords" content="" />
+            <meta name="author" content="" />
+        {% endblock meta %}
+        <link rel="icon"
+              type="image/png"
+              href="{% static 'base/favicon-96x96.png' %}?v=20260427"
+              sizes="96x96" />
+        <link rel="icon"
+              type="image/svg+xml"
+              href="{% static 'base/favicon.svg' %}?v=20260427" />
+        <link rel="shortcut icon"
+              type="image/x-icon"
+              href="{% static 'base/favicon.ico' %}?v=20260427" />
+        <link rel="apple-touch-icon"
+              sizes="180x180"
+              href="{% static 'base/apple-touch-icon.png' %}?v=20260427" />
+        <meta name="apple-mobile-web-app-title" content="Treeolive" />
+        <link rel="manifest" href="{% static 'base/site.webmanifest' %}?v=20260427" />
+        {% block title %}
+            <title>{{ site_title|default:base_display_name }} App</title>
+        {% endblock title %}
+        {% block fonts %}
+        {% endblock fonts %}
+        {% asset "aos" %}
+        {% asset "bootstrap" %}
+        {% block styles %}
+        {% endblock styles %}
+        {% block deferred_scripts %}
+        {% endblock deferred_scripts %}
+    </head>
+    <body id="{{ body_id }}" class="{{ body_class }}">
+        {% block auth_logout %}
+            {% if request.user.is_authenticated %}
+                <style nonce="{{ csp_nonce }}">
+                    #auth_logout{
+                        display: none;
+                    }
+                </style>
+                <form id="auth_logout" action="{% url 'auth_logout' %}" method="post">
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+        {% endblock auth_logout %}
+        {% widget "preloader" %}
+        {% widget "header" %}
+        <main id="{{ main_id }}" class="{{ main_class }}">
+            {% block sections %}
+            {% endblock sections %}
+        </main>
+        {% widget "footer" %}
+        {% widget "scroll_top" %}
+    </body>
+</html>

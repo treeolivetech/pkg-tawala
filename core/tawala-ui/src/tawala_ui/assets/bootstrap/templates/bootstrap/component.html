@@ -1,0 +1,16 @@
+{% load static sass_tags %}
+{# bootstrap icons #}
+<link rel="stylesheet"
+      href='{% static "bootstrap/vendor/bootstrap-icons.css" %}' />
+{# bootstrap #}
+<style nonce="{{ csp_nonce }}">
+    @font-face {
+        font-family: "Titillium-Regular";
+        src: url("{% static 'bootstrap/vendor/fonts/Titillium-Regular.otf' %}");
+    }
+    @font-face {
+        font-family: "preloslab-medium-bold";
+        src: url("{% static 'bootstrap/vendor/fonts/preloslab-bold2_1.otf' %}");
+    }
+</style>
+<link rel="stylesheet" href='{% sass_src "bootstrap/component.scss" %}' />

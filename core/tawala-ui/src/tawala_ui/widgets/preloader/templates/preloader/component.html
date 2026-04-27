@@ -1,0 +1,29 @@
+{% load static %}
+{% if widget_preloader|default_if_none:True %}
+    <style nonce="{{ csp_nonce }}">
+      /* Spinner element */
+      #widget_preloader::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 60px;
+        height: 60px;
+        margin-top: -30px;
+        margin-left: -30px;
+        border: 6px solid var(--bs-primary);
+        border-top-color: color-mix(in srgb, var(--bs-primary), transparent 90%);
+        border-radius: 50%;
+        animation: animate-preloader 1s linear infinite;
+      }
+
+      @keyframes animate-preloader {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <div id="widget_preloader"
+         class="position-fixed top-0 start-0 w-100 h-100 overflow-hidden bg-body z-3"></div>
+    <script defer src="{% static 'preloader/component.js' %}"></script>
+{% endif %}
