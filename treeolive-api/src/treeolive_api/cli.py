@@ -10,17 +10,17 @@ from christianwhocodes import ExitCode
 def _build_parser() -> ArgumentParser:
     """Create and configure the top-level CLI parser."""
     from .commands import GenerateCommand, NewCommand
-    from .conf import API_PKG_NAME, API_PKG_VERSION, FETCH_PROJECT
+    from .conf import API_NAME, API_VERSION
 
     parser = ArgumentParser(
-        prog=API_PKG_NAME,
-        description=f"{FETCH_PROJECT.pkg_display_name} CLI.",
+        prog=API_NAME,
+        description=f"{API_NAME} CLI.",
     )
     parser.add_argument(
         "-v",
         "--version",
         action="version",
-        version=API_PKG_VERSION,
+        version=API_VERSION,
         help="Show package version and exit.",
     )
     subparsers = parser.add_subparsers(dest="command")

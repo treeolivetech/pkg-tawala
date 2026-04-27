@@ -1,6 +1,10 @@
+# Miscellaneous
+tmp/
+mock/
 /.env
-.tmp/
-/.venv/
+
+# Python
 __pycache__/
+/.venv/
 /.ruff_cache/
 /dist/

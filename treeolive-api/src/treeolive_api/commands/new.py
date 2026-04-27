@@ -12,8 +12,8 @@ from christianwhocodes import (
 )
 
 from ..conf import (
-    API_PKG_NAME,
-    API_PKG_VERSION,
+    API_NAME,
+    API_VERSION,
     FETCH_PROJECT,
     DatabaseHelpTexts,
     DatabaseKeys,
@@ -35,8 +35,8 @@ class NewCommand(BaseCommand):
     _project_dir: Path
     _validated_args: Namespace
     _project_dir_existed_before: bool
-    prog = API_PKG_NAME + " new"
-    help = f"Initialize a new {FETCH_PROJECT.pkg_display_name} app."
+    prog = API_NAME + " new"
+    help = f"Initialize a new {FETCH_PROJECT.core_display_name} app."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Register arguments onto the parser."""
@@ -44,7 +44,7 @@ class NewCommand(BaseCommand):
             "-v",
             "--version",
             action="version",
-            version=API_PKG_VERSION,
+            version=API_VERSION,
             help="Show package version and exit.",
         )
 
@@ -263,6 +263,6 @@ class NewCommand(BaseCommand):
     def _display_successful_setup_info(self, project_dir: Path) -> None:
         """Print success output after initialization."""
         cprint(
-            f"✓ {FETCH_PROJECT.pkg_display_name} project '{project_dir.name}' initialized successfully!",
+            f"✓ {FETCH_PROJECT.core_display_name} project '{project_dir.name}' initialized successfully!",
             Text.SUCCESS,
         )

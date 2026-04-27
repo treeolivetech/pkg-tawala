@@ -15,9 +15,8 @@ from christianwhocodes import (
 )
 
 from ..conf import (
-    API_PKG_MODULE,
-    API_PKG_NAME,
-    API_PKG_VERSION,
+    API_NAME,
+    API_VERSION,
     DATABASES_SCHEMA,
     FETCH_PROJECT,
     INTERNATIONALIZATION_SCHEMA,
@@ -68,7 +67,7 @@ class _GenerateTargets:
 class GenerateCommand(BaseCommand):
     """Generate one or more scaffold project files."""
 
-    prog = API_PKG_NAME
+    prog = API_NAME
     help = "Generate scaffold artifacts (files)."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
@@ -77,7 +76,7 @@ class GenerateCommand(BaseCommand):
             "-v",
             "--version",
             action="version",
-            version=API_PKG_VERSION,
+            version=API_VERSION,
             help="Show package version and exit.",
         )
 
@@ -267,7 +266,7 @@ class GenerateCommand(BaseCommand):
 
         extras: list[str] = []
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
-        tool_lines = [f"[tool.{FETCH_PROJECT.pkg_name}]"]
+        tool_lines = [f"[tool.{FETCH_PROJECT.core_name}]"]
 
         # ---------------------------------------------
 
@@ -304,8 +303,11 @@ class GenerateCommand(BaseCommand):
         # ---------------------------------------------
 
         extras_suffix = f"[{','.join(extras)}]" if extras else ""
+        api_dependency = (
+            f'"{API_NAME}{extras_suffix}=={API_VERSION}" ,' if extras else ""
+        )
         dependencies = (
-            f'"{FETCH_PROJECT.pkg_name}{extras_suffix}=={FETCH_PROJECT.pkg_version}"'
+            f'{api_dependency}"{FETCH_PROJECT.core_name}=={FETCH_PROJECT.core_version}"'
         )
         tool_section = "\n".join(tool_lines) + "\n"
 
@@ -326,7 +328,7 @@ class GenerateCommand(BaseCommand):
 
     def _content_api_server_py(self) -> str:
         """Generate API server entry-point file content."""
-        return f"from {API_PKG_MODULE}.sgi import application\n\napp = application\n"
+        return f"from {FETCH_PROJECT.core_app}.management.contrib.api import server\n\napp = server\n"
 
     def _content_vercel_json(self) -> str:
         """Generate vercel.json content for Vercel preset."""
@@ -334,8 +336,8 @@ class GenerateCommand(BaseCommand):
             "{",
             '  "$schema": "https://openapi.vercel.sh/vercel.json",',
             '  "framework": null,',
-            f'  "installCommand": "uv run {FETCH_PROJECT.pkg_name} runinstall",',
-            f'  "buildCommand": "uv run {FETCH_PROJECT.pkg_name} runbuild",',
+            f'  "installCommand": "uv run {FETCH_PROJECT.core_name} runinstall",',
+            f'  "buildCommand": "uv run {FETCH_PROJECT.core_name} runbuild",',
             '  "rewrites": [',
             "    {",
             '      "source": "/(.*)",',
@@ -354,9 +356,9 @@ class GenerateCommand(BaseCommand):
         """Generate CONFIG.md documentation from exported setting schemas."""
         generated_on = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
         lines = [
-            f"# {FETCH_PROJECT.pkg_display_name} Configuration Reference",
+            f"# {FETCH_PROJECT.core_display_name} Configuration Reference",
             "",
-            f"A generated reference of all supported `tool.{FETCH_PROJECT.pkg_name}` settings, their defaults, and allowed values.",
+            f"A generated reference of all supported `tool.{FETCH_PROJECT.core_name}` settings, their defaults, and allowed values.",
             "",
             f"Generated on: {generated_on}",
             "",
@@ -364,7 +366,7 @@ class GenerateCommand(BaseCommand):
             "",
             "Configuration is resolved in this order:",
             "1. Environment variables",
-            f"2. `pyproject.toml` in `[tool.{FETCH_PROJECT.pkg_name}]` section",
+            f"2. `pyproject.toml` in `[tool.{FETCH_PROJECT.core_name}]` section",
             "3. Schema defaults",
             "",
         ]

@@ -1,6 +1,6 @@
 {
   "material-icon-theme.folders.associations": {
-    "treeolive": "python",
-    "treeolive-api": "python"
+    "treeolive-api": "api",
+    "treeolive-ui": "ui"
   }
 }

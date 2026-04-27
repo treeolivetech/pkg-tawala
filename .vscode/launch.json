@@ -12,7 +12,7 @@
       "request": "launch",
       "module": "treeolive_api.cli",
       "args": ["new", "--project", "launch-new-default", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/.tmp",
+      "cwd": "${workspaceFolder}/mock",
       "preLaunchTask": "CLI: new default project",
       "console": "integratedTerminal"
     },
@@ -22,7 +22,7 @@
       "request": "launch",
       "module": "treeolive_api.cli",
       "args": ["new", "--project", "launch-new-vercel", "--preset", "vercel"],
-      "cwd": "${workspaceFolder}/.tmp",
+      "cwd": "${workspaceFolder}/mock",
       "preLaunchTask": "CLI: new vercel project",
       "console": "integratedTerminal"
     },
@@ -41,7 +41,7 @@
         "--layout",
         "wip"
       ],
-      "cwd": "${workspaceFolder}/.tmp",
+      "cwd": "${workspaceFolder}/mock",
       "preLaunchTask": "CLI: new postgres vars wip project",
       "console": "integratedTerminal"
     },
@@ -51,7 +51,7 @@
       "request": "launch",
       "module": "treeolive_api.cli",
       "args": ["new", "--project", "."],
-      "cwd": "${workspaceFolder}/.tmp/new-dot",
+      "cwd": "${workspaceFolder}/mock/new-dot",
       "preLaunchTask": "CLI: new current directory",
       "console": "integratedTerminal"
     },
@@ -64,7 +64,7 @@
         "generate",
         "${input:treeoliveGenerateTarget}",
         "--output-dir",
-        "${workspaceFolder}/.tmp/generate/out-${input:treeoliveGenerateTarget}",
+        "${workspaceFolder}/mock/generate/out-${input:treeoliveGenerateTarget}",
         "--project-name",
         "gen-${input:treeoliveGenerateTarget}"
       ],
@@ -81,7 +81,7 @@
         "generate",
         "all",
         "--output-dir",
-        "${workspaceFolder}/.tmp/generate/all",
+        "${workspaceFolder}/mock/generate/all",
         "--project-name",
         "gen-all"
       ],

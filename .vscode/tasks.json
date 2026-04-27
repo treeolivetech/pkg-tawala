@@ -1,3 +1,4 @@
+// TODO: There's a lot of repetition here. Preferably move some of the code to the .vscode/scripts folder.
 {
   "version": "2.0.0",
   "tasks": [
@@ -9,7 +10,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-default', ignore_errors=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-default', ignore_errors=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -24,7 +25,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-vercel', ignore_errors=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-vercel', ignore_errors=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -39,7 +40,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'launch-new-postgres-vars-wip', ignore_errors=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-postgres-vars-wip', ignore_errors=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -54,7 +55,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); target = tmp / 'new-dot'; shutil.rmtree(target, ignore_errors=True); target.mkdir(parents=True, exist_ok=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); target = mock / 'new-dot'; shutil.rmtree(target, ignore_errors=True); target.mkdir(parents=True, exist_ok=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -69,7 +70,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'generate', ignore_errors=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'generate', ignore_errors=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -84,7 +85,7 @@
         "run",
         "python",
         "-c",
-        "import pathlib, shutil; tmp = pathlib.Path('.tmp'); tmp.mkdir(parents=True, exist_ok=True); shutil.rmtree(tmp / 'generate', ignore_errors=True)"
+        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'generate', ignore_errors=True)"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
