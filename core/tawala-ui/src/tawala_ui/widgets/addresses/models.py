@@ -33,7 +33,7 @@ class Address(
 # Social Address model
 # ==============================================
 class Social(Address):
-    """Stores one social profile URL per platform with an auto-generated icon."""
+    """Stores one social profile username per platform with an auto-generated icon and URL."""
 
     class Meta(Address.Meta):
         """Meta configuration."""
@@ -74,19 +74,49 @@ class Social(Address):
 
     # ------------------------------------------------------------------------
 
-    url = models.URLField(
-        help_text="Public profile URL for the selected social platform."
+    username = models.CharField(
+        max_length=255,
+        help_text=(
+            "Your handle or username on this platform (e.g. 'johndoe' or 'acme-corp'). "
+            "Do not include the full URL — it is built automatically from the platform. "
+            "For YouTube and TikTok the '@' prefix is added automatically if omitted."
+        ),
     )
+
+    @property
+    def url(self) -> str:
+        """Return the full profile URL constructed from the platform base URL and username."""
+        return SocialMediaPlatformChoice.build_profile_url_for_value(
+            str(self.name), str(self.username)
+        )
 
     # ------------------------------------------------------------------------
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        """Auto-populate icon classes from the selected platform before saving."""
-        cast(Any, self).icon = SocialMediaPlatformChoice.icon_for_value(str(self.name))
+        """Normalise username, auto-populate icon, and build the profile URL before saving.
+
+        - Auto-prepends '@' for platforms that require it (YouTube, TikTok) if
+        the user omitted it.
+        - Strips a leading '@' for all other platforms to keep storage clean.
+        - Populates the ``icon`` field from the selected platform.
+        """
+        platform_value = str(self.name)
+
+        # Normalise the username: ensure correct '@' handling.
+        username = str(cast(Any, self).username).strip()
+        if SocialMediaPlatformChoice.uses_at_prefix_for_value(platform_value):
+            if not username.startswith("@"):
+                username = f"@{username}"
+        else:
+            username = username.lstrip("@")
+
+        cast(Any, self).username = username
+        cast(Any, self).icon = SocialMediaPlatformChoice.icon_for_value(platform_value)
+
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        """Return a string representation of the SocialMediaAddress."""
+        """Return a string representation of the Social address."""
         return f"{self.display_name} - {self.url}"
 
 

@@ -32,6 +32,29 @@ class _SocialMediaPlatform(StrEnum):
         """Return the Bootstrap icon class for the platform."""
         return _SOCIAL_MEDIA_ICON_CLASSES[self]
 
+    @property
+    def base_url(self) -> str:
+        """Return the base profile URL for the platform (without username)."""
+        return _SOCIAL_MEDIA_BASE_URLS[self]
+
+    @property
+    def uses_at_prefix(self) -> bool:
+        """Return True if the platform username must be prefixed with '@'."""
+        return self in _SOCIAL_MEDIA_AT_PREFIX
+
+    def build_profile_url(self, username: str) -> str:
+        """Return the full profile URL for the given username.
+
+        Strips a leading '@' from the username before concatenation because
+        the base URL already encodes the '@' where required (e.g. YouTube,
+        TikTok).  This keeps the stored username consistent regardless of
+        whether the user typed it with or without the symbol.
+        """
+        clean = (
+            username.lstrip("@") if not self.uses_at_prefix else username.lstrip("@")
+        )
+        return f"{self.base_url}{'@' if self.uses_at_prefix else ''}{clean}"
+
 
 _SOCIAL_MEDIA_LABELS: dict[_SocialMediaPlatform, str] = {
     _SocialMediaPlatform.FACEBOOK: "Facebook",
@@ -65,6 +88,32 @@ _SOCIAL_MEDIA_ICON_CLASSES: dict[_SocialMediaPlatform, str] = {
     _SocialMediaPlatform.TWITCH: "bi bi-twitch",
 }
 
+# Base profile URLs for each platform. Do NOT include a trailing '@'; that is
+# handled by `_SOCIAL_MEDIA_AT_PREFIX` so the username storage stays clean.
+_SOCIAL_MEDIA_BASE_URLS: dict[_SocialMediaPlatform, str] = {
+    _SocialMediaPlatform.FACEBOOK: "https://www.facebook.com/",
+    _SocialMediaPlatform.TWITTER: "https://x.com/",
+    _SocialMediaPlatform.INSTAGRAM: "https://www.instagram.com/",
+    _SocialMediaPlatform.LINKEDIN: "https://www.linkedin.com/in/",
+    _SocialMediaPlatform.YOUTUBE: "https://www.youtube.com/",
+    _SocialMediaPlatform.TIKTOK: "https://www.tiktok.com/",
+    _SocialMediaPlatform.PINTEREST: "https://www.pinterest.com/",
+    _SocialMediaPlatform.SNAPCHAT: "https://www.snapchat.com/add/",
+    _SocialMediaPlatform.DISCORD: "https://discord.gg/",
+    _SocialMediaPlatform.TELEGRAM: "https://t.me/",
+    _SocialMediaPlatform.GITHUB: "https://github.com/",
+    _SocialMediaPlatform.REDDIT: "https://www.reddit.com/user/",
+    _SocialMediaPlatform.TWITCH: "https://www.twitch.tv/",
+}
+
+# Platforms whose usernames are conventionally written with a leading '@'
+# (e.g. @channelname on YouTube, @handle on TikTok).  The save() method on
+# Social will auto-prepend '@' for these if the user omits it.
+_SOCIAL_MEDIA_AT_PREFIX: frozenset[_SocialMediaPlatform] = frozenset({
+    _SocialMediaPlatform.YOUTUBE,
+    _SocialMediaPlatform.TIKTOK,
+})
+
 
 class SocialMediaPlatformChoice(models.TextChoices):
     """Django-compatible social media choices for model fields."""
@@ -96,3 +145,27 @@ class SocialMediaPlatformChoice(models.TextChoices):
             return _SocialMediaPlatform(value).icon_class
         except ValueError:
             return ""
+
+    @classmethod
+    def base_url_for_value(cls, value: str) -> str:
+        """Return the base profile URL for a given choice value."""
+        try:
+            return _SocialMediaPlatform(value).base_url
+        except ValueError:
+            return ""
+
+    @classmethod
+    def build_profile_url_for_value(cls, value: str, username: str) -> str:
+        """Return the full profile URL for a given platform value and username."""
+        try:
+            return _SocialMediaPlatform(value).build_profile_url(username)
+        except ValueError:
+            return ""
+
+    @classmethod
+    def uses_at_prefix_for_value(cls, value: str) -> bool:
+        """Return True if the platform requires a leading '@' in its username."""
+        try:
+            return _SocialMediaPlatform(value).uses_at_prefix
+        except ValueError:
+            return False

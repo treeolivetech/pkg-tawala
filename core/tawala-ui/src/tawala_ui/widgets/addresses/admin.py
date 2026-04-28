@@ -19,11 +19,11 @@ class SocialAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingType
     """Social Media Address Admin."""
 
     form = SocialMediaAddressForm
-    list_display = ("name", "url", "is_active", "display_order")
-    list_editable = ("url", "display_order")
+    list_display = ("name", "username", "url", "is_active", "display_order")
+    list_editable = ("username", "display_order")
     list_filter = ("is_active",)
-    search_fields = ("name", "url")
-    readonly_fields = ("created_at", "updated_at")
+    search_fields = ("name", "username")
+    readonly_fields = ("url", "created_at", "updated_at")
 
     def get_exclude(
         self, request: HttpRequest, obj: Social | None = None
@@ -40,7 +40,7 @@ class SocialAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingType
         return [
             (
                 "Social Media Details",
-                {"fields": ("url",) if obj else ("name", "url")},
+                {"fields": ("username", "url") if obj else ("name", "username", "url")},
             ),
             ("Display Options", {"fields": ("is_active", "display_order")}),
             *(
@@ -70,7 +70,7 @@ class PhoneAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeA
     def get_exclude(
         self, request: HttpRequest, obj: Social | None = None
     ) -> tuple[str, ...]:
-        """Exclude 'number' on edit so platform cannot be changed after creation."""
+        """Exclude 'number' on edit so number cannot be changed after creation."""
         if obj:
             return ("number",)
         return ()
@@ -119,7 +119,7 @@ class EmailAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeA
     def get_exclude(
         self, request: HttpRequest, obj: Social | None = None
     ) -> tuple[str, ...]:
-        """Exclude 'email' on edit so platform cannot be changed after creation."""
+        """Exclude 'email' on edit so address cannot be changed after creation."""
         if obj:
             return ("email",)
         return ()
