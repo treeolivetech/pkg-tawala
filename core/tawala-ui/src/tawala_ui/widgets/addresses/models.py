@@ -7,7 +7,7 @@ from phonenumber_field.modelfields import PhoneNumberField  # pyright: ignore
 from tawala_api.utils.models import (
     AbstractCreatedAtUpdatedAt,
     AbstractDisplayOrder,
-    AbstractIsActive,
+    AbstractIsActiveIsPrimary,
 )
 
 from .utils import SocialMediaPlatformChoice
@@ -16,12 +16,14 @@ from .utils import SocialMediaPlatformChoice
 # ==============================================
 # Abstract Base Address classes
 # ==============================================
-class Address(AbstractCreatedAtUpdatedAt, AbstractIsActive, AbstractDisplayOrder):
+class Address(
+    AbstractCreatedAtUpdatedAt, AbstractIsActiveIsPrimary, AbstractDisplayOrder
+):
     """Shared base for all address records."""
 
     class Meta(  # noqa: D106
         AbstractCreatedAtUpdatedAt.Meta,
-        AbstractIsActive.Meta,
+        AbstractIsActiveIsPrimary.Meta,
         AbstractDisplayOrder.Meta,
     ):
         abstract = True
@@ -126,11 +128,6 @@ class Phone(Address):
 
     # ------------------------------------------------------------------------
 
-    is_primary = models.BooleanField(
-        default=False,
-        help_text="Mark as the primary phone contact and WhatsApp number. Ignored when this record is inactive.",
-    )
-
     @property
     def whatsapp_link(self) -> str:
         """Return a wa.me URL for the active primary number."""
@@ -140,22 +137,6 @@ class Phone(Address):
         return ""
 
     # ------------------------------------------------------------------------
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        """Enforce uniqueness of primary flag and inactive behavior.
-
-        - Keep only one primary number.
-        - Clear the primary flag when the record is inactive.
-        """
-        manager = cast(Any, Phone).objects
-
-        if not self.is_active:
-            cast(Any, self).is_primary = False
-
-        if self.is_primary:
-            manager.filter(is_primary=True).exclude(pk=self.pk).update(is_primary=False)
-
-        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         """Return the formatted phone number."""
@@ -186,25 +167,6 @@ class Email(Address):
         return f"mailto:{self.email}"
 
     # ------------------------------------------------------------------------
-
-    is_primary = models.BooleanField(
-        default=False,
-        help_text="Mark as the primary email for contact forms. Ignored when this record is inactive.",
-    )
-
-    # ------------------------------------------------------------------------
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        """Ensure only one active primary email and clear primary on inactive records."""
-        if not self.is_active:
-            self.is_primary = False  # type: ignore
-
-        if self.is_primary:
-            Email.objects.filter(is_primary=True).exclude(pk=self.pk).update(  # type: ignore
-                is_primary=False
-            )
-
-        super().save(*args, **kwargs)
 
     def __str__(self) -> str:  # noqa: D105
         return str(self.email)
@@ -292,24 +254,6 @@ class PhysicalLocation(Address):
     )
 
     # ------------------------------------------------------------------------
-    is_primary = models.BooleanField(
-        default=False,
-        help_text="Mark as the primary address for contact sections and maps. Only one active address can be selected.",
-    )
-
-    # ------------------------------------------------------------------------
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        """Ensure only one active physical address is marked as primary."""
-        if not self.is_active:
-            self.is_primary = False  # type: ignore
-
-        if self.is_primary:
-            PhysicalLocation.objects.filter(is_primary=True).exclude(pk=self.pk).update(  # type: ignore
-                is_primary=False
-            )
-
-        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         """Return the label when available, otherwise fall back to city."""

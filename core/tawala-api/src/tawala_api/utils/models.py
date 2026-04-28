@@ -1,4 +1,6 @@
-"""Core model backends."""
+"""model utils."""
+
+from typing import Any, cast
 
 from django.conf import settings
 from django.db import models
@@ -80,8 +82,8 @@ class AbstractImage(models.Model):
         return static("core/placeholder.png")
 
 
-class AbstractIsActive(models.Model):
-    """Abstract model providing an is_active field."""
+class AbstractIsActiveIsPrimary(models.Model):
+    """Abstract model providing an is_active and is_primary field."""
 
     class Meta:
         """Model metadata."""
@@ -92,3 +94,23 @@ class AbstractIsActive(models.Model):
         default=True,
         help_text="Designates whether this item should be treated as active. Unselect this instead of deleting items.",
     )
+    is_primary = models.BooleanField(
+        default=False,
+        help_text="Designates whether this item is the primary item. Only one active item should be marked as primary.",
+    )
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        """Enforce uniqueness of primary flag and inactive behavior.
+
+        - Keep only one primary item.
+        - Clear the primary flag when the record is inactive.
+        """
+        if not self.is_active:
+            cast(Any, self).is_primary = False
+
+        if self.is_primary:
+            cast(Any, self.__class__).objects.filter(is_primary=True).exclude(
+                pk=self.pk
+            ).update(is_primary=False)
+
+        super().save(*args, **kwargs)

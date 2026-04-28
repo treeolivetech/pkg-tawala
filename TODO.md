@@ -1,0 +1,4 @@
+- [] Integrate in the utils.py that contains enums, each link having it's own url mapping e.g GitHub - https://github.com, Facebook - https://www.facebook.com, etc.
+- [] This will allow the Social Address model, the urls field, to instead unnecessarily typing the url plus username (e.g for GitHub - https://github.com/username), we only add the username. Rename the urls field to username. Update all relevant references.
+- [] Since some usernames start with `@` e.g for YouTube (Confirm which other platforms start with `@` for the username), update the Social save method to check for those specific platforms if the `@` has been included at the start of the username and if not, include it before saving.
+- [] Appropriate git commit message
