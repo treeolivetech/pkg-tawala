@@ -3,9 +3,9 @@
 from django.core.files.base import ContentFile, File
 from django.core.files.storage import Storage
 from django.utils.deconstruct import deconstructible
-from vercel.blob import BlobClient  # pyright: ignore[reportMissingTypeStubs]
+from vercel.blob import BlobClient
 
-from tawala_api.conf import PRESET_API
+from tawala_api.apps import PRESET_API
 
 
 @deconstructible

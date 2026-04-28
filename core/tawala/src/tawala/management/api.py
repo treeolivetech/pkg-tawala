@@ -6,12 +6,12 @@ https://docs.djangoproject.com/en/stable/howto/deployment/wsgi
 
 from sys import exit
 
-from tawala_api.conf import PROJECT_API, FetchProjectValidationError
+from tawala_api.apps import PROJECT_API, FetchProjectValidationError
 
 try:
     PROJECT_API.validate_project()
 except FetchProjectValidationError as e:
-    from tawala_api.conf import print_invalid_project_help
+    from tawala_api.apps import print_invalid_project_help
 
     exit(print_invalid_project_help(e))
 except Exception as e:
@@ -22,7 +22,7 @@ except Exception as e:
 else:
     from os import environ
 
-    from tawala_api.conf import (
+    from tawala_api.apps import (
         SECURITY_API,
         SecurityServerOptions,
     )

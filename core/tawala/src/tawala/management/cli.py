@@ -3,7 +3,7 @@
 from sys import argv, exit
 
 from christianwhocodes import ExitCode, Text, cprint
-from tawala_api.conf import PROJECT_API
+from tawala_api.apps import PROJECT_API
 
 
 def main() -> None:
@@ -16,9 +16,9 @@ def main() -> None:
         case "-v" | "--version" | "version":
             from christianwhocodes import print_version
 
-            exit(print_version(PROJECT_API.base_name))
+            exit(print_version(PROJECT_API.pkg_name))
         case _:
-            from tawala_api.conf import (
+            from tawala_api.apps import (
                 FetchProjectValidationError,
                 print_invalid_project_help,
             )
@@ -41,7 +41,7 @@ def main() -> None:
                 path.insert(0, str(PROJECT_API.base_dir))
                 environ.setdefault("DJANGO_SETTINGS_MODULE", DJANGO_SETTINGS_MODULE)
                 utility = ManagementUtility(argv)
-                utility.prog_name = PROJECT_API.base_name
+                utility.prog_name = PROJECT_API.pkg_name
                 utility.execute()
 
 

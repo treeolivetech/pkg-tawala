@@ -11,7 +11,7 @@ from christianwhocodes import (
     status,
 )
 
-from ...conf import (
+from ...apps import (
     API_NAME,
     API_VERSION,
     PROJECT_API,
@@ -38,7 +38,7 @@ class NewCommand(BaseCommand):
     _validated_args: Namespace
     _project_dir_existed_before: bool
     prog = API_NAME + " new"
-    help = f"Initialize a new {PROJECT_API.base_display_name} app."
+    help = f"Initialize a new {PROJECT_API.pkg_display_name} app."
 
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Register arguments onto the parser."""
@@ -210,11 +210,11 @@ class NewCommand(BaseCommand):
 
         layout_html_content = (
             '{% extends "base/layout.html" %}\n'
-            "{% block sections %}\n"
+            "{% block inner_main %}\n"
             '    <section class="container">\n'
             '        <p class="text-primary">Welcome to our App!</p>\n'
             "    </section>\n"
-            "{% endblock sections %}\n"
+            "{% endblock inner_main %}\n"
         )
         templates_dir = dashboard_dir / "templates" / dashboard_name
         templates_dir.mkdir(parents=True, exist_ok=True)
@@ -268,6 +268,6 @@ class NewCommand(BaseCommand):
     def _display_successful_setup_info(self, project_dir: Path) -> None:
         """Print success output after initialization."""
         cprint(
-            f"✓ {PROJECT_API.base_display_name} project '{project_dir.name}' initialized successfully!",
+            f"✓ {PROJECT_API.pkg_display_name} project '{project_dir.name}' initialized successfully!",
             Text.SUCCESS,
         )

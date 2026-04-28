@@ -10,7 +10,7 @@ from .models import Group, Item
 
 
 @admin.register(Group)
-class ListGroupAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class ListGroupAdmin(admin.ModelAdmin):
     """List Group Admin. Allow permissions only for superusers."""
 
     list_display = ("name", "is_primary", "is_active")
@@ -61,7 +61,7 @@ class GroupNameFilter(admin.SimpleListFilter):
 
 
 @admin.register(Item)
-class ListItemAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class ListItemAdmin(admin.ModelAdmin):
     """List Item Admin with enhanced display, filtering, search, and form behavior."""
 
     list_display = (

@@ -14,7 +14,7 @@ from christianwhocodes import (
     cprint,
 )
 
-from ...conf import (
+from ...apps import (
     API_NAME,
     API_VERSION,
     DATABASES_SCHEMA,
@@ -265,7 +265,7 @@ class GenerateCommand(BaseCommand):
 
         extras: list[str] = []
         allowed_hosts = ['"localhost"', '"127.0.0.1"']
-        tool_lines = [f"[tool.{PROJECT_API.base_name}]"]
+        tool_lines = [f"[tool.{PROJECT_API.pkg_name}]"]
 
         # ---------------------------------------------
 
@@ -309,7 +309,7 @@ class GenerateCommand(BaseCommand):
         base_extras = (
             f"[{layout}]" if layout and layout != LayoutOptions.UI.value else ""
         )
-        base_dep = f'"{PROJECT_API.base_name}{base_extras}=={PROJECT_API.base_version}"'
+        base_dep = f'"{PROJECT_API.pkg_name}{base_extras}=={PROJECT_API.pkg_version}"'
 
         # ---------------------------------------------
 
@@ -334,7 +334,9 @@ class GenerateCommand(BaseCommand):
 
     def _content_api_server_py(self) -> str:
         """Generate API server entry-point file content."""
-        return f"from {PROJECT_API.base_app}.management.api import server\n\napp = server\n"
+        return (
+            f"from {PROJECT_API.pkg_app}.management.api import server\n\napp = server\n"
+        )
 
     def _content_vercel_json(self) -> str:
         """Generate vercel.json content for Vercel preset."""
@@ -342,8 +344,8 @@ class GenerateCommand(BaseCommand):
             "{",
             '  "$schema": "https://openapi.vercel.sh/vercel.json",',
             '  "framework": null,',
-            f'  "installCommand": "uv run {PROJECT_API.base_name} runinstall",',
-            f'  "buildCommand": "uv run {PROJECT_API.base_name} runbuild",',
+            f'  "installCommand": "uv run {PROJECT_API.pkg_name} runinstall",',
+            f'  "buildCommand": "uv run {PROJECT_API.pkg_name} runbuild",',
             '  "rewrites": [',
             "    {",
             '      "source": "/(.*)",',
@@ -362,9 +364,9 @@ class GenerateCommand(BaseCommand):
         """Generate CONFIG.md documentation from exported setting schemas."""
         generated_on = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
         lines = [
-            f"# {PROJECT_API.base_display_name} Configuration Reference",
+            f"# {PROJECT_API.pkg_display_name} Configuration Reference",
             "",
-            f"A generated reference of all supported `tool.{PROJECT_API.base_name}` settings, their defaults, and allowed values.",
+            f"A generated reference of all supported `tool.{PROJECT_API.pkg_name}` settings, their defaults, and allowed values.",
             "",
             f"Generated on: {generated_on}",
             "",
@@ -372,7 +374,7 @@ class GenerateCommand(BaseCommand):
             "",
             "Configuration is resolved in this order:",
             "1. Environment variables",
-            f"2. `pyproject.toml` in `[tool.{PROJECT_API.base_name}]` section",
+            f"2. `pyproject.toml` in `[tool.{PROJECT_API.pkg_name}]` section",
             "3. Schema defaults",
             "",
         ]

@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import WIDGET_HEADER
+from ...apps import WIDGET_HEADER
 
 
 class HeaderConfig(AppConfig):

@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import NotRequired, TypeAlias, TypedDict
 
-from django.utils.csp import CSP  # pyright: ignore[reportMissingTypeStubs]
-from tawala_api.conf import (
+from django.utils.csp import CSP
+from tawala_api.apps import (
     API_APP,
     DATABASES_API,
     INTERNATIONALIZATION_API,
@@ -17,9 +17,17 @@ from tawala_api.conf import (
     LayoutOptions,
     PresetOptions,
 )
-from tawala_school.conf import SCHOOL_APP
-from tawala_ui.conf import ASSET_BOOTSTRAP, UI_APP, UI_APPS, WIDGET_ADDRESSES
-from tawala_wip.conf import WIP_APP
+from tawala_school.apps import SCHOOL_APP
+from tawala_ui.apps import (
+    ASSET_BOOTSTRAP,
+    ASSETS_LITERAL,
+    ASSETS_MODULE,
+    UI_APPS,
+    WIDGET_ADDRESSES,
+    WIDGETS_LITERAL,
+    WIDGETS_MODULE,
+)
+from tawala_wip.apps import WIP_APP
 
 # ============================================================================
 # Layout
@@ -37,10 +45,10 @@ INSTALLED_APPS: list[str] = [
 
 # --------------------------------------------
 
-BASE_APP = PROJECT_API.base_app
-BASE_NAME = PROJECT_API.base_name
-BASE_DISPLAY_NAME = PROJECT_API.base_display_name
-BASE_VERSION = PROJECT_API.base_version
+BASE_APP = PROJECT_API.pkg_app
+BASE_NAME = PROJECT_API.pkg_name
+BASE_DISPLAY_NAME = PROJECT_API.pkg_display_name
+BASE_VERSION = PROJECT_API.pkg_version
 BASE_DIR = PROJECT_API.base_dir
 
 INSTALLED_APPS.append(BASE_APP)
@@ -154,7 +162,11 @@ TEMPLATES: _TemplatesDict = [
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.csp",
             ],
-            "builtins": [f"{UI_APP}.templatetags"],
+            "builtins": [f"{API_APP}.templatetags"],
+            "libraries": {
+                ASSETS_LITERAL: f"{ASSETS_MODULE}.templatetags",
+                WIDGETS_LITERAL: f"{WIDGETS_MODULE}.templatetags",
+            },
         },
     }
 ]

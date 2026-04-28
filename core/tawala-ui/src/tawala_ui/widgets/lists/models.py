@@ -1,23 +1,27 @@
 """Widget lists models."""
 
 from django.db import models
-from tawala_api.utils.models import (
-    AbstractBootstrapIcon,
-    AbstractCreatedAtUpdatedAt,
-    AbstractDisplayOrder,
-    AbstractIsActiveIsPrimary,
+
+from ...utils.models import (
+    BootstrapIconModel,
+    CreatedAtUpdatedAtModel,
+    DisplayOrderModel,
+    IsActiveIsPrimaryModel,
 )
 
 
 class Group(
-    AbstractCreatedAtUpdatedAt, AbstractBootstrapIcon, AbstractIsActiveIsPrimary
+    CreatedAtUpdatedAtModel,
+    BootstrapIconModel,
+    IsActiveIsPrimaryModel,
 ):
     """Model representing a list group."""
 
     class Meta(
-        AbstractCreatedAtUpdatedAt.Meta,
-        AbstractBootstrapIcon.Meta,
-        AbstractIsActiveIsPrimary.Meta,
+        DisplayOrderModel.Meta,
+        BootstrapIconModel.Meta,
+        CreatedAtUpdatedAtModel.Meta,
+        IsActiveIsPrimaryModel.Meta,
     ):
         """Meta configuration."""
 
@@ -38,18 +42,18 @@ class Group(
 
 
 class Item(
-    AbstractDisplayOrder,
-    AbstractBootstrapIcon,
-    AbstractCreatedAtUpdatedAt,
-    AbstractIsActiveIsPrimary,
+    DisplayOrderModel,
+    BootstrapIconModel,
+    CreatedAtUpdatedAtModel,
+    IsActiveIsPrimaryModel,
 ):
     """Model representing an individual item within a list group."""
 
     class Meta(
-        AbstractDisplayOrder.Meta,
-        AbstractBootstrapIcon.Meta,
-        AbstractCreatedAtUpdatedAt.Meta,
-        AbstractIsActiveIsPrimary.Meta,
+        DisplayOrderModel.Meta,
+        BootstrapIconModel.Meta,
+        CreatedAtUpdatedAtModel.Meta,
+        IsActiveIsPrimaryModel.Meta,
     ):
         """Meta configuration."""
 
@@ -57,7 +61,7 @@ class Item(
 
     # ------------------------------------------------------------------------
 
-    groups = models.ManyToManyField(  # pyright: ignore[reportUnknownVariableType]
+    groups = models.ManyToManyField(
         Group,
         related_name="items",
         blank=True,

@@ -11,17 +11,7 @@ members = [
 ]
 
 [dependency-groups]
-dev = ["pre-commit>=4.6.0", "ty>=0.0.32"]
-
-[tool.ruff]
-exclude = ["*/migrations/*"]
-
-[tool.ruff.format]
-preview = true
-
-[tool.ruff.lint]
-select = ["D"]
-ignore = ["D203", "D213"]
+dev = ["pre-commit>=4.6.0"]
 
 [[tool.uv.index]]
 name = "testpypi"

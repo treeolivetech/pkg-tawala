@@ -1,8 +1,11 @@
 """School app."""
 
+from christianwhocodes import Version
 from django.apps import AppConfig
 
-from .conf import SCHOOL_APP
+SCHOOL_APP = "tawala_school"
+SCHOOL_NAME = "tawala-school"
+SCHOOL_VERSION = Version.get(SCHOOL_NAME)[0]
 
 
 class SchoolConfig(AppConfig):

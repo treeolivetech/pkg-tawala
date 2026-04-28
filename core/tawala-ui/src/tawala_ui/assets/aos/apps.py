@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import ASSET_AOS
+from ...apps import ASSET_AOS
 
 
 class AOSConfig(AppConfig):

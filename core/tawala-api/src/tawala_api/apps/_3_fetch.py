@@ -67,10 +67,10 @@ class _FetchProject:
         self._base_toml: dict[str, Any] = {}
         self._base_dir: pathlib.Path | None = None
 
-        self.base_app = "tawala"
-        self.base_name: Final[str] = self.base_app
-        self.base_display_name: Final[str] = self.base_name.capitalize()
-        self.base_version: Final[str] = Version.get(self.base_name)[0]
+        self.pkg_app = "tawala"
+        self.pkg_name: Final[str] = self.pkg_app
+        self.pkg_display_name: Final[str] = self.pkg_name.capitalize()
+        self.pkg_version: Final[str] = Version.get(self.pkg_name)[0]
 
     def _load_project(self) -> None:
         """Load and validate pyproject.toml configuration."""
@@ -78,9 +78,9 @@ class _FetchProject:
         if not pyproject_path.exists():
             raise FileNotFoundError(f"pyproject.toml not found at '{pyproject_path}'")
         tool_section = PyProject(pyproject_path).data.get("tool", {})
-        if self.base_name not in tool_section:
-            raise KeyError(f"Missing 'tool.{self.base_name}' section in pyproject.toml")
-        self._base_toml = tool_section[self.base_name]
+        if self.pkg_name not in tool_section:
+            raise KeyError(f"Missing 'tool.{self.pkg_name}' section in pyproject.toml")
+        self._base_toml = tool_section[self.pkg_name]
         self._base_dir = pyproject_path.parent
 
     def validate_project(self) -> None:

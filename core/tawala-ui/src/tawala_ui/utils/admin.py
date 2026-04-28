@@ -2,8 +2,10 @@
 
 from typing import Any
 
+from django import forms
 
-class UniqueChoiceFormMixin:
+
+class UniqueChoiceForm(forms.ModelForm):
     """Mixin that filters a choice field to values not yet used.
 
     By default it targets the 'name' field, but forms can override

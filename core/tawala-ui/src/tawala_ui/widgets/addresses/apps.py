@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import WIDGET_ADDRESSES
+from ...apps import WIDGET_ADDRESSES
 
 
 class AddressesConfig(AppConfig):

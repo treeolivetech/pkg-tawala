@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import ASSET_BOOTSTRAP
+from ...apps import ASSET_BOOTSTRAP
 
 
 class BootstrapConfig(AppConfig):

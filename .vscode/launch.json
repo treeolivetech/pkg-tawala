@@ -7,11 +7,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CLI: new default project wip",
+      "name": "CLI: new default project",
       "type": "debugpy",
       "request": "launch",
       "module": "tawala_api.management.cli",
-      "args": ["new", "--project", "launch-new-default", "--layout", "wip"],
+      "args": ["new", "--project", "launch-new-default"],
       "cwd": "${workspaceFolder}/mock",
       "preLaunchTask": "CLI: new default project",
       "console": "integratedTerminal"

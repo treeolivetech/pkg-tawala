@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import WIDGET_LISTS
+from ...apps import WIDGET_LISTS
 
 
 class ListsConfig(AppConfig):

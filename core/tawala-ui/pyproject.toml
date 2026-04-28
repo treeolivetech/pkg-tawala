@@ -18,5 +18,17 @@ dependencies = [
     "tawala-api==0.1.0",
 ]
 
+[dependency-groups]
+dev = ["djlint>=1.36.4", "ruff>=0.15.12", "ty>=0.0.33"]
+
+[tool.djlint]
+blank_line_before_tag = "block"
+blank_line_after_tag = "endblock"
+
+[tool.ruff]
+exclude = ["*/migrations/*"]
+format = { preview = true }
+lint = { select = ["D"], ignore = ["D203", "D213"] }
+
 [tool.uv.sources]
 tawala-api = { workspace = true }

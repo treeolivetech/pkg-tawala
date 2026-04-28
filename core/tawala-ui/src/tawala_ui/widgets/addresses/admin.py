@@ -1,11 +1,11 @@
-"""Widget addresses admin configuration."""
+"""Widget Addresses Admin."""
 
 from typing import Any, cast
 
 from django.contrib import admin
 from django.http import HttpRequest
 
-from .forms import SocialMediaAddressForm
+from ...utils.admin import UniqueChoiceForm
 from .models import (
     Email,
     Phone,
@@ -14,11 +14,32 @@ from .models import (
 )
 
 
+# ==============================================
+# Social
+# ==============================================
+# forms
+class SocialForm(UniqueChoiceForm):
+    """Form for the Social model, filtering out existing choices for 'name'.
+
+    Excludes the auto-populated 'icon' field from the form.
+    """
+
+    choice_field_name = "name"
+
+    class Meta:
+        """Meta options for the form."""
+
+        model = Social
+        fields = "__all__"
+        exclude = ("icon",)
+
+
+# admin
 @admin.register(Social)
-class SocialAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class SocialAdmin(admin.ModelAdmin):
     """Social Media Address Admin."""
 
-    form = SocialMediaAddressForm
+    form = SocialForm
     list_display = ("name", "username", "url", "is_active", "display_order")
     list_editable = ("username", "display_order")
     list_filter = ("is_active",)
@@ -51,8 +72,12 @@ class SocialAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingType
         ]
 
 
+# ==============================================
+# Phone
+# ==============================================
+# admin
 @admin.register(Phone)
-class PhoneAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class PhoneAdmin(admin.ModelAdmin):
     """Phone Address Admin."""
 
     list_display = ("number", "is_primary", "is_active", "display_order")
@@ -100,8 +125,12 @@ class PhoneAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeA
         ]
 
 
+# ==============================================
+# Email
+# ==============================================
+# admin
 @admin.register(Email)
-class EmailAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class EmailAdmin(admin.ModelAdmin):
     """Email Address Admin."""
 
     list_display = ("email", "is_primary", "is_active", "display_order")
@@ -149,12 +178,16 @@ class EmailAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeA
         ]
 
 
+# ==============================================
+# PhysicalLocation
+# ==============================================
+# admin
 @admin.register(PhysicalLocation)
-class PhysicalAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTypeArgument]
+class PhysicalLocationAdmin(admin.ModelAdmin):
     """Physical Address Admin."""
 
     list_display = (
-        "label",
+        "name",
         "city",
         "country",
         "is_primary",
@@ -163,7 +196,7 @@ class PhysicalAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTy
     )
     list_editable = ("display_order",)
     list_filter = ("is_active", "is_primary", "country", "state_province")
-    search_fields = ("label", "street_address", "city", "country")
+    search_fields = ("name", "street_address", "city", "country")
     readonly_fields = ("created_at", "updated_at", "current_primary_location")
 
     @admin.display(description="Current primary")
@@ -181,7 +214,7 @@ class PhysicalAddressAdmin(admin.ModelAdmin):  # pyright: ignore[reportMissingTy
                 "Address Details",
                 {
                     "fields": (
-                        "label",
+                        "name",
                         "building",
                         "street_address",
                         "city",

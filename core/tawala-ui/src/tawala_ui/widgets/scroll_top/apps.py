@@ -2,7 +2,7 @@
 
 from django.apps import AppConfig
 
-from ...conf import WIDGET_SCROLL_TOP
+from ...apps import WIDGET_SCROLL_TOP
 
 
 class ScrollTopConfig(AppConfig):

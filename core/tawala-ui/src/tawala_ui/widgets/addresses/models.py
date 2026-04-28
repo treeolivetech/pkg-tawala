@@ -1,36 +1,144 @@
-"""Address widget models for social, phone, email, and physical contact data."""
+"""Widget Addresses Models."""
 
 from typing import Any, cast
 
+from django.apps import AppConfig
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField  # pyright: ignore
-from tawala_api.utils.models import (
-    AbstractCreatedAtUpdatedAt,
-    AbstractDisplayOrder,
-    AbstractIsActiveIsPrimary,
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
+
+from ...utils.models import (
+    CreatedAtUpdatedAtModel,
+    DisplayOrderModel,
+    IsActiveIsPrimaryModel,
 )
-
-from .utils import SocialMediaPlatformChoice
+from .apps import AddressesConfig
 
 
 # ==============================================
-# Abstract Base Address classes
+# Address
 # ==============================================
+# choices
+class SocialPlatformChoice(models.TextChoices):
+    """Django-compatible social media choices for model fields."""
+
+    FACEBOOK = "facebook", "Facebook"
+    TWITTER = "twitter", "X (formerly Twitter)"
+    INSTAGRAM = "instagram", "Instagram"
+    LINKEDIN = "linkedin", "LinkedIn"
+    YOUTUBE = "youtube", "YouTube"
+    TIKTOK = "tiktok", "TikTok"
+    PINTEREST = "pinterest", "Pinterest"
+    SNAPCHAT = "snapchat", "Snapchat"
+    DISCORD = "discord", "Discord"
+    TELEGRAM = "telegram", "Telegram"
+    GITHUB = "github", "GitHub"
+    REDDIT = "reddit", "Reddit"
+    TWITCH = "twitch", "Twitch"
+
+    @classmethod
+    def icon_for_value(cls, value: str) -> str:
+        """Return the Bootstrap icon CSS class for the given platform value."""
+        match value:
+            case cls.FACEBOOK:
+                return "bi bi-facebook"
+            case cls.TWITTER:
+                return "bi bi-twitter-x"
+            case cls.INSTAGRAM:
+                return "bi bi-instagram"
+            case cls.LINKEDIN:
+                return "bi bi-linkedin"
+            case cls.YOUTUBE:
+                return "bi bi-youtube"
+            case cls.TIKTOK:
+                return "bi bi-tiktok"
+            case cls.PINTEREST:
+                return "bi bi-pinterest"
+            case cls.SNAPCHAT:
+                return "bi bi-snapchat"
+            case cls.DISCORD:
+                return "bi bi-discord"
+            case cls.TELEGRAM:
+                return "bi bi-telegram"
+            case cls.GITHUB:
+                return "bi bi-github"
+            case cls.REDDIT:
+                return "bi bi-reddit"
+            case cls.TWITCH:
+                return "bi bi-twitch"
+            case _:
+                return ""
+
+    @classmethod
+    def base_url_for_value(cls, value: str) -> str:
+        """Return the base profile URL for the given platform value."""
+        match value:
+            case cls.FACEBOOK:
+                return "https://www.facebook.com/"
+            case cls.TWITTER:
+                return "https://x.com/"
+            case cls.INSTAGRAM:
+                return "https://www.instagram.com/"
+            case cls.LINKEDIN:
+                return "https://www.linkedin.com/in/"
+            case cls.YOUTUBE:
+                return "https://www.youtube.com/"
+            case cls.TIKTOK:
+                return "https://www.tiktok.com/"
+            case cls.PINTEREST:
+                return "https://www.pinterest.com/"
+            case cls.SNAPCHAT:
+                return "https://www.snapchat.com/add/"
+            case cls.DISCORD:
+                return "https://discord.gg/"
+            case cls.TELEGRAM:
+                return "https://t.me/"
+            case cls.GITHUB:
+                return "https://github.com/"
+            case cls.REDDIT:
+                return "https://www.reddit.com/user/"
+            case cls.TWITCH:
+                return "https://www.twitch.tv/"
+            case _:
+                return ""
+
+    @classmethod
+    def uses_at_prefix_for_value(cls, value: str) -> bool:
+        """Return True if the platform requires a leading '@' in its username."""
+        return value in {cls.YOUTUBE, cls.TIKTOK}
+
+    @classmethod
+    def build_profile_url_for_value(cls, value: str, username: str) -> str:
+        """Return the full profile URL for the given platform and username."""
+        base = cls.base_url_for_value(value)
+        if not base:
+            return ""
+        uses_at = cls.uses_at_prefix_for_value(value)
+        clean = username.lstrip("@")
+        return f"{base}{'@' if uses_at else ''}{clean}"
+
+
+# models
 class Address(
-    AbstractCreatedAtUpdatedAt, AbstractIsActiveIsPrimary, AbstractDisplayOrder
+    CreatedAtUpdatedAtModel,
+    IsActiveIsPrimaryModel,
+    DisplayOrderModel,
 ):
     """Shared base for all address records."""
 
-    class Meta(  # noqa: D106
-        AbstractCreatedAtUpdatedAt.Meta,
-        AbstractIsActiveIsPrimary.Meta,
-        AbstractDisplayOrder.Meta,
+    class Meta(
+        CreatedAtUpdatedAtModel.Meta,
+        IsActiveIsPrimaryModel.Meta,
+        DisplayOrderModel.Meta,
     ):
+        """Meta configuration."""
+
         abstract = True
 
 
 # ==============================================
-# Social Address model
+# Social
 # ==============================================
 class Social(Address):
     """Stores one social profile username per platform with an auto-generated icon and URL."""
@@ -44,14 +152,14 @@ class Social(Address):
 
     name = models.CharField(
         max_length=20,
-        choices=SocialMediaPlatformChoice.choices,
+        choices=SocialPlatformChoice.choices,
         unique=True,
         help_text="Select the social platform. Each platform can only be added once.",
     )
 
     @property
     def display_name(self) -> str:
-        """Return the human-friendly platform label from model choices."""
+        """Return the human-friendly platform name from model choices."""
         return str(self.get_name_display())  # type: ignore
 
     # ------------------------------------------------------------------------
@@ -76,6 +184,7 @@ class Social(Address):
 
     username = models.CharField(
         max_length=255,
+        blank=True,
         help_text=(
             "Your handle or username on this platform (e.g. 'johndoe' or 'acme-corp'). "
             "Do not include the full URL — it is built automatically from the platform. "
@@ -86,7 +195,7 @@ class Social(Address):
     @property
     def url(self) -> str:
         """Return the full profile URL constructed from the platform base URL and username."""
-        return SocialMediaPlatformChoice.build_profile_url_for_value(
+        return SocialPlatformChoice.build_profile_url_for_value(
             str(self.name), str(self.username)
         )
 
@@ -104,14 +213,14 @@ class Social(Address):
 
         # Normalise the username: ensure correct '@' handling.
         username = str(cast(Any, self).username).strip()
-        if SocialMediaPlatformChoice.uses_at_prefix_for_value(platform_value):
+        if SocialPlatformChoice.uses_at_prefix_for_value(platform_value):
             if not username.startswith("@"):
                 username = f"@{username}"
         else:
             username = username.lstrip("@")
 
         cast(Any, self).username = username
-        cast(Any, self).icon = SocialMediaPlatformChoice.icon_for_value(platform_value)
+        cast(Any, self).icon = SocialPlatformChoice.icon_for_value(platform_value)
 
         super().save(*args, **kwargs)
 
@@ -120,9 +229,22 @@ class Social(Address):
         return f"{self.display_name} - {self.url}"
 
 
+# signals
+@receiver(post_migrate)
+def create_default_socials(
+    sender: object, app_config: AppConfig, **kwargs: Any
+) -> None:
+    """Seed one Social record per SocialPlatformChoice on migration."""
+    if app_config.name != AddressesConfig.name:
+        return
+    for choice in SocialPlatformChoice.values:
+        cast(Any, Social).objects.get_or_create(name=choice)
+
+
 # ==============================================
-# Phone Address model
+# Phone
 # ==============================================
+# models
 class Phone(Address):
     """Stores phone contact numbers with optional primary designation."""
 
@@ -174,8 +296,9 @@ class Phone(Address):
 
 
 # ==============================================
-# Email Address model
+# Email
 # ==============================================
+# models
 class Email(Address):
     """Stores email contact addresses with optional primary designation."""
 
@@ -202,19 +325,23 @@ class Email(Address):
         return str(self.email)
 
 
+# ==============================================
+# Physical Location
+# ==============================================
+# models
 class PhysicalLocation(Address):
     """Stores physical location details with optional map and contact-form usage."""
 
     class Meta(Address.Meta):
         """Meta configuration."""
 
-        ordering = ["display_order", "label", "city"]
+        ordering = ["display_order", "name", "city"]
 
     # ------------------------------------------------------------------------
 
-    label = models.CharField(
+    name = models.CharField(
         max_length=100,
-        help_text="Short label for this location (e.g., Main Office).",
+        help_text="Name for this location (e.g., Main Office).",
         unique=True,
     )
 
@@ -286,5 +413,5 @@ class PhysicalLocation(Address):
     # ------------------------------------------------------------------------
 
     def __str__(self) -> str:
-        """Return the label when available, otherwise fall back to city."""
-        return str(self.label if self.label else self.city)
+        """Return the name when available, otherwise fall back to city."""
+        return str(self.name if self.name else self.city)

@@ -1,0 +1,10 @@
+{% block auth_logout %}
+    {% if request.user.is_authenticated %}
+        <form id="widget_logout"
+              class="d-none"
+              action="{% url 'widget_logout' %}"
+              method="post">
+            {% csrf_token %}
+        </form>
+    {% endif %}
+{% endblock auth_logout %}

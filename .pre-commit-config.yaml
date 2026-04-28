@@ -36,8 +36,8 @@ repos:
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
     hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
+      - id: djlint-reformat
+      - id: djlint
 
   # 5. Type checking last — needs clean, linted code to be meaningful
   # ty : https://github.com/astral-sh/ty/issues/269

@@ -10,7 +10,7 @@ from christianwhocodes import ExitCode
 def _build_parser() -> ArgumentParser:
     """Create and configure the top-level CLI parser."""
     from .commands import GenerateCommand, NewCommand
-    from ..conf import API_NAME, API_VERSION
+    from ..apps import API_NAME, API_VERSION
 
     parser = ArgumentParser(
         prog=API_NAME,

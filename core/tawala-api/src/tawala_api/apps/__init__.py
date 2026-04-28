@@ -19,7 +19,7 @@ def print_invalid_project_help(error: Exception) -> ExitCode:
 
     """
     cprint(
-        f"Is this a valid {PROJECT_API.base_display_name} project directory? {error}",
+        f"Is this a valid {PROJECT_API.pkg_display_name} project directory? {error}",
         Text.WARNING,
     )
     return ExitCode.ERROR
