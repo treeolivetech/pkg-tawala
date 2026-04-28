@@ -57,10 +57,11 @@ class Item(
 
     # ------------------------------------------------------------------------
 
-    group = models.ForeignKey(
+    groups = models.ManyToManyField(  # pyright: ignore[reportUnknownVariableType]
         Group,
-        on_delete=models.CASCADE,
         related_name="items",
+        blank=True,
+        help_text="Groups this item belongs to.",
     )
 
     # ------------------------------------------------------------------------
