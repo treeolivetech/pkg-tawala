@@ -1,4 +1,3 @@
-// TODO: There's a lot of repetition here. Preferably move some of the code to the .vscode/scripts folder.
 {
   "version": "2.0.0",
   "tasks": [
@@ -9,8 +8,8 @@
       "args": [
         "run",
         "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-default', ignore_errors=True)"
+        ".vscode/scripts/cleanup_mock.py",
+        "launch-new-default"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -24,8 +23,8 @@
       "args": [
         "run",
         "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-vercel', ignore_errors=True)"
+        ".vscode/scripts/cleanup_mock.py",
+        "launch-new-vercel"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -39,8 +38,8 @@
       "args": [
         "run",
         "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'launch-new-postgres-vars-wip', ignore_errors=True)"
+        ".vscode/scripts/cleanup_mock.py",
+        "launch-new-postgres-vars-wip"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -54,8 +53,9 @@
       "args": [
         "run",
         "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); target = mock / 'new-dot'; shutil.rmtree(target, ignore_errors=True); target.mkdir(parents=True, exist_ok=True)"
+        ".vscode/scripts/cleanup_mock.py",
+        "new-dot",
+        "--recreate"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -66,12 +66,7 @@
       "label": "CLI: generate selected target",
       "type": "process",
       "command": "uv",
-      "args": [
-        "run",
-        "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'generate', ignore_errors=True)"
-      ],
+      "args": ["run", "python", ".vscode/scripts/cleanup_mock.py", "generate"],
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -81,12 +76,7 @@
       "label": "CLI: generate all targets",
       "type": "process",
       "command": "uv",
-      "args": [
-        "run",
-        "python",
-        "-c",
-        "import pathlib, shutil; mock = pathlib.Path('mock'); mock.mkdir(parents=True, exist_ok=True); shutil.rmtree(mock / 'generate', ignore_errors=True)"
-      ],
+      "args": ["run", "python", ".vscode/scripts/cleanup_mock.py", "generate"],
       "options": {
         "cwd": "${workspaceFolder}"
       },

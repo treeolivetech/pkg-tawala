@@ -7,12 +7,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "CLI: new default project wip",
+      "name": "CLI: new default project",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
-      "args": ["new", "--project", "launch-new-default", "--layout", "wip"],
-      "cwd": "${workspaceFolder}/mock",
+      "module": "tawala_api.management.cli",
+      "args": ["new", "--project", "launch-new-default"],
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new default project",
       "console": "integratedTerminal"
     },
@@ -20,9 +20,9 @@
       "name": "CLI: new vercel project",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
+      "module": "tawala_api.management.cli",
       "args": ["new", "--project", "launch-new-vercel", "--preset", "vercel"],
-      "cwd": "${workspaceFolder}/mock",
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new vercel project",
       "console": "integratedTerminal"
     },
@@ -30,7 +30,7 @@
       "name": "CLI: new postgres vars wip project",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
+      "module": "tawala_api.management.cli",
       "args": [
         "new",
         "--project",
@@ -41,7 +41,7 @@
         "--layout",
         "wip"
       ],
-      "cwd": "${workspaceFolder}/mock",
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new postgres vars wip project",
       "console": "integratedTerminal"
     },
@@ -49,9 +49,9 @@
       "name": "CLI: new current directory",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
+      "module": "tawala_api.management.cli",
       "args": ["new", "--project", "."],
-      "cwd": "${workspaceFolder}/mock/new-dot",
+      "cwd": "${workspaceFolder}/.mock/new-dot",
       "preLaunchTask": "CLI: new current directory",
       "console": "integratedTerminal"
     },
@@ -59,14 +59,14 @@
       "name": "CLI: generate selected target",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
+      "module": "tawala_api.management.cli",
       "args": [
         "generate",
-        "${input:treeoliveGenerateTarget}",
+        "${input:tawalaGenerateTarget}",
         "--output-dir",
-        "${workspaceFolder}/mock/generate/out-${input:treeoliveGenerateTarget}",
+        "${workspaceFolder}/.mock/generate/out-${input:tawalaGenerateTarget}",
         "--project-name",
-        "gen-${input:treeoliveGenerateTarget}"
+        "gen-${input:tawalaGenerateTarget}"
       ],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "CLI: generate selected target",
@@ -76,12 +76,12 @@
       "name": "CLI: generate all targets",
       "type": "debugpy",
       "request": "launch",
-      "module": "treeolive_api.cli",
+      "module": "tawala_api.management.cli",
       "args": [
         "generate",
         "all",
         "--output-dir",
-        "${workspaceFolder}/mock/generate/all",
+        "${workspaceFolder}/.mock/generate/all",
         "--project-name",
         "gen-all"
       ],
@@ -92,7 +92,7 @@
   ],
   "inputs": [
     {
-      "id": "treeoliveGenerateTarget",
+      "id": "tawalaGenerateTarget",
       "type": "pickString",
       "description": "Generate target",
       "options": [

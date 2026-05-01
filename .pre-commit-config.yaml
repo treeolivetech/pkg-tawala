@@ -1,11 +1,11 @@
 repos:
-  # 1. Ensure updated dependencies
+  # 1. Ensure lockfile is up-to-date
   # uv
   - repo: local
     hooks:
-      - id: uv-sync
-        name: Sync dependencies with uv
-        entry: uv sync
+      - id: uv-lock-check
+        name: Check lockfile correctness with uv
+        entry: uv lock --check
         language: system
         pass_filenames: false
         require_serial: true
@@ -36,8 +36,8 @@ repos:
   - repo: https://github.com/djlint/djLint
     rev: v1.36.4
     hooks:
-      - id: djlint-reformat-django
-      - id: djlint-django
+      - id: djlint-reformat
+      - id: djlint
 
   # 5. Type checking last — needs clean, linted code to be meaningful
   # ty : https://github.com/astral-sh/ty/issues/269
@@ -45,7 +45,7 @@ repos:
     hooks:
       - id: ty-check
         name: Type check with ty
-        entry: uv run ty check
+        entry: uv run --locked ty check
         language: system
         pass_filenames: false
         require_serial: true

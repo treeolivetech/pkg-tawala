@@ -1,8 +1,0 @@
-{% if request.user.is_authenticated %}
-    <form id="form-logout"
-          action="{% url 'widget_logout' %}"
-          method="post"
-          class="d-none">
-        {% csrf_token %}
-    </form>
-{% endif %}

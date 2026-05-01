@@ -1,4 +1,0 @@
-# Ignore all migration files
-*
-!.gitignore
-!__init__.py

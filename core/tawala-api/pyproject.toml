@@ -1,0 +1,54 @@
+[build-system]
+requires = ["uv_build>=0.11.8,<0.12.0"]
+build-backend = "uv_build"
+
+[project.urls]
+Repository = "https://github.com/treeolivetech/pkg-tawala"
+Issues = "https://github.com/treeolivetech/pkg-tawala/issues"
+
+[project.scripts]
+tawala-api = "tawala_api.management.cli:main"
+
+[project]
+name = "tawala-api"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Kevin Wasike Wakhisi", email = "kevin@treeolive.tech" }]
+requires-python = ">=3.14"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Code Generators",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Framework :: Django :: 6",
+    "Typing :: Typed",
+]
+dependencies = [
+    "christianwhocodes==1.5.7",
+    "django==6.0.4",
+    "python-dotenv==1.2.2",
+]
+
+[project.optional-dependencies]
+postgresql = ["psycopg[binary,pool]==3.3.3"]
+vercel = ["psycopg[binary,pool]==3.3.3", "vercel==0.5.8"]
+
+[dependency-groups]
+dev = [
+    "psycopg[binary,pool]==3.3.3",
+    "vercel>=0.5.8",
+    "ruff>=0.15.12",
+    "ty>=0.0.33",
+]
+
+[tool.ruff]
+exclude = ["*/migrations/*"]
+format = { preview = true }
+lint = { select = ["D"], ignore = ["D203", "D213"] }

@@ -1,0 +1,51 @@
+{% load brand assets widgets %}
+{% brand_full_name as brand_full_name %}
+{% brand_legal_name as brand_legal_name %}
+{% brand_short_description as brand_description %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="{{ html_id }}" class="{{ html_class }}">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="{{ brand_legal_name }}" />
+        <meta name="description"
+              content="{{ brand_description|default:'App built using ' }}{% pkg_display_name %} framework.'" />
+        {% brand_favicon_ico_html "20260427" %}
+        {% brand_favicon_svg_html "20260427" %}
+        {% brand_apple_touch_icon_html "20260427" %}
+        <meta name="apple-mobile-web-app-title" content="{{ brand_full_name }}" />
+        {% asset "aos" %}
+        {% asset "bootstrap" %}
+
+        {% block styles %}
+        {% endblock styles %}
+
+        {% block deferred_scripts %}
+        {% endblock deferred_scripts %}
+
+        <title>{{ site_title|default:brand_full_name }} App</title>
+    </head>
+    <body id="{{ body_id }}" class="{{ body_class }}">
+        {% widget "logout" %}
+        {% widget "preloader" %}
+        <aside id="{{ aside_id }}" class="{{ aside_class }}">
+            {% widget "header" "aside" %}
+
+            {% block inner_aside %}
+            {% endblock inner_aside %}
+
+            {% widget "footer" "aside" %}
+        </aside>
+        <main id="{{ main_id }}" class="{{ main_class }}">
+            {% widget "header" "main" %}
+
+            {% block inner_main %}
+            {% endblock inner_main %}
+
+            {% widget "footer" "main" %}
+        </main>
+        {% widget "scroll_top" %}
+    </body>
+</html>
