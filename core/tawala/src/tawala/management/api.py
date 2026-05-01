@@ -32,7 +32,7 @@ else:
     environ.setdefault("DJANGO_SETTINGS_MODULE", DJANGO_SETTINGS_MODULE)
 
     match SECURITY_API.server_option:
-        case SecurityServerOptions.ASGI.value:
+        case SecurityServerOptions.ASGI:
             from django.core.asgi import get_asgi_application
 
             application = get_asgi_application()
@@ -42,4 +42,4 @@ else:
 
             application = get_wsgi_application()
 
-    server = application
+    __all__ = ["application"]

@@ -124,7 +124,7 @@ MIDDLEWARE = [
 
 # --------------------------------------------
 
-WSGI_APPLICATION = f"{BASE_APP}.management.api.server"
+WSGI_APPLICATION = f"{BASE_APP}.management.api.application"
 ROOT_URLCONF = f"{BASE_APP}.urls"
 
 # --------------------------------------------

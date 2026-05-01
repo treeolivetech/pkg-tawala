@@ -334,9 +334,7 @@ class GenerateCommand(BaseCommand):
 
     def _content_api_server_py(self) -> str:
         """Generate API server entry-point file content."""
-        return (
-            f"from {PROJECT_API.pkg_app}.management.api import server\n\napp = server\n"
-        )
+        return f"from {PROJECT_API.pkg_app}.management.api import application\n\napp = application\n"
 
     def _content_vercel_json(self) -> str:
         """Generate vercel.json content for Vercel preset."""
