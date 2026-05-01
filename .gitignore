@@ -1,7 +1,6 @@
 # Miscellaneous
-tmp/
-mock/
-/.env
+/.tmp/
+/.mock/
 
 # Python
 __pycache__/

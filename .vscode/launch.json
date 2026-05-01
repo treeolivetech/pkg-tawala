@@ -12,7 +12,7 @@
       "request": "launch",
       "module": "tawala_api.management.cli",
       "args": ["new", "--project", "launch-new-default"],
-      "cwd": "${workspaceFolder}/mock",
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new default project",
       "console": "integratedTerminal"
     },
@@ -22,7 +22,7 @@
       "request": "launch",
       "module": "tawala_api.management.cli",
       "args": ["new", "--project", "launch-new-vercel", "--preset", "vercel"],
-      "cwd": "${workspaceFolder}/mock",
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new vercel project",
       "console": "integratedTerminal"
     },
@@ -41,7 +41,7 @@
         "--layout",
         "wip"
       ],
-      "cwd": "${workspaceFolder}/mock",
+      "cwd": "${workspaceFolder}/.mock",
       "preLaunchTask": "CLI: new postgres vars wip project",
       "console": "integratedTerminal"
     },
@@ -51,7 +51,7 @@
       "request": "launch",
       "module": "tawala_api.management.cli",
       "args": ["new", "--project", "."],
-      "cwd": "${workspaceFolder}/mock/new-dot",
+      "cwd": "${workspaceFolder}/.mock/new-dot",
       "preLaunchTask": "CLI: new current directory",
       "console": "integratedTerminal"
     },
@@ -64,7 +64,7 @@
         "generate",
         "${input:tawalaGenerateTarget}",
         "--output-dir",
-        "${workspaceFolder}/mock/generate/out-${input:tawalaGenerateTarget}",
+        "${workspaceFolder}/.mock/generate/out-${input:tawalaGenerateTarget}",
         "--project-name",
         "gen-${input:tawalaGenerateTarget}"
       ],
@@ -81,7 +81,7 @@
         "generate",
         "all",
         "--output-dir",
-        "${workspaceFolder}/mock/generate/all",
+        "${workspaceFolder}/.mock/generate/all",
         "--project-name",
         "gen-all"
       ],

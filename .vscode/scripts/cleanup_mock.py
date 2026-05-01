@@ -1,4 +1,4 @@
-"""Cleanup mock directories for CLI task testing."""
+"""Cleanup .mock directories for CLI task testing."""
 
 import pathlib
 import shutil
@@ -6,10 +6,10 @@ import sys
 
 
 def cleanup_mock_directory(target: str, recreate: bool = False) -> None:
-    """Clean up or reset a mock directory.
+    """Clean up or reset a .mock directory.
     
     Args:
-        target: The name of the subdirectory within 'mock' to clean up.
+        target: The name of the subdirectory within '.mock' to clean up.
         recreate: If True, recreate the directory after removal.
     
     Raises:
@@ -18,7 +18,7 @@ def cleanup_mock_directory(target: str, recreate: bool = False) -> None:
     if not target or "/" in target or "\\" in target or target == "..":
         raise ValueError(f"Invalid target directory name: {target}")
     
-    mock_dir = pathlib.Path("mock")
+    mock_dir = pathlib.Path(".mock")
     mock_dir.mkdir(parents=True, exist_ok=True)
     
     target_dir = mock_dir / target
